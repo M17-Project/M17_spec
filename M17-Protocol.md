@@ -51,25 +51,41 @@ The M17 Packet format borrows heavily from Ethernet, except the Preamble and Syn
 
 **TODO** More detail here about endianness, etc.  Use Ethernet definitions unless we have a specific reason not to.
 
-### Link Control Packets
-**TODO** Define a packet that switches from Packet mode to Stream mode.
-
 ## Data Link Layer: Stream Mode
 In Stream Mode, an indefinite amount of payload data is sent continuously without breaks in the Physical layer.  The Stream is broken up into parts, called Frames to not confuse them with Packets sent in Packet mode.  Frames contain payload data wrapped with framing (similar to packets).
 
 A portion of each Frame contains a portion of the Link Control packet that was used to establish the Stream.  Frames are grouped into Super Frames, which is the group of Frames that contain everything needed to rebuild the original Link Control packet, so that a receiver who starts listening in the middle of a stream is eventually able to reconstruct the Link Control message and understand how to receive the in-progress stream.
 
 ### Frame Format:
-Stream frames are 64 bytes, formatted like this:
+Stream frames are 60 bytes, formatted like this:
 * Sync: 3 bytes  (Same Sync from Packet mode)
 * Stream Indicator: 1 byte
-* Payload: 52 bytes
+* Payload: 48 bytes
 * CRC: 4 bytes
 * Preamble/Link Control: 4 bytes
   * Every frame of the Super Frame except the last, this contains 4 bytes of the Link Control message that established this stream.
   * The last frame of the Super Frame, this contains 4 bytes of Preamble.  Combined with the immediately following Sync header of the next frame, these two will wake-up a receiver in progress.
  
-Assuming a 9600bps Physical layer, this Stream Frame format gives 7800bps of payload throughput.  All ECC is done at the application layer.
+Assuming a 9600bps Physical layer, this Stream Frame format gives 7680bps of payload throughput.  All ECC is done at the application layer.
 
 # Application Layer
 This section describes the actual Packet and Stream payloads.
+
+## Packet Formats
+### Link Control Packet
+
+### Identity Beacon Packet
+
+## Stream Formats
+These formats must fit in the 48 byte payload of the Stream Mode Frame specified above.
+
+A Frame will be sent 20 times a second, or one frame every 50ms.  The application is responsible for padding any unneeded space.
+
+### Voice Streams
+#### CODEC2 3200
+CODEC2 3200 needs to send a 64 bit, 4 byte, CODEC frame every 20ms.  Stream frames are sent every 50ms, so Stream frames will alternate between 2 CODEC frames and 3 CODEC frames.
+
+
+
+### File Transfer Stream
+
