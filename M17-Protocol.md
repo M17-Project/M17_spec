@@ -39,7 +39,7 @@ The M17 Packet format borrows heavily from Ethernet, except the Preamble and Syn
   * **TODO** Depends on Physical Layer. ADF7021 datasheet suggests 0xAAAAAA for 2FSK, but 0x0202 for 4FSK.
 * Sync: 3 bytes
   * **TODO** Something long and arbitrary, like e or Pi.
-* Packet Indicator: 1 byte
+* Packet/Stream Indicator: 1 byte
   * A value to indicate this is a Packet, not a Stream.
 * Destination address: 6 bytes  (See below for address encoding.)
 * Source address: 6 bytes  (See below for address encoding.)
@@ -59,33 +59,65 @@ A portion of each Frame contains a portion of the Link Control packet that was u
 ### Frame Format:
 Stream frames are 60 bytes, formatted like this:
 * Sync: 3 bytes  (Same Sync from Packet mode)
-* Stream Indicator: 1 byte
+* Packet/Stream Indicator: 1 byte
 * Payload: 48 bytes
 * CRC: 4 bytes
 * Preamble/Link Control: 4 bytes
   * Every frame of the Super Frame except the last, this contains 4 bytes of the Link Control message that established this stream.
-  * The last frame of the Super Frame, this contains 4 bytes of Preamble.  Combined with the immediately following Sync header of the next frame, these two will wake-up a receiver in progress.
+  * The last frame of the Super Frame, this contains 4 bytes of Preamble.  Combined with the immediately following Sync header of the next frame, these two will wake-up a receiver from the stream in progress, if it wasn't already awake.
  
-Assuming a 9600bps Physical layer, this Stream Frame format gives 7680bps of payload throughput.  All ECC is done at the application layer.
+Assuming a 9600bps Physical layer, this Stream Frame format gives 7680bps of payload throughput.  All FEC is done at the application layer.
 
 # Application Layer
 This section describes the actual Packet and Stream payloads.
 
 ## Packet Formats
 ### Link Control Packet
+**TODO** Flesh this out
+Notes:
+* Moves the state machine from Packet mode to Stream mode.
+* Specifies what the Stream is carrying.
+* Specifies what the Padding is carrying, if anything.
+
 
 ### Identity Beacon Packet
+**TODO** Flesh this out
+Notes:
+* The sender's callsign is already encoded in the header, so we don't need to include that here.
+* Everything is an optional field?  I can't think of anything to REQUIRE here.
+* Optional fields:
+  * Arbitrary string of personal data?  eg: "@SmittyHalibut on Twitter" or "Mark's Car".  Akin to APRS's "Status message."
+  * Location data: Lat/Long
+  * Station Type/Icon:  Literally copy from APRS?
+
 
 ## Stream Formats
-These formats must fit in the 48 byte payload of the Stream Mode Frame specified above.
-
-A Frame will be sent 20 times a second, or one frame every 50ms.  The application is responsible for padding any unneeded space.
+These formats must fit in the 48 byte payload of the Stream Mode Frame specified above.  A Frame will be sent 20 times a second, or one frame every 50ms.
 
 ### Voice Streams
-#### CODEC2 3200
-CODEC2 3200 needs to send a 64 bit, 4 byte, CODEC frame every 20ms.  Stream frames are sent every 50ms, so Stream frames will alternate between 2 CODEC frames and 3 CODEC frames.
+The Link Control packet that establishes the Voice Stream specifies which stream type is used.
 
+The Link Control packet also specifies what the padding is, whether it's just empty padding, or some other data stream.  But for the purposes of the primary Voice Stream, it's just padding.  Any use of the padding data is outside the scope of the primary voice stream.
 
+#### C2-32: CODEC2 3200bps
+CODEC2 3200 needs to send a 64 bit/4 byte CODEC frame every 20ms.  Stream frames are sent every 50ms, so Stream frames will alternate between containing 2 CODEC frames and 3 CODEC frames.
+
+Even Frames:
+* Even/Odd Frame Indicator: 1 byte
+* CODEC2: 8 bytes
+* CODEC2: 8 bytes
+* FEC: 12 bytes
+* Padding: 19 bytes
+
+Odd Frames:
+* Even/Odd Frame Indicator: 1 byte
+* CODEC2: 8 bytes
+* CODEC2: 8 bytes
+* CODEC2: 8 bytes
+* FEC: 16 bytes
+* Padding: 7 bytes
+
+**TODO** Provide more detail here about the FEC encoding.
 
 ### File Transfer Stream
 
