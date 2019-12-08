@@ -31,14 +31,16 @@ The Data Link layer is split into two modes:
 When the Physical Layer is idle (no RF being transmitted or received), the Data Link defaults to Packet mode.  To switch to Stream mode, a Link Control packet (detailed later) is sent, immediately followed by the switch to Stream mode; the Stream of data immediately follows the Link Control packet without disabling the Physical layer.  To switch out of Stream mode, the stream simply ends and returns the Physical layer to the idle state, and the Data Link defaults back to Packet mode.
 
 ## Data Link Layer: Packet Mode
-In Packet Mode, a finite amount of payload data (eg: Link Control messages, or Application Layer data) is wrapped with framing, sent over the Physical Layer, and is completed when done.  Any acknowlement or error correction is done at the application layer.
+In Packet Mode, a finite amount of payload data (eg: Link Control messages, or Application Layer data) is wrapped with a packet, sent over the Physical Layer, and is completed when done.  Any acknowlement or error correction is done at the application layer.
 
-### Frame Format:
-The M17 Packet frame borrows heavily from Ethernet:
-* Preamble: 6 bytes
+### Packet Format:
+The M17 Packet format borrows heavily from Ethernet, except the Preamble and Sync:
+* Preamble: 8 bytes
   * **TODO** Depends on Physical Layer. ADF7021 datasheet suggests 0xAAAAAA for 2FSK, but 0x0202 for 4FSK.
 * Sync: 3 bytes
   * **TODO** Something long and arbitrary, like e or Pi.
+* Packet Indicator: 1 byte
+  * A value to indicate this is a Packet, not a Stream.
 * Destination address: 6 bytes
 * Source address: 6 bytes
 * Length: 2 bytes (Number of bytes in payload)
@@ -53,9 +55,21 @@ The M17 Packet frame borrows heavily from Ethernet:
 **TODO** Define a packet that switches from Packet mode to Stream mode.
 
 ## Data Link Layer: Stream Mode
-In Stream Mode, an indefinite amount of payload data is sent continuously without breaks in the Physical layer.  The Stream is broken up into parts, called Frames to not confuse them with Packets sent in Packet mode.
+In Stream Mode, an indefinite amount of payload data is sent continuously without breaks in the Physical layer.  The Stream is broken up into parts, called Frames to not confuse them with Packets sent in Packet mode.  Frames contain payload data wrapped with framing (similar to packets).
 
-Stream frames are formatted like this:
-* Sync: 
+A portion of each Frame contains a portion of the Link Control packet that was used to establish the Stream.  Frames are grouped into Super Frames, which is the group of Frames that contain everything needed to rebuild the original Link Control packet, so that a receiver who starts listening in the middle of a stream is eventually able to reconstruct the Link Control message and understand how to receive the in-progress stream.
+
+### Frame Format:
+Stream frames are 64 bytes, formatted like this:
+* Sync: 3 bytes  (Same Sync from Packet mode)
+* Stream Indicator: 1 byte
+* Payload: 52 bytes
+* CRC: 4 bytes
+* Preamble/Link Control: 4 bytes
+  * Every frame of the Super Frame except the last, this contains 4 bytes of the Link Control message that established this stream.
+  * The last frame of the Super Frame, this contains 4 bytes of Preamble.  Combined with the immediately following Sync header of the next frame, these two will wake-up a receiver in progress.
  
+Assuming a 9600bps Physical layer, this Stream Frame format gives 7800bps of payload throughput.  All ECC is done at the application layer.
+
 # Application Layer
+This section describes the actual Packet and Stream payloads.
