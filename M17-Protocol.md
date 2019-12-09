@@ -25,13 +25,13 @@ This document attempts to document these layers.
 
 # Data Link Layer
 The Data Link layer is split into two modes:
-1. Packet Mode: Data are sent in small bursts, on the order of 100s to 1000s of bytes at a time, after which the Physical layer stops sending data.  eg: Link Controll messages, beacons, etc.
+1. Packet Mode: Data are sent in small bursts, on the order of 100s to 1000s of bytes at a time, after which the Physical layer stops sending data.  eg: Start Stream messages, beacons, etc.
 1. Stream Mode: Data are sent in a continuous stream for an indefinite amount of time, with no break in Physical layer output, until the stream ends.  eg: Voice data, bulk data transfers, etc.
 
-When the Physical Layer is idle (no RF being transmitted or received), the Data Link defaults to Packet mode.  To switch to Stream mode, a Link Control packet (detailed later) is sent, immediately followed by the switch to Stream mode; the Stream of data immediately follows the Link Control packet without disabling the Physical layer.  To switch out of Stream mode, the stream simply ends and returns the Physical layer to the idle state, and the Data Link defaults back to Packet mode.
+When the Physical Layer is idle (no RF being transmitted or received), the Data Link defaults to Packet mode.  To switch to Stream mode, a Start Stream packet (detailed later) is sent, immediately followed by the switch to Stream mode; the Stream of data immediately follows the Start Stream packet without disabling the Physical layer.  To switch out of Stream mode, the stream simply ends and returns the Physical layer to the idle state, and the Data Link defaults back to Packet mode.
 
 ## Data Link Layer: Packet Mode
-In Packet Mode, a finite amount of payload data (eg: Link Control messages, or Application Layer data) is wrapped with a packet, sent over the Physical Layer, and is completed when done.  Any acknowlement or error correction is done at the application layer.
+In Packet Mode, a finite amount of payload data (eg: Start Stream messages, or Application Layer data) is wrapped with a packet, sent over the Physical Layer, and is completed when done.  Any acknowlement or error correction is done at the application layer.
 
 ### Packet Format:
 The M17 Packet format borrows heavily from Ethernet, except the Preamble and Sync:
@@ -39,49 +39,76 @@ The M17 Packet format borrows heavily from Ethernet, except the Preamble and Syn
   * **TODO** Depends on Physical Layer. ADF7021 datasheet suggests 0xAAAAAA for 2FSK, but 0x0202 for 4FSK.
 * Sync: 3 bytes
   * **TODO** Something long and arbitrary, like e or Pi.
-* Packet/Stream Indicator: 1 byte
-  * A value to indicate this is a Packet, not a Stream.
+* Packet Indicator/Stream Sequence Number: 2 bytes
+  * 0x0000 indicates a Packet.
 * Destination address: 6 bytes  (See below for address encoding.)
 * Source address: 6 bytes  (See below for address encoding.)
-* Length: 2 bytes (Number of bytes in payload)
+* Length: 2 bytes
+  * Number of bytes in payload, not including any headers.
+* Packet Type: 1 byte
 * Payload: N bytes
-* CRC: 4 bytes (32-bit CRC of the entire frame, not including the preamble or sync byte. Includes Destination, Source, Lengh, and Payload.)
+* CRC: 4 bytes
+  * 32-bit CRC of the entire frame, not including the Preamble, Sync word, or Packet Indicator (which are all constants.) Includes Destination, Source, Lengh, Packet Type, and Payload.
 
-**Note:** The Preamble and Sync are different than Ethernet. These are constants that depend more on the Physical layer than the Data Link. The values used here are chosen for the M17 Physical layer.  When bridging M17 packets to Ethernet, the Preamble and Sync are replaced with Ethernet values.
+**Note:** The Preamble and Sync are different than Ethernet. These are constants that depend more on the Physical layer than the Data Link. The values used here are chosen for the M17 Physical layer.  When bridging M17 packets to Ethernet, the Preamble and Sync are replaced with Ethernet values.  
+
+**FIXME** We've diverged from Ethernet even more, with the addition of Packet Indicator/Stream Sequence Number, and Packet Type headers.  Should we bother continuing to claim we are borrowing from Ethernet?
 
 **TODO** More detail here about endianness, etc.  Use Ethernet definitions unless we have a specific reason not to.
 
 ## Data Link Layer: Stream Mode
 In Stream Mode, an indefinite amount of payload data is sent continuously without breaks in the Physical layer.  The Stream is broken up into parts, called Frames to not confuse them with Packets sent in Packet mode.  Frames contain payload data wrapped with framing (similar to packets).
 
-A portion of each Frame contains a portion of the Link Control packet that was used to establish the Stream.  Frames are grouped into Super Frames, which is the group of Frames that contain everything needed to rebuild the original Link Control packet, so that a receiver who starts listening in the middle of a stream is eventually able to reconstruct the Link Control message and understand how to receive the in-progress stream.
+A portion of each Frame contains a portion of the Start Stream packet that was used to establish the Stream.  Frames are grouped into Super Frames, which is the group of Frames that contain everything needed to rebuild the original Start Stream packet, so that a receiver who starts listening in the middle of a stream is eventually able to reconstruct the Start Stream message and understand how to receive the in-progress stream.
 
 ### Frame Format:
-Stream frames are 60 bytes, formatted like this:
-* Sync: 3 bytes  (Same Sync from Packet mode)
-* Packet/Stream Indicator: 1 byte
-* Payload: 48 bytes
+All Stream frames are 96 bytes long.
+
+Frames have the following format:
+* Sync: 3 bytes
+  * Same Sync from Packet mode
+* Packet Indicator/Stream Sequence Number: 2 bytes
+  * The Start Stream Packet that starts a stream is Sequence Number 0x0000. The first stream frame starts at 0x0001 and increases from there.
+* Payload: 83 bytes
 * CRC: 4 bytes
-* Preamble/Link Control: 4 bytes
-  * Every frame of the Super Frame except the last, this contains 4 bytes of the Link Control message that established this stream.
+  * 32-bit CRC of the entire frame, not including the Sync word.  Includes Sequence Number, Payload, four bytes of 0x00 where the CRC goes in the frame, and the Preamble/Start Stream.
+* Preamble/Start Stream: 4 bytes
+  * Every frame of the Super Frame except the last, this contains 4 bytes of the Start Stream message that established this stream.
   * The last frame of the Super Frame, this contains 4 bytes of Preamble.  Combined with the immediately following Sync header of the next frame, these two will wake-up a receiver from the stream in progress, if it wasn't already awake.
  
-Assuming a 9600bps Physical layer, this Stream Frame format gives 7680bps of payload throughput.  All FEC is done at the application layer.
+Assuming a 9600bps Physical layer:
+* A Stream frame is sent every 80ms.
+* This Stream Frame format gives 8230bps of payload throughput, an 85.7% efficiency.
+
+All FEC, if required, is done at the application layer.
 
 # Application Layer
 This section describes the actual Packet and Stream payloads.
 
 ## Packet Formats
-### Link Control Packet
-**TODO** Flesh this out
-Notes:
-* Moves the state machine from Packet mode to Stream mode.
-* Specifies what the Stream is carrying.
-* Specifies what the Padding is carrying, if anything.
+### Start Stream
+Data Link Layer values:
+* Length = 16 bytes
+* Packet Type = 0x00
+
+Format:
+* Stream Type: 2 bytes
+* Stream Subtype: 2 bytes
+* Encryption Type: 2 bytes
+* Encryption Subtype: 2 bytes
+* Encryption Key Index: 4 bytes
+  * Index to a known preshared key, or a recently negotiated session key.
+* Padding Type: 2 bytes
+* Padding Subtype: 2 bytes
+
+Stream Types and Subtypes are defined below in `Stream Types`.  Encryption Type and Subtype are defined below in `Encryption Types`.  Padding Type and Subtype are defined below in `Padding Types`.
 
 
 ### Identity Beacon Packet
+Data Link Layer Packet Type = 0x01
+
 **TODO** Flesh this out
+
 Notes:
 * The sender's callsign is already encoded in the header, so we don't need to include that here.
 * Everything is an optional field?  I can't think of anything to REQUIRE here.
@@ -90,36 +117,103 @@ Notes:
   * Location data: Lat/Long
   * Station Type/Icon:  Literally copy from APRS?
 
+### Key Negotiation
+Used to negotiate a session key with a station with whom you do not have a preshared key.  Probably a whole protocol in here. **TODO**
 
-## Stream Formats
-These formats must fit in the 48 byte payload of the Stream Mode Frame specified above.  A Frame will be sent 20 times a second, or one frame every 50ms.
+### Ping
+Ping? Pong.  Test availability to a particular station.  Both the echo request and reply are defined.  **TODO**
+
+## Stream Types
+These formats must fit in the 83 byte payload of the Stream Mode Frame specified above.  A Frame will be sent 12.5 times a second, or one frame every 80ms.
 
 ### Voice Streams
-The Link Control packet that establishes the Voice Stream specifies which stream type is used.
+The Start Stream packet that establishes the Voice Stream specifies which stream type is used.
 
-The Link Control packet also specifies what the padding is, whether it's just empty padding, or some other data stream.  But for the purposes of the primary Voice Stream, it's just padding.  Any use of the padding data is outside the scope of the primary voice stream.
+The Start Stream packet also specifies what the padding is, whether it's just empty padding, or some other data stream.  But for the purposes of the primary Voice Stream, it's just padding.  Any use of the padding data is outside the scope of the primary voice stream.
 
-#### C2-32: CODEC2 3200bps
-CODEC2 3200 needs to send a 64 bit/4 byte CODEC frame every 20ms.  Stream frames are sent every 50ms, so Stream frames will alternate between containing 2 CODEC frames and 3 CODEC frames.
+#### CODEC2, All bit rates
+Stream Type = 0xC2
+CODEC2 modes operate on either 20ms frames, or 40ms frames.  Stream frames are sent every 80ms, so will contain either 2 or 4 CODEC frames, depending on the CODEC mode used.i  Different CODEC bitrates result in varrying amounts of FEC and padding available for other purposes.
 
-Even Frames:
-* Even/Odd Frame Indicator: 1 byte
-* CODEC2: 8 bytes
-* CODEC2: 8 bytes
-* FEC: 12 bytes
-* Padding: 19 bytes
-
-Odd Frames:
-* Even/Odd Frame Indicator: 1 byte
-* CODEC2: 8 bytes
-* CODEC2: 8 bytes
-* CODEC2: 8 bytes
-* FEC: 16 bytes
-* Padding: 7 bytes
+All 20ms modes put 4 CODEC frames per Stream frame.  All 40ms modes put 2 CODEC frames per Stream frame.
 
 **TODO** Provide more detail here about the FEC encoding.
 
+##### CODEC2 3200bps
+Stream Type = 0xC2, Stream Subtype = 0x32
+
+CODEC2 3200 uses a 64 bit/8 byte CODEC frame every 20ms.  FEC ratio is 1:1.
+
+Frame format:
+* CODEC2: 8 bytes
+* CODEC2: 8 bytes
+* CODEC2: 8 bytes
+* CODEC2: 8 bytes
+* FEC: 32 bytes
+* Padding: 19 bytes
+
+##### CODEC2 2400bps
+Stream Type = 0xC2, Stream Subtype = 0x24
+CODEC2 2400 uses a 48 bit/6 byte CODEC frame every 20ms.  FEC ratio is 1:1
+
+Frame format:
+* CODEC2: 6 bytes
+* CODEC2: 6 bytes
+* CODEC2: 6 bytes
+* CODEC2: 6 bytes
+* FEC: 24 bytes
+* Padding: 35 bytes
+
+##### CODEC2 2400bps, Resiliant Mode 
+Stream Type = 0xC2, Stream Subtype = 0x25
+**TODO** Come up with a better name than "Resiliant Mode."
+
+CODEC2 2400 uses a 48 bit/6 byte CODEC frame every 20ms.  FEC ratio is 1:2, twice as much FEC as data.
+
+Frame format:
+* CODEC2: 6 bytes
+* CODEC2: 6 bytes
+* CODEC2: 6 bytes
+* CODEC2: 6 bytes
+* FEC: 48 bytes
+* Padding: 11 bytes
+
+##### CODEC2_MODE_1600
+Stream Type = 0xC2, Stream Subtype = 0x16
+
+CODEC2 1600 uses a 64 bit/8 byte CODEC frame every 40ms.  FEC ratio is 1:2.
+
+Frame format:
+* CODEC2: 8 bytes
+* CODEC2: 8 bytes
+* FEC: 32 bytes
+* Padding: 35 bytes
+
+##### CODEC2_MODE_1400
+Stream Type = 0xC2, Stream Subtype = 0x14
+##### CODEC2_MODE_1300
+Stream Type = 0xC2, Stream Subtype = 0x13
+##### CODEC2_MODE_1200
+Stream Type = 0xC2, Stream Subtype = 0x12
+##### CODEC2_MODE_700
+Stream Type = 0xC2, Stream Subtype = 0x07
+
 ### File Transfer Stream
+**TODO** Notes:
+* Include filename, size, MIME type, etc.
+
+## Encryption Types
+**TODO** Notes:
+* Encryption should user COUNTER mode block ciphers and user the Sequence Number as the counter.  The 16 bit counter and 80ms frames can provide for over 87 minutes of streaming without rolling over the counter.
+
+### Null Encryption
+Encryption Type = 0x00, Encryption Subtype = 0x00.  No encryption is performed, payload is sent in clear text.
+
+## Padding Types
+These might be very similar to Stream Types, but they have variable number of bytes per frame available to them.  There is no guaranteed delivery rate like there is for a Stream Type.
+
+### Null Padding
+Padding Type = 0x00, Padding Sybtype = 0x00.  Simply fill the empty space with 0x00.
 
 # Address Encoding
 M17 addresses are 48 bits, 6 bytes long.  Callsigns (and other addresses) are encoded into these 6 bytes in the following ways:
