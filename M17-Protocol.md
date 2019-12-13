@@ -9,7 +9,7 @@ M17 is an RF protocol that is:
 * Capable of doing the things hams expect their digital protocols to do:
   * Voice (eg: DMR, D-Star, etc)
   * Point to point data (eg: Packet, D-Star, etc)
-  * Broadcast telemetry (eg: APRS, LoRa, etc)
+  * Broadcast telemetry (eg: APRS, etc)
 * Extensible, so we can add more capabilities over time.
 
 To do this, the M17 protocol is broken down into three protocol layers, like a network:
@@ -37,8 +37,7 @@ In Packet Mode, a finite amount of payload data (eg: Start Stream messages, or A
 The M17 Packet format borrows heavily from Ethernet, except the Preamble and Sync:
 * Preamble: 8 bytes
   * **TODO** Depends on Physical Layer. ADF7021 datasheet suggests 0xAAAAAA for 2FSK, but 0x0202 for 4FSK.
-* Sync: 3 bytes
-  * **TODO** Something long and arbitrary, like e or Pi.
+* Sync: 3 bytes, 0x3243f6 (Pi in Hexidecimal)
 * Packet Indicator/Stream Sequence Number: 2 bytes
   * 0x0000 indicates a Packet.
 * Destination address: 6 bytes  (See below for address encoding.)
@@ -65,8 +64,7 @@ A portion of each Frame contains a portion of the Start Stream packet that was u
 All Stream frames are 96 bytes long.
 
 Frames have the following format:
-* Sync: 3 bytes
-  * Same Sync from Packet mode
+* Sync: 3 bytes, 0x3243f6 (Pi in Hexidecimal)
 * Packet Indicator/Stream Sequence Number: 2 bytes
   * The Start Stream Packet that starts a stream is Sequence Number 0x0000. The first stream frame starts at 0x0001 and increases from there.
 * Payload: 83 bytes
@@ -214,6 +212,22 @@ These might be very similar to Stream Types, but they have variable number of by
 
 ### Null Padding
 Padding Type = 0x00, Padding Sybtype = 0x00.  Simply fill the empty space with 0x00.
+
+
+# Data Examples
+Here's an example of what a Start Stream packet, followed by a CODEC2 3200bps Voice Stream might look like:
+
+* Data Link:
+  * Preamble: 0x10101010 0x10101010
+  * Sync: 0x3243f6
+  * Packet Indicator: 0x0000
+  * Destination: 
+  * Source: 
+  * Length: 0x0010
+  * Packet Type: 0x00
+* Application:
+  * 
+
 
 # Address Encoding
 M17 addresses are 48 bits, 6 bytes long.  Callsigns (and other addresses) are encoded into these 6 bytes in the following ways:
