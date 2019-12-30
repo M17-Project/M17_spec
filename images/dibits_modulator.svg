@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="215.41368mm"
+   height="46.324406mm"
+   viewBox="0 0 215.41368 46.324406"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="dibits_modulator.svg"
+   inkscape:export-filename="C:\Users\SP5WWP\Desktop\dibits_modulator.svg.png"
+   inkscape:export-xdpi="132"
+   inkscape:export-ydpi="132">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="193.21274"
+     inkscape:cy="142.78584"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     fit-margin-left="10"
+     fit-margin-top="10"
+     fit-margin-bottom="10"
+     fit-margin-right="10"
+     inkscape:window-width="1280"
+     inkscape:window-height="962"
+     inkscape:window-x="-32000"
+     inkscape:window-y="-32000"
+     inkscape:window-maximized="0">
+    <sodipodi:guide
+       position="131.94532,23.162203"
+       orientation="0,1"
+       id="guide12"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(14.346726,-107.06161)">
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M -4.346726,130.22381 H 191.06696"
+       id="path29"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect10"
+       width="47.247025"
+       height="25.324406"
+       x="33.864349"
+       y="117.56161" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot836-5"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.26458333,0,0,0.26458333,37.550404,1.6879886)"><flowRegion
+         id="flowRegion838-9"
+         style="line-height:1"><rect
+           id="rect840-8"
+           width="132.13989"
+           height="97.570717"
+           x="10"
+           y="446.09113"
+           style="line-height:1" /></flowRegion><flowPara
+         style="font-size:29.33333397px;line-height:1;text-align:center;text-anchor:middle"
+         id="flowPara850-8">RRC</flowPara><flowPara
+         style="font-size:29.33333397px;line-height:1;text-align:center;text-anchor:middle"
+         id="flowPara883">Filter</flowPara></flowRoot>    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect10-5"
+       width="47.247025"
+       height="25.324406"
+       x="106.77827"
+       y="117.56161" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot836-5-4"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.26458333,0,0,0.26458333,110.19095,0.88028592)"><flowRegion
+         id="flowRegion838-9-3"
+         style="line-height:1"><rect
+           id="rect840-8-2"
+           width="132.13989"
+           height="97.570717"
+           x="10"
+           y="446.09113"
+           style="line-height:1" /></flowRegion><flowPara
+         style="font-size:24px;line-height:1;text-align:center;text-anchor:middle"
+         id="flowPara883-8">Frequency</flowPara><flowPara
+         style="font-size:24px;line-height:1;text-align:center;text-anchor:middle"
+         id="flowPara933">Modulator</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot836-5-2"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.26458333,0,0,0.26458333,-5.8303137,1.6879935)"><flowRegion
+         id="flowRegion838-9-5"
+         style="line-height:1"><rect
+           id="rect840-8-8"
+           width="132.13989"
+           height="97.570717"
+           x="10"
+           y="446.09113"
+           style="line-height:1" /></flowRegion><flowPara
+         style="font-size:29.33333397px;line-height:1;text-align:center;text-anchor:middle"
+         id="flowPara850-8-2">Dibits</flowPara><flowPara
+         style="font-size:29.33333397px;line-height:1;text-align:center;text-anchor:middle"
+         id="flowPara883-9">Input</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot836-5-2-9"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.26458333,0,0,0.26458333,152.79668,1.0039648)"><flowRegion
+         id="flowRegion838-9-5-1"
+         style="line-height:1"><rect
+           id="rect840-8-8-2"
+           width="132.13989"
+           height="97.570717"
+           x="10"
+           y="446.09113"
+           style="line-height:1" /></flowRegion><flowPara
+         style="font-size:29.33333397px;line-height:1;text-align:center;text-anchor:middle"
+         id="flowPara883-9-9">4FSK</flowPara><flowPara
+         style="font-size:29.33333397px;line-height:1;text-align:center;text-anchor:middle"
+         id="flowPara964">Output</flowPara></flowRoot>  </g>
+</svg>
