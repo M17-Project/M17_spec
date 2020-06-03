@@ -11,7 +11,7 @@ ECC - Error Correction Coding
 SSN - Stream/Superframe Sequence Number
 CRC - Cyclic Redundancy Check
 
-2. Every transmission starts with a PREAMBLE, which shall consist of at least 40ms of alternating -3, +3, -3, +3 symbols.
+2. Every transmission starts with a PREAMBLE, which shall consist of at least 40ms of alternating -3, +3... symbols.
 
 3. Bit types:
 Type 1 - raw data
@@ -29,8 +29,9 @@ TYPE  - type						- 16 bits, information about incoming data stream:
 											bit 0 		- packet/stream indicator, 0=packet, 1=stream
 											bit 2,3 	- data type indicator, 01=data (D), 10=voice (V), 11=V+D, 00=reserved
 											bit 4 		- voice codec indicator, 0=Codec2 1=other
-											bit 5,6 	- encryption type, 00=none, 01=AES, 10=scrambling, 11=other/reserved
-											bits ..15	- reserved (don't care)
+											bit 5		- voice codec bitrate, 0=3200bps, 1=other
+											bit 6,7 	- encryption type, 00=none, 01=AES, 10=scrambling, 11=other/reserved
+											bits 8..15	- reserved (don't care)
 NONCE - nonce value for encryption - 128 bits
 TAIL  - 4 flushing bits for the convolutional encoder
 
@@ -42,10 +43,29 @@ Four TAIL bits are needed for the convolutional coder to go back to state 0, so 
 5. Frames 2, 3, 4, 5 fields:
 SYNC    - synchronization burst		- 16 bits (0x3243), first 16-bit part of pi in hexadecimal notation
 LICH    - LICH chunk, one of 5		- 48 bits, part of full LICH
-SSN     - superframe number			- 16 bits, starts from 0 and increments every superframe (6 frames)
+SSN     - frame number				- 16 bits, starts from 0 and increments every frame
 PAYLOAD - payload/data				- 128 bits, can contain arbitrary data
 CRC     - CRC						- 16 bits, this field contains 16-bit value used to check data integrity, CRC-16 is used
-TAIL    - 4 flushing bits for the convolutional encoder
+TAIL    - 4 flushing bits for the convolutional encoder that don't carry any information
 
 6. Frame 6 fields (Type 1 bits):
-TBF
+SYNC     - synchronization burst		- 16 bits (0x3243), first 16-bit part of pi in hexadecimal notation
+PAYLOAD  - payload/data					- 128 bits, can contain arbitrary data
+PREAMBLE - preamble for late-joiners	- 240 bits, 25 ms of alternating -3, +3... symbols
+
+7. Superframe structure
+A superframe contains 6 frames. At the beginning of the transmission, a leading PREAMBLE is sent. Immediately after that, a superframe starts. 
+First frame has SSN field equal to 0 (zero). 6 consecutive frames are transmitted with no pauses in between. The last 25 milliseconds
+of the superframe is the PREAMBLE for late-joiners. Every other superframes have identical structure. 25 milliseconds PREAMBLE marks the end
+of the transmission.
+
+8. Error coding schemes and bit type conversion
+8.1 Frame 1:
+240 DST, SRC, TYPE and NONCE type 1 bits are convolutionally coded using rate 1/2 coder with constraint K=5. 4 tail bits are used to flush
+the encoder's state register, giving a total of 244 bits being encoded. Resulting 488 type 2 bits are retained for type 3 bits computation.
+Type 3 bits are computed by puncturing type 2 bits using a scheme shown in chapter X. This results in 368 bits, which in conjunction with
+the SYNC field give 384 bits (384 bits / 9600bps = 40 ms).
+Interleaving type 3 bits produce type 4 bits that are ready to be transmitted. Interleaving is used to combat error bursts.
+
+8.2 Frames 2 through 5:
+A 48-bit (type 1) chunk of LICH is encoded using Golay (24, 12) code to produce 96-bit encoded LICH, type 2. 
