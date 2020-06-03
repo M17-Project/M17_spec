@@ -4,7 +4,7 @@ FSK - Frequency Shift Keying
 BPS - Bits Per Second
 PTT - Push To Talk
 V+D - Voice plus Data
-AES - Advanced Encryption System
+AES - Advanced Encryption Standard
 CTR - Counter (stream cipher mode)
 LICH - Link Information CHannel
 ECC - Error Correction Coding
