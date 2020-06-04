@@ -8,7 +8,7 @@ AES - Advanced Encryption Standard
 CTR - Counter (stream cipher mode)
 LICH - Link Information CHannel
 ECC - Error Correction Coding
-SSN - Stream/Superframe Sequence Number
+SSN - Stream/Superframe Sequence Number (TODO: rename this to FN - Frame Number)
 CRC - Cyclic Redundancy Check
 
 2. Every transmission starts with a PREAMBLE, which shall consist of at least 40ms of alternating -3, +3... symbols.
@@ -56,7 +56,7 @@ PREAMBLE - preamble for late-joiners	- 240 bits, 25 ms of alternating -3, +3... 
 7. Superframe structure
 A superframe contains 6 frames. At the beginning of the transmission, a leading PREAMBLE is sent. Immediately after that, a superframe starts. 
 First frame has SSN field equal to 0 (zero). 6 consecutive frames are transmitted with no pauses in between. The last 25 milliseconds
-of the superframe is the PREAMBLE for late-joiners. Every other superframes have identical structure. 25 milliseconds PREAMBLE marks the end
+of the superframe is the PREAMBLE for late-joiners. Every other superframes have identical structure. 15 milliseconds PREAMBLE marks the end
 of the transmission.
 
 8. Error coding schemes and bit type conversion
@@ -68,4 +68,11 @@ the SYNC field give 384 bits (384 bits / 9600bps = 40 ms).
 Interleaving type 3 bits produce type 4 bits that are ready to be transmitted. Interleaving is used to combat error bursts.
 
 8.2 Frames 2 through 5:
-A 48-bit (type 1) chunk of LICH is encoded using Golay (24, 12) code to produce 96-bit encoded LICH, type 2. 
+A 48-bit (type 1) chunk of LICH is partitioned into 4 12-bit parts and encoded using Golay (24, 12) code. This produces 96 encoded LICH bits of type 2.
+164 SSN, PAYLOAD and CRC bits are convolutionally encoded in a manner analogous to that of Frame 1. A total of 168 bits is being encoded resulting in
+336 type 2 bits. These bits are punctured to generate 272 type 3 bits. 96 type 2 bits of LICH are concatenated with 272 type 3 bits and re-ordered to form
+type 4 bits for transmission. This, along with 16-bit sync in the beginning of frame, gives a total of 384 bits.
+
+8.3 Frame 6:
+128-bit PAYLOAD is encoded convolutionally with rate 1/2, giving 256 type 2 bits. Puncturing type 2 bits shall give 224 type 3 bits. These bits
+don't need to be re-ordered and can be treated like type 4 bits for transmission. 16-bit SYNC with 224-bit data gives 15 ms space for superframe ending PREAMBLE.
