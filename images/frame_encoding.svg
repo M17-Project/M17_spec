@@ -14,8 +14,8 @@
    viewBox="0 0 252.30742 120.5"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
-   sodipodi:docname="frame_1_encoding.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="frame_encoding.svg"
    inkscape:export-filename="C:\Users\SP5WWP\Desktop\frame_1_encoding.png"
    inkscape:export-xdpi="400"
    inkscape:export-ydpi="400">
@@ -29,7 +29,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="501.7889"
+     inkscape:cx="323.49698"
      inkscape:cy="251.59426"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -39,10 +39,10 @@
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:bbox-nodes="true"
-     inkscape:window-width="1280"
-     inkscape:window-height="962"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1600"
+     inkscape:window-height="851"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      fit-margin-top="10"
      fit-margin-bottom="10"
@@ -189,14 +189,14 @@
          style="font-size:24px">LICH</flowPara></flowRoot>    <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="69.547615"
+       x="71.418503"
        y="84.397797"
        id="text4565"><tspan
          sodipodi:role="line"
          id="tspan4563"
-         x="69.547615"
+         x="71.418503"
          y="84.397797"
-         style="font-size:6.3499999px;stroke-width:0.26458332">SSN</tspan></text>
+         style="font-size:6.3499999px;stroke-width:0.26458332">FN</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
