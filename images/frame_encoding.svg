@@ -29,8 +29,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="323.49698"
-     inkscape:cy="251.59426"
+     inkscape:cx="441.17975"
+     inkscape:cy="203.10694"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -150,19 +150,22 @@
        height="10.000001"
        x="20"
        y="77" />
-    <flowRoot
+    <text
        xml:space="preserve"
-       id="flowRoot3723"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,1.5119043,-1.9659192)"><flowRegion
-         id="flowRegion3725"><rect
-           id="rect3727"
-           width="677.2666"
-           height="75.590546"
-           x="75.590553"
-           y="291.02362" /></flowRegion><flowPara
-         id="flowPara3729"
-         style="font-size:24px">SYNC</flowPara></flowRoot>    <path
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="21.511717"
+       y="84.397797"
+       id="text931"><tspan
+         sodipodi:role="line"
+         x="21.511717"
+         y="84.397797"
+         id="tspan929"
+         style="stroke-width:0.26458332"><tspan
+           x="21.511717"
+           y="84.397797"
+           style="font-size:6.3499999px;stroke-width:0.26458332"
+           id="tspan927">SYNC</tspan></tspan></text>
+    <path
        style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 39.999999,77.000002 V 87.000005"
        id="path3733"
@@ -174,19 +177,22 @@
        id="path3733-4"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
-    <flowRoot
+    <text
        xml:space="preserve"
-       id="flowRoot4555"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,-15.308036,-48.852978)"><flowRegion
-         id="flowRegion4557"><rect
-           id="rect4559"
-           width="92.85714"
-           height="61.42857"
-           x="229.28572"
-           y="468.23398" /></flowRegion><flowPara
-         id="flowPara4561"
-         style="font-size:24px">LICH</flowPara></flowRoot>    <text
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="45.356995"
+       y="84.397804"
+       id="text949"><tspan
+         sodipodi:role="line"
+         x="45.356995"
+         y="84.397804"
+         id="tspan947"
+         style="stroke-width:0.26458332"><tspan
+           x="45.356995"
+           y="84.397804"
+           style="font-size:6.3499999px;stroke-width:0.26458332"
+           id="tspan945">LICH</tspan></tspan></text>
+    <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        x="71.418503"
@@ -255,37 +261,43 @@
        height="10"
        x="20"
        y="107" />
-    <flowRoot
+    <text
        xml:space="preserve"
-       id="flowRoot3723-3"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,1.5119042,28.034085)"><flowRegion
-         id="flowRegion3725-9"><rect
-           id="rect3727-4"
-           width="677.2666"
-           height="75.590546"
-           x="75.590553"
-           y="291.02362" /></flowRegion><flowPara
-         id="flowPara3729-5"
-         style="font-size:24px">SYNC</flowPara></flowRoot>    <path
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="21.511717"
+       y="114.3978"
+       id="text925"><tspan
+         sodipodi:role="line"
+         x="21.511717"
+         y="114.3978"
+         id="tspan923"
+         style="stroke-width:0.26458332"><tspan
+           x="21.511717"
+           y="114.3978"
+           style="font-size:6.3499999px;stroke-width:0.26458332"
+           id="tspan921">SYNC</tspan></tspan></text>
+    <path
        style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 39.999999,107 v 10"
        id="path3733-8"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
-    <flowRoot
+    <text
        xml:space="preserve"
-       id="flowRoot4555-2"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,-13.169879,-18.852975)"><flowRegion
-         id="flowRegion4557-6"><rect
-           id="rect4559-9"
-           width="297.91809"
-           height="79.611305"
-           x="229.28572"
-           y="468.23398" /></flowRegion><flowPara
-         id="flowPara4561-4"
-         style="font-size:24px">ENC LICH </flowPara></flowRoot>    <text
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="47.495152"
+       y="114.3978"
+       id="text943"><tspan
+         sodipodi:role="line"
+         x="47.495152"
+         y="114.3978"
+         id="tspan941"
+         style="stroke-width:0.26458332"><tspan
+           x="47.495152"
+           y="114.3978"
+           style="font-size:6.3499999px;stroke-width:0.26458332"
+           id="tspan939">ENC LICH </tspan></tspan></text>
+    <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        x="137.53557"
@@ -309,37 +321,43 @@
        height="10"
        x="20"
        y="137" />
-    <flowRoot
+    <text
        xml:space="preserve"
-       id="flowRoot3723-3-1"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,1.5119032,58.034075)"><flowRegion
-         id="flowRegion3725-9-0"><rect
-           id="rect3727-4-3"
-           width="677.2666"
-           height="75.590546"
-           x="75.590553"
-           y="291.02362" /></flowRegion><flowPara
-         id="flowPara3729-5-9"
-         style="font-size:24px">SYNC</flowPara></flowRoot>    <path
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="21.511715"
+       y="144.3978"
+       id="text919"><tspan
+         sodipodi:role="line"
+         x="21.511715"
+         y="144.3978"
+         id="tspan917"
+         style="stroke-width:0.26458332"><tspan
+           x="21.511715"
+           y="144.3978"
+           style="font-size:6.3499999px;stroke-width:0.26458332"
+           id="tspan915">SYNC</tspan></tspan></text>
+    <path
        style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 39.999998,136.99999 v 10"
        id="path3733-8-1"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
-    <flowRoot
+    <text
        xml:space="preserve"
-       id="flowRoot4555-2-4"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,-13.16988,11.147016)"><flowRegion
-         id="flowRegion4557-6-8"><rect
-           id="rect4559-9-8"
-           width="297.91809"
-           height="79.611305"
-           x="229.28572"
-           y="468.23398" /></flowRegion><flowPara
-         id="flowPara4561-4-7"
-         style="font-size:24px">ENC LICH </flowPara></flowRoot>    <text
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="47.495152"
+       y="144.3978"
+       id="text937"><tspan
+         sodipodi:role="line"
+         x="47.495152"
+         y="144.3978"
+         id="tspan935"
+         style="stroke-width:0.26458332"><tspan
+           x="47.495152"
+           y="144.3978"
+           style="font-size:6.3499999px;stroke-width:0.26458332"
+           id="tspan933">ENC LICH </tspan></tspan></text>
+    <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        x="126.04298"
@@ -399,19 +417,22 @@
        height="10"
        x="20"
        y="167" />
-    <flowRoot
+    <text
        xml:space="preserve"
-       id="flowRoot3723-3-1-4"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,1.511899,88.03407)"><flowRegion
-         id="flowRegion3725-9-0-9"><rect
-           id="rect3727-4-3-7"
-           width="677.2666"
-           height="75.590546"
-           x="75.590553"
-           y="291.02362" /></flowRegion><flowPara
-         id="flowPara3729-5-9-5"
-         style="font-size:24px">SYNC</flowPara></flowRoot>    <path
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="21.511711"
+       y="174.3978"
+       id="text913"><tspan
+         sodipodi:role="line"
+         x="21.511711"
+         y="174.3978"
+         id="tspan911"
+         style="stroke-width:0.26458332"><tspan
+           x="21.511711"
+           y="174.3978"
+           style="font-size:6.3499999px;stroke-width:0.26458332"
+           id="tspan909">SYNC</tspan></tspan></text>
+    <path
        style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 39.999994,166.99999 v 10"
        id="path3733-8-1-0"

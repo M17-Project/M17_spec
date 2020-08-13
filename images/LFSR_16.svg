@@ -14,7 +14,7 @@
    viewBox="0 0 293.03935 89.701905"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="LFSR_16.svg"
    inkscape:export-filename="C:\Users\SP5WWP\Desktop\LFSR_8.png"
    inkscape:export-xdpi="400.10522"
@@ -225,8 +225,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="536.17779"
-     inkscape:cy="245.15928"
+     inkscape:cx="539.71332"
+     inkscape:cy="228.99684"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -238,10 +238,10 @@
      fit-margin-top="10"
      fit-margin-bottom="10"
      fit-margin-right="10"
-     inkscape:window-width="1280"
-     inkscape:window-height="962"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="1600"
+     inkscape:window-height="851"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:snap-center="true">
     <sodipodi:guide
@@ -336,21 +336,22 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(54.599407,-95.237152)">
-    <flowRoot
+    <text
        xml:space="preserve"
-       id="flowRoot836-5-2"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,131.29424,6.8814301)"><flowRegion
-         id="flowRegion838-9-5"
-         style="line-height:1"><rect
-           id="rect840-8-8"
-           width="132.13989"
-           height="97.570717"
-           x="10"
-           y="446.09113"
-           style="line-height:1" /></flowRegion><flowPara
-         style="font-size:29.33333397px;line-height:1;text-align:center;text-anchor:middle"
-         id="flowPara883-9">D0</flowPara></flowRoot>    <circle
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="151.42114"
+       y="133.04893"
+       id="text1026"><tspan
+         sodipodi:role="line"
+         x="151.42114"
+         y="133.04893"
+         id="tspan1024"
+         style="stroke-width:0.26458332"><tspan
+           x="151.42114"
+           y="133.04893"
+           style="font-size:7.76111126px;line-height:1;text-align:center;text-anchor:middle;stroke-width:0.26458332"
+           id="tspan1022">D0</tspan></tspan></text>
+    <circle
        style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
        id="path837-0"
        cx="104.58839"
@@ -368,7 +369,7 @@
        inkscape:connector-curvature="0" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 104.58839,165.71752 0,-27.49372"
+       d="M 104.58839,165.71752 V 138.2238"
        id="path906"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
@@ -411,49 +412,52 @@
        d="m 208.9499,134.47609 v 13.4213"
        id="path1428"
        inkscape:connector-curvature="0" />
-    <flowRoot
+    <text
        xml:space="preserve"
-       id="flowRoot836-5-2-5"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,188.57488,-14.935528)"><flowRegion
-         id="flowRegion838-9-5-1"
-         style="line-height:1"><rect
-           id="rect840-8-8-7"
-           width="132.13989"
-           height="97.570717"
-           x="10"
-           y="446.09113"
-           style="line-height:1" /></flowRegion><flowPara
-         style="font-size:29.33333397px;line-height:1;text-align:center;text-anchor:middle"
-         id="flowPara883-9-8">plaintext</flowPara></flowRoot>    <flowRoot
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="208.70181"
+       y="111.13378"
+       id="text1008"><tspan
+         sodipodi:role="line"
+         x="208.70181"
+         y="111.13378"
+         id="tspan1006"
+         style="stroke-width:0.26458332"><tspan
+           x="208.70181"
+           y="111.13378"
+           style="font-size:7.76111126px;line-height:1;text-align:center;text-anchor:middle;stroke-width:0.26458332"
+           id="tspan1004">plaintext</tspan></tspan></text>
+    <text
        xml:space="preserve"
-       id="flowRoot836-5-2-5-9"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,183.10062,29.236548)"><flowRegion
-         id="flowRegion838-9-5-1-8"
-         style="line-height:1"><rect
-           id="rect840-8-8-7-1"
-           width="174.5663"
-           height="47.06311"
-           x="10"
-           y="446.09113"
-           style="line-height:1" /></flowRegion><flowPara
-         style="font-size:29.33333397px;line-height:1;text-align:center;text-anchor:middle"
-         id="flowPara883-9-8-2">ciphertext</flowPara></flowRoot>    <flowRoot
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="208.84013"
+       y="155.30585"
+       id="text1020"><tspan
+         sodipodi:role="line"
+         x="208.84013"
+         y="155.30585"
+         id="tspan1018"
+         style="stroke-width:0.26458332"><tspan
+           x="208.84013"
+           y="155.30585"
+           style="font-size:7.76111126px;line-height:1;text-align:center;text-anchor:middle;stroke-width:0.26458332"
+           id="tspan1016">ciphertext</tspan></tspan></text>
+    <text
        xml:space="preserve"
-       id="flowRoot836-5-2-9-5"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       transform="matrix(0.26458333,0,0,0.26458333,-56.448044,6.6763088)"><flowRegion
-         id="flowRegion838-9-5-7-1"
-         style="line-height:1"><rect
-           id="rect840-8-8-9-3"
-           width="132.13989"
-           height="97.570717"
-           x="10"
-           y="446.09113"
-           style="line-height:1" /></flowRegion><flowPara
-         style="font-size:26.66666794px;line-height:1;text-align:center;text-anchor:middle"
-         id="flowPara883-9-3-3">D15</flowPara></flowRoot>    <path
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="-36.309906"
+       y="132.74561"
+       id="text1032"><tspan
+         sodipodi:role="line"
+         x="-36.309906"
+         y="132.74561"
+         id="tspan1030"
+         style="stroke-width:0.26458332"><tspan
+           x="-36.309906"
+           y="132.74561"
+           style="font-size:7.05555582px;line-height:1;text-align:center;text-anchor:middle;stroke-width:0.26458332"
+           id="tspan1028">D15</tspan></tspan></text>
+    <path
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m -36.273734,138.2238 -1e-6,31.79319 140.862125,0.0473"
        id="path166"
@@ -461,7 +465,7 @@
        sodipodi:nodetypes="ccc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m -20.622391,138.2238 0,31.79319"
+       d="m -20.622391,138.2238 v 31.79319"
        id="path168"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
