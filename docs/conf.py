@@ -41,6 +41,7 @@ release = 'DRAFT'
 extensions = [
     'sphinx_rtd_theme',
     'sphinx.ext.graphviz',
+    'sphinx.ext.imgconverter',
     'sphinx.ext.mathjax',
     'sphinx.ext.todo',
 ]
