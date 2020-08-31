@@ -14,16 +14,16 @@ Why base40?
 ~~~~~~~~~~~
 
 Callsign Formats
----
+----------------
 
 Multiple Stations
-~~~
+~~~~~~~~~~~~~~~~~
 
 Temporary Modifiers
-~~~
+~~~~~~~~~~~~~~~~~~~
 
 Interoperability
-~~~
+~~~~~~~~~~~~~~~~
 
 DMR
 +++

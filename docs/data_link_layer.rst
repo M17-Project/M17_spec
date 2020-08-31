@@ -41,8 +41,8 @@ physical layer. The *stream* is broken up into parts, called *frames* to not con
 in packet mode. Frames contain payload data interleaved with frame signalling (similar to packets).
 Frame signalling is contained within the **Link Information Channel (LICH)**.
 
-All frames are preceded by a 16-bit ** *synchronization burst* **, which consists of 0x3243 (first 16-bit of pi)
-in type 4 bits.
+All frames are preceded by a 16-bit *synchronization burst*,
+which consists of 0x3243 (first 16-bit of pi) in type 4 bits.
 
 Link setup frame
 ~~~~~~~~~~~~~~~~
@@ -78,11 +78,11 @@ the link setup frame, and is not part of any superframes.
    * - Bit 0
      - Packet/stream indicator, 0=packet, 1=stream
    * - Bits 1, 2
-     - Data type indicator, :math:`01_2`=data (D), :math:`10_2`=voice
-       (V), :math:`11_2`=V+D, :math:`00_2`=reserved
+     - Data type indicator, :math:`01_2` =data (D), :math:`10_2` =voice
+       (V), :math:`11_2` =V+D, :math:`00_2` =reserved
    * - Bits 3, 4
-     - Encryption type, :math:`00_2`=none, :math:`01_2`=AES,
-       :math:`10_2`=scrambling, :math:`11_2`=other/reserved
+     - Encryption type, :math:`00_2` =none, :math:`01_2` =AES,
+       :math:`10_2` =scrambling, :math:`11_2` =other/reserved
    * - Bits 5, 6
      - Encryption subtype (meaning of values depends on encryption type)
    * - Bits 7…15
@@ -151,10 +151,10 @@ CRC
 ~~~
 
 M17 uses a non-standard version of 16-bit CRC with polynomial
-:math:`x^16 + x^14 + x^12 + x^11 + x^8 + x^5 + x^4 + x^2 + 1 or 0xAC9A
-and initial value of 0xFFFF. This polynomial allows for detecting all
-errors up to hamming distance of 5 with payloads up to 241 bits :ref:,
-which is less than the amount of data in each frame.
+:math:`x^{16} + x^{14} + x^{12} + x^{11} + x^8 + x^5 + x^4 + x^2 + 1` or
+0xAC9A and initial value of 0xFFFF. This polynomial allows for
+detecting all errors up to hamming distance of 5 with payloads up to
+241 bits :ref:, which is less than the amount of data in each frame.
 
 .. todo:: add koopman refernce/footnote
 	  

@@ -43,11 +43,11 @@ algorithm.  Figures 5 to 8 show block diagrams of the algorithm
      - 8 bits
      - 255
    * - :math:`01_2`
-     - :math:`x^16 + x^15 + x^13 + x^4 + 1`
+     - :math:`x^{16} + x^{15} + x^{13} + x^4 + 1`
      - 16 bits
      - 65,535
    * - :math:`10_2`
-     - :math:`x^24 + x^23 + x^22 + x^17 + 1`
+     - :math:`x^{24} + x^{23} + x^{22} + x^{17} + 1`
      - 24 bits
      - 16,777,215 
 
