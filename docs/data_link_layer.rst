@@ -8,13 +8,13 @@ which the physical layer stops sending data. eg: messages, beacons, etc.
 break in physical layer output, until the stream ends. eg: voice data, bulk data transfers, etc.
 
 When the physical layer is idle (no RF being transmitted or received),
-the data link defaults to packet mode. ~~To switch to stream mode, a
+the data link defaults to packet mode. :strike:`To switch to stream mode, a
 start stream packet (detailed later) is sent, immediately followed by
 the switch to stream mode; the Stream of data immediately follows the
 Start Stream packet without disabling the Physical layer. To switch
 out of Stream mode, the stream simply ends and returns the Physical
 layer to the idle state, and the Data Link defaults back to Packet
-mode.~~
+mode.`
 
 As is the convention with networking protocols, all quantities
 larger than 8 bits are encoded in bigendian.

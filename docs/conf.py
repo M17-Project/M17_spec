@@ -20,8 +20,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'M17 Protocol Specification'
-copyright = '2020, Project M17 Mark KR6ZY, Wojciech SP5WWP, Steve KC1AWV, Nikoloz SO3ALG, Juhani OH1CAU'
-author = 'Project M17: Mark KR6ZY, Wojciech SP5WWP, Steve KC1AWV, Nikoloz SO3ALG, Juhani OH1CAU'
+copyright = '2020, Project M17'
+author = 'Project M17: & Mark KR6ZY, & Wojciech SP5WWP, & Steve KC1AWV, & Nikoloz SO3ALG, & Juhani OH1CAU'
 
 # The short X.Y version
 version = ''
