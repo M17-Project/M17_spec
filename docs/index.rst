@@ -12,11 +12,12 @@ Welcome to M17 Protocol Specification's documentation!
 
    summary
    physical_layer
+   data_link_layer
    application_layer
    address_encoding
    data_whitening
 
-   .. Bibliography.............................................................................................................................................19
+.. Bibliography.............................................................................................................................................19
 
 
 Indices and tables
