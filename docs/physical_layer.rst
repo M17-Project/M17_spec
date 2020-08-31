@@ -44,7 +44,7 @@ The bit-to-symbol mapping is shown in the table below.
 .. todo:: update section
 
 The most significant bits are sent first, meaning that the byte 0xB4
-in type 4 bits (see section 3) would be sent as the symbols -1 -3 +3
+in type 4 bits (see :ref:`bit_types`) would be sent as the symbols -1 -3 +3
 +1.
 
 Preamble
@@ -55,12 +55,15 @@ least 40ms of alternating -3, +3... symbols. This is equivalent to 40
 milliseconds of a 2400 Hz tone
 
 
+.. _bit_types:
+
 Bit types
 ---------
 
 The bits at different stages of the error correction coding are
-referred to with bit types, given in Table 2.
+referred to with bit types, given in :numref:`table_bit_types`.
 
+.. _table_bit_types:
 .. table:: Bit types
 
    +---------------+----------------------------------------+
