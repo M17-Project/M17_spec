@@ -15,13 +15,13 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
 project = 'M17 Protocol Specification'
 copyright = '2020, Project M17'
-author = 'Project M17: & Mark KR6ZY, & Wojciech SP5WWP, & Steve KC1AWV, & Nikoloz SO3ALG, & Juhani OH1CAU'
+author = 'Project M17: Mark KR6ZY, Wojciech SP5WWP, Steve KC1AWV, Nikoloz SO3ALG, Juhani OH1CAU'
 
 # The short X.Y version
 version = ''
@@ -39,6 +39,7 @@ release = 'DRAFT'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx_rtd_theme',
     'sphinx.ext.graphviz',
     'sphinx.ext.mathjax',
     'sphinx.ext.todo',
@@ -77,7 +78,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -130,9 +131,10 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
+latex_author = author.replace(':',' &').replace(',', ' &')
 latex_documents = [
     (master_doc, 'M17ProtocolSpecification.tex', 'M17 Protocol Specification Documentation',
-     'Project M17 Mark KR6ZY, Wojciech SP5WWP, Steve KC1AWV, Nikoloz SO3ALG, Juhani OH1CAU', 'manual'),
+     latex_author, 'manual'),
 ]
 
 
