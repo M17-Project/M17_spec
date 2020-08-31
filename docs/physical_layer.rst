@@ -18,7 +18,7 @@ receiver.
    out [shape=none, label=""]
    "RRC Filter"[shape=box]
    "Frequency Modulation"[shape=box]
-   
+
    src -- "RRC Filter" [label="Dibits Input"]
    "RRC Filter" -- "Frequency Modulation"
    "Frequency Modulation" -- out [label="4FSK output"]
@@ -26,7 +26,7 @@ receiver.
 The bit-to-symbol mapping is shown in the table below.
 
 .. table:: Dibit symbol mapping to 4FSK deviation
-   
+
    +-------------------------------+---------------+---------------+
    |Information bits               |Symbol         |4FSK deviation |
    +---------------+---------------+               |               |
@@ -76,7 +76,7 @@ referred to with bit types, given in Table 2.
    |Type 4         |Whitened and interleaved (re-ordered)   |
    |               |type 3 bits                             |
    +---------------+----------------------------------------+
-           
+
 Type 4 bits are used for transmission over the RF. Incoming type 4
 bits shall be decoded to type 1 bits, which are then used to extract
 all the frame fields.
@@ -85,7 +85,7 @@ Error correction coding schemes and bit type conversion
 -------------------------------------------------------
 Two distinct ECC schemes are used for different parts of the transmission.
 
-   
+
 Link setup frame
 ~~~~~~~~~~~~~~~~
 
@@ -160,7 +160,7 @@ Two different puncturing schemes are used in M17:
 
 #. leaving 46 from 61 encoded bits
 #. leaving 34 from 41 encoded bits
-   
+
 Both puncturers are defined by their puncturing matrices:
 
 .. math::
@@ -175,7 +175,7 @@ Both puncturers are defined by their puncturing matrices:
    1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & X \\
    \end{pmatrix}
    \end{eqnarray}
-   
+
 Scheme I is used for the initial LICH link setup info, while scheme II
 is for frames (excluding LICH chunks, which are coded differently).
 

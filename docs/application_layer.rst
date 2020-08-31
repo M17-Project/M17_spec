@@ -33,6 +33,7 @@ register. Seed value acts as an encryption key for the scrambler
 algorithm.  Figures 5 to 8 show block diagrams of the algorithm
 
 .. list-table::  LFSR scrambler polynomials
+   :header-rows: 1
 
    * - Encryption subtype
      - LFSR polynomial
@@ -49,21 +50,21 @@ algorithm.  Figures 5 to 8 show block diagrams of the algorithm
    * - :math:`10_2`
      - :math:`x^{24} + x^{23} + x^{22} + x^{17} + 1`
      - 24 bits
-     - 16,777,215 
+     - 16,777,215
 
 .. figure:: ../images/LFSR_8.png
-   
+
    8-bit LFSR taps
 
 .. figure:: ../images/LFSR_16.png
-   
+
    16-bit LFSR taps
 
 .. figure:: ../images/LFSR_24.png
-   
+
    24-bit LFSR taps
 
-   
+
 Advanced Encryption Standard (AES)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Encryption type = :math:`10_2`
@@ -91,6 +92,7 @@ the number of seconds that elapsed since the beginning of 1970-01-01,
 00:00:00 UTC, minus leap seconds (a.k.a. “unix time”).
 
 .. list-table:: NONCE field structure
+   :header-rows: 1
 
    * - TIMESTAMP
      - NONCE

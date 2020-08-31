@@ -11,7 +11,7 @@ M17 is an RF protocol that is:
 * Simple to understand and implement.
 * Capable of doing the things hams expect their digital protocols to
   do:
-  
+
   * Voice (eg: DMR, D-Star, etc)
   * Point to point data (eg: Packet, D-Star, etc)
   * Broadcast telemetry (eg: APRS, etc)

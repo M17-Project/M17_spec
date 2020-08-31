@@ -74,18 +74,21 @@ the link setup frame, and is not part of any superframes.
 
 
 .. list-table:: Bitfields of type field
+   :header-rows: 1
 
-   * - Bit 0
+   * - Bits
+     - Meaning
+   * - 0
      - Packet/stream indicator, 0=packet, 1=stream
-   * - Bits 1, 2
+   * - 1-2
      - Data type indicator, :math:`01_2` =data (D), :math:`10_2` =voice
        (V), :math:`11_2` =V+D, :math:`00_2` =reserved
-   * - Bits 3, 4
+   * - 3-4
      - Encryption type, :math:`00_2` =none, :math:`01_2` =AES,
        :math:`10_2` =scrambling, :math:`11_2` =other/reserved
-   * - Bits 5, 6
+   * - 5-6
      - Encryption subtype (meaning of values depends on encryption type)
-   * - Bits 7…15
+   * - 7-15
      - Reserved (don't care)
 
 The fields in Table 3 (except tail) form initial LICH. It contains all
@@ -100,6 +103,7 @@ also the ending trellis position is known.
 Voice coder rate is inferred from TYPE field, bits 1 and 2.
 
 .. list-table:: Voice coder rates for different data type indicators
+   :header-rows: 1
 
    * - Data type indicator
      - Voice coder rate
@@ -111,27 +115,27 @@ Voice coder rate is inferred from TYPE field, bits 1 and 2.
      - 3200 bps
    * - :math:`11_2`
      - 1600 bps
-       
+
 Subsequent frames
 ~~~~~~~~~~~~~~~~~
 
 .. list-table:: Fields for frames other than the link setup frame
-	   
- * - LICH
-   - 48 bits
-   - LICH chunk, one of 5
- * - FN
-   - 16 bits
-   - Frame number, starts from 0 and increments every frame
- * - PAYLOAD
-   - 128 bits
-   - Payload/data, can contain arbitrary data
- * - CRC
-   - 16 bits
-   - This field contains 16-bit value used to check data integrity, see section 2.4 for details
- * - TAIL
-   - 4 bits
-   - Flushing bits for the convolutional encoder that don't carry any information
+
+   * - LICH
+     - 48 bits
+     - LICH chunk, one of 5
+   * - FN
+     - 16 bits
+     - Frame number, starts from 0 and increments every frame
+   * - PAYLOAD
+     - 128 bits
+     - Payload/data, can contain arbitrary data
+   * - CRC
+     - 16 bits
+     - This field contains 16-bit value used to check data integrity, see section 2.4 for details
+   * - TAIL
+     - 4 bits
+     - Flushing bits for the convolutional encoder that don't carry any information
 
 Superframes
 ~~~~~~~~~~~
@@ -157,7 +161,7 @@ detecting all errors up to hamming distance of 5 with payloads up to
 241 bits :ref:, which is less than the amount of data in each frame.
 
 .. todo:: add koopman refernce/footnote
-	  
+
 As M17’s native bit order is most significant bit first, neither the
 input nor the output of the CRC algorithm gets reflected.
 
@@ -169,14 +173,15 @@ The test vectors in Table 6 are calculated by feeding the given
 message and then 16 zero bits to the CRC algorithm.
 
 .. list-table:: CRC test vectors
-	   
- * - Message
-   - CRC output
- * - (empty string)
-   - 0x7A06
- * - ASCII string "A"
-   - 0xA8A4
- * - ASCII string "123456789"
-   - 0x29D6
- * - Bytes from 0x00 to 0xFF
-   - 0x0FA6
+   :header-rows: 1
+
+   * - Message
+     - CRC output
+   * - (empty string)
+     - 0x7A06
+   * - ASCII string "A"
+     - 0xA8A4
+   * - ASCII string "123456789"
+     - 0x29D6
+   * - Bytes from 0x00 to 0xFF
+     - 0x0FA6
