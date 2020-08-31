@@ -9,10 +9,10 @@ addresses) are encoded into these 6 bytes in the following ways:
 .. todo:: Do we want to use zero as a flag value of some kind?
 
 * Address values between 1 and 262143999999999 (which is
-  :math:`(40_9)-1`), up to 9 characters of text are encoded using
+  :math:`(40^9)-1`), up to 9 characters of text are encoded using
   base40, described below.
-* Address values between 262144000000000 (:math:`40_9`) and
-  281474976710654 (:math:`(2_{48})-2`) are invalid
+* Address values between 262144000000000 (:math:`40^9`) and
+  281474976710654 (:math:`(2^{48})-2`) are invalid
 
 .. todo:: Can we think of something to do with these 19330976710654 addresses?
 
