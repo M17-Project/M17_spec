@@ -21,12 +21,12 @@ import sphinx_rtd_theme
 
 project = 'M17 Protocol Specification'
 copyright = '2020, Project M17'
-author = 'Project M17: Mark KR6ZY, Wojciech SP5WWP, Steve KC1AWV, Nikoloz SO3ALG, Juhani OH1CAU'
+author = 'M17 Working Group: Mark KR6ZY, Wojciech SP5WWP, Steve KC1AWV, Nikoloz SO3ALG, Juhani OH1CAU'
 
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = 'DRAFT'
+#release = 'DRAFT'
 
 
 # -- General configuration ---------------------------------------------------
@@ -134,19 +134,27 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_author = author.replace(':',' &').replace(',', ' &')
+#latex_author = author.replace(':',' \\\\\n\\hfill{\\large').replace(',', ' }\\\\\n\\hfill{\\large') + '}'
+#latex_author = '{\\begin{tabular}{lr}' + author.replace(':',' & \\\\\n & ').replace(',', ' \\\\\n & ') + '\\end{tabular}}'
+latex_author = '{\\begin{tabular}{lr}' + '{} & \\\\\n\\hline\n'.format(author.split(':')[0]) +  ''.join(['{} & {}\\\\\n'.format(*auth.split()) for auth in author.split(':')[1].split(',')]) + '\\end{tabular}}'
 latex_documents = [
-    (master_doc, 'M17ProtocolSpecification.tex', 'M17 Protocol Specification Documentation',
+    (master_doc, 'M17ProtocolSpecification.tex', 'M17 Protocol Specification',
      latex_author, 'manual'),
 ]
-
+latex_elements = {
+    'preamble': r'''
+\newcommand{\sphinxlogo}{\sphinxincludegraphics[height=1in]{m17_logo_shadow_400.png}\par}
+''',
+    'releasename': 'DRAFT',
+    }
+latex_logo = '../images/m17_logo_shadow_400.png'
 
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'm17protocolspecification', 'M17 Protocol Specification Documentation',
+    (master_doc, 'm17protocolspecification', 'M17 Protocol Specification',
      [author], 1)
 ]
 
@@ -157,7 +165,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'M17ProtocolSpecification', 'M17 Protocol Specification Documentation',
+    (master_doc, 'M17ProtocolSpecification', 'M17 Protocol Specification',
      author, 'M17ProtocolSpecification', 'One line description of project.',
      'Miscellaneous'),
 ]

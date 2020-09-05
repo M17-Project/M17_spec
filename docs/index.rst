@@ -19,10 +19,11 @@ Welcome to M17 Protocol Specification's documentation!
 
 .. Bibliography.............................................................................................................................................19
 
+.. only:: html
 
-Indices and tables
-==================
+   Indices and tables
+   ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   * :ref:`genindex`
+   * :ref:`modindex`
+   * :ref:`search`

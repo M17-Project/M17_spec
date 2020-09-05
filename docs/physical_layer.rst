@@ -138,11 +138,12 @@ R=½ with constraint length K=5. The encoder diagram and generating
 polynomials are shown below
 
 .. math::
+   :nowrap:
 
-   \begin{eqnarray}
-   G_1(D) =& 1 + D^3 + D^4\\
+   \begin{align}
+   G_1(D) =& 1 + D^3 + D^4 \\
    G_2(D) =& 1+ D + D^2 + D^4
-   \end{eqnarray}
+   \end{align}
 
 The output from the encoder must be read alternately.
 
@@ -167,17 +168,20 @@ Two different puncturing schemes are used in M17:
 Both puncturers are defined by their puncturing matrices:
 
 .. math::
+   :nowrap:
 
-   \begin{eqnarray}
-   P1 =& \begin{pmatrix}
+   \setcounter{MaxMatrixCols}{32}
+   \begin{align}
+   P1 = & \begin{bmatrix}
    1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 1 \\
-   1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & X \\
-   \end{pmatrix} \\
-   P2 =& \begin{pmatrix}
+   1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & X
+   \end{bmatrix} \\
+   P2 = & \begin{bmatrix}
    1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
-   1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & X \\
-   \end{pmatrix}
-   \end{eqnarray}
+   1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & X
+   \end{bmatrix}
+   \end{align}
+
 
 Scheme I is used for the initial LICH link setup info, while scheme II
 is for frames (excluding LICH chunks, which are coded differently).
