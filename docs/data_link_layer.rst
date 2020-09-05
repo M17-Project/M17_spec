@@ -160,11 +160,12 @@ CRC
 
 M17 uses a non-standard version of 16-bit CRC with polynomial
 :math:`x^{16} + x^{14} + x^{12} + x^{11} + x^8 + x^5 + x^4 + x^2 + 1` or
-0xAC9A and initial value of 0xFFFF. This polynomial allows for
+0x5935 and initial value of 0xFFFF. This polynomial allows for
 detecting all errors up to hamming distance of 5 with payloads up to
-241 bits :ref:, which is less than the amount of data in each frame.
+241 bits [#koopman]_, which is less than the amount of data in each frame.
 
-.. todo:: add koopman refernce/footnote
+.. [#koopman] https://users.ece.cmu.edu/~koopman/crc/ has this listed
+              as 0xAC9A, which is the reversed reciprocal notation
 
 As M17’s native bit order is most significant bit first, neither the
 input nor the output of the CRC algorithm gets reflected.
@@ -182,10 +183,10 @@ message and then 16 zero bits to the CRC algorithm.
    * - Message
      - CRC output
    * - (empty string)
-     - 0x7A06
+     - 0xFFFF
    * - ASCII string "A"
-     - 0xA8A4
+     - 0x206E
    * - ASCII string "123456789"
-     - 0x29D6
+     - 0x772B
    * - Bytes from 0x00 to 0xFF
-     - 0x0FA6
+     - 0x1C31
