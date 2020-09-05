@@ -74,9 +74,12 @@ value is extracted from the NONCE field, as the 96 most significant
 bits of it. The highest 16 bits of the counter are the remaining 16
 bits of the NONCE field. FN field value is then used as the
 counter. The 16 bit frame counter and 40 ms frames can provide for
-over 43 minutes of streaming without rolling over the counter. This
+over 20 minutes of streaming without rolling over the counter [#fn_roll]_. This
 method adapts 16-bit counter to the standard 32-bit CTR for the
 encryption. FN counter always start from 0 (zero).
+
+.. [#fn_roll] The effective capacity of the counter is 15 bits, as the
+              MSB is used for transmission end signalling
 
 The nonce value should be generated with a hardware random number
 generator or any other method of generating non-repeating

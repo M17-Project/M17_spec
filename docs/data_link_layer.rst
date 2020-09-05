@@ -137,6 +137,10 @@ Subsequent frames
      - 4 bits
      - Flushing bits for the convolutional encoder that don't carry any information
 
+The most significant bit in the FN counter is used for transmission
+end signalling. When transmitting the last frame, it shall be set to 1
+(one).
+
 Superframes
 ~~~~~~~~~~~
 
