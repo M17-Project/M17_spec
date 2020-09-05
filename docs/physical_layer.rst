@@ -3,10 +3,13 @@ Physical Layer
 
 4FSK generation
 ---------------
-M17 standard uses 4FSK modulation running at 4800 symbols/s (9600 bits/s) with a deviation index
-h=0.33 for transmission in 6.25 kHz channel bandwidth. Channel spacing is 12.5 kHz. The symbol
-stream is converted to a series of impulses which pass through a root-raised-cosine (α=0.5) shaping
-filter before frequency modulation at the transmitter and again after frequency demodulation at the
+
+M17 standard uses 4FSK modulation running at 4800 symbols/s (9600
+bits/s) with a deviation index h=0.33 for transmission in 6.25 kHz
+channel bandwidth. Channel spacing is 12.5 kHz. The symbol stream is
+converted to a series of impulses which pass through a
+root-raised-cosine (α=0.5) shaping filter before frequency modulation
+at the transmitter and again after frequency demodulation at the
 receiver.
 
 .. graph:: modulation
@@ -131,6 +134,9 @@ re-ordered to form type 4 bits for transmission. This, along with
 
 Convolutional encoder
 ~~~~~~~~~~~~~~~~~~~~~
+
+.. [ECC] Moreira, Jorge C.; Farrell, Patrick G. "Essentials of
+         Error‐Control Coding" Wiley 2006, ISBN: 9780470029206
 
 The convolutional code shall encode the input bit sequence after
 appending 4 tail bits at the end of the sequence. Rate of the coder is

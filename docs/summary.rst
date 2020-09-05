@@ -27,3 +27,16 @@ To do this, the M17 protocol is broken down into three protocol layers, like a n
    streams, control packets, beacons, etc.
 
 This document attempts to document these layers.
+
+.. [TETRA] Dunlop, John; Girma, Demessie; Irvine, James "Digital
+           Mobile Communications and the TETRA System" Wiley 1999,
+           ISBN: 9780471987925
+
+.. [NXDN] NXDN Technical Specifications, Part 1: Air Interface;
+          Sub-part A: Common Air Interface
+
+.. [DMR] ETSI TS 102 361-1 V2.2.1 (2013-02): "Electromagnetic
+         compatibility and Radio spectrum Matters (ERM); Digital
+         Mobile Radio (DMR) Systems; Part 1: DMR Air Interface (AI)
+         protocol"
+         https://www.etsi.org/deliver/etsi_ts/102300_102399/10236101/02.02.01_60/ts_10236101v020201p.pdf
