@@ -41,7 +41,7 @@ Callsign Encoding: base40
 9 characters from an alphabet of 40 possible characters can be encoded into 48 bits, 6 bytes. The
 base40 alphabet is:
 
-* 0: An invalid character, something not in the alphabet was provided.
+* 0: An invalid character, something not in the alphabet was provided. Decoded as a space.
 * 1-26: "A" through "Z"
 * 27-36: "0" through "9"
 * 37: "-" (hyphen)
@@ -75,7 +75,7 @@ Example code: encode_base40()
        else if (*p == '.') // 39
          encoded += 39;
        else
-         // Invalid character, represented by 0.
+         // Invalid character, represented by 0, decoded as a space.
          //encoded += 0;
      }
      return encoded;
@@ -93,7 +93,7 @@ Example code: decode_base40()
      }
      char *p = callsign;
      for (; encoded > 0; p++) {
-       *p = "xABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/."[encoded % 40];
+       *p = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/."[encoded % 40];
        encoded /= 40;
      }
      *p = 0;
