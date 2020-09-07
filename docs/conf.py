@@ -21,7 +21,7 @@ import sphinx_rtd_theme
 
 project = 'M17 Protocol Specification'
 copyright = '2020, Project M17'
-author = 'M17 Working Group: Wojciech SP5WWP, Juhani OH1CAU, Elms KM6VMZ, Nikoloz SO3ALG, Mark KR6ZY, Steve KC1AWV, Mathis DB9MAT '
+author = 'M17 Working Group: Wojciech SP5WWP, Juhani OH1CAU, Elms KM6VMZ, Nikoloz SO3ALG, Mark KR6ZY, Steve KC1AWV, Mathis DB9MAT, Tom N7TAE, Mike W2FBI '
 
 # The short X.Y version
 version = ''
