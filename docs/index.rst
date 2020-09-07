@@ -26,6 +26,7 @@ Welcome to M17 Protocol Specification's documentation!
    address_encoding
    decorrelator
    interleaving
+   ip_encapsulation
 
 
 .. only:: html
