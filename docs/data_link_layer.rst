@@ -126,7 +126,7 @@ Subsequent frames
      - LICH chunk, one of 5
    * - FN
      - 16 bits
-     - Frame number, starts from 0 and increments every frame
+     - Frame number, starts from 0 and increments every frame to a max of 0x7fff where it will then wrap back to 0. High bit set indicates this frame is the last of the stream.
    * - PAYLOAD
      - 128 bits
      - Payload/data, can contain arbitrary data
@@ -139,7 +139,20 @@ Subsequent frames
 
 The most significant bit in the FN counter is used for transmission
 end signalling. When transmitting the last frame, it shall be set to 1
-(one).
+(one). 
+
+The payload is used so that earlier data in the voice stream is sent first.
+For mixed voice and data payloads, the voice data is stored first, then the data.
+
+.. table:: Payload examples
+
+   +-------------------------------+---------------+---------------+
+   |    Codec2 encoded frame t + 0 |   Codec2 encoded frame t + 1  |
+   +---------------+---------------+---------------+---------------+
+
+   +-------------------------------+---------------+---------------+
+   |    Codec2 encoded frame t + 0 |       Mixed data t + 0        |
+   +---------------+---------------+---------------+---------------+
 
 Superframes
 ~~~~~~~~~~~
