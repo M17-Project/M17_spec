@@ -21,7 +21,7 @@ import sphinx_rtd_theme
 
 project = 'M17 Protocol Specification'
 copyright = '2020, Project M17'
-author = 'M17 Working Group: Wojciech SP5WWP, Juhani OH1CAU, Nikoloz SO3ALG, Mark KR6ZY, Steve KC1AWV, Mathis DB9MAT '
+author = 'M17 Working Group: Wojciech SP5WWP, Juhani OH1CAU, Elms KM6VMZ, Nikoloz SO3ALG, Mark KR6ZY, Steve KC1AWV, Mathis DB9MAT '
 
 # The short X.Y version
 version = ''
@@ -134,9 +134,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-#latex_author = author.replace(':',' \\\\\n\\hfill{\\large').replace(',', ' }\\\\\n\\hfill{\\large') + '}'
-#latex_author = '{\\begin{tabular}{lr}' + author.replace(':',' & \\\\\n & ').replace(',', ' \\\\\n & ') + '\\end{tabular}}'
-latex_author = '{\\begin{tabular}{lr}' + '{} & \\\\\n\\hline\n'.format(author.split(':')[0]) +  ''.join(['{} & {}\\\\\n'.format(*auth.split()) for auth in author.split(':')[1].split(',')]) + '\\end{tabular}}'
+latex_author = '{\\begin{tabular}{ll}' + '{} & \\\\\n\\hline\n'.format(author.split(':')[0]) +  ''.join(['{} & {}\\\\\n'.format(*auth.split()) for auth in author.split(':')[1].split(',')]) + '\\end{tabular}}'
 latex_documents = [
     (master_doc, 'M17ProtocolSpecification.tex', 'M17 Protocol Specification',
      latex_author, 'manual'),
