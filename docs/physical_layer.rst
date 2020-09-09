@@ -34,7 +34,7 @@ The bit-to-symbol mapping is shown in the table below.
    |Information bits               |Symbol         |4FSK deviation |
    +---------------+---------------+               |               |
    |Bit 1          | Bit 0         |               |               |
-   +---------------+---------------+---------------+---------------+
+   +===============+===============+===============+===============+
    |0              |1              |+3             |+2.4 kHz       |
    +---------------+---------------+---------------+---------------+
    |0              |0              |+1             |+0.8 kHz       |
@@ -194,6 +194,10 @@ is for frames (excluding LICH chunks, which are coded differently).
 
 .. todo:: explain what’s the X for
 
+Interleaving
+~~~~~~~~~~~~
+
+To be Documented.
 
 Data Whitening
 ~~~~~~~~~~~~~~

@@ -14,10 +14,26 @@ addresses) are encoded into these 6 bytes in the following ways:
 * Address values between 262144000000000 (:math:`40^9`) and
   281474976710654 (:math:`2^{48}-2`) are invalid
 
-.. todo:: Can we think of something to do with these 19330976710654 addresses?
+.. todo:: Can we think of something to do with these 19330976710655 addresses?
 
 * An address of 0xFFFFFFFFFFFF is a broadcast. All stations should
   receive and listen to this message.
+
+.. table:: Address scheme
+
+   +------------------------------+---------------+-------------------+-------------------+
+   |Address Range                 |Category       |Number of addresses |Remarks            |
+   +==============================+===============+===================+===================+
+   |0x000000000000                |RESERVED       |1                  |For future use     |
+   +------------------------------+---------------+-------------------+-------------------+
+   |0x000000000001-0xee6b27ffffff |Unit ID        |262143999999999    |                   |
+   +------------------------------+---------------+-------------------+-------------------+
+   |0xee6b28000000-0xfffffffffffe |RESERVED       |19330976710655     |For future use     |
+   +------------------------------+---------------+-------------------+-------------------+
+   |0xffffffffffff                |Broadcast      |1                  |Valid only for     |
+   |                              |               |                   |destination field  |
+   +------------------------------+---------------+-------------------+-------------------+
+
 
 Callsign Encoding: base40
 -------------------------
