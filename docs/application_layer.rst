@@ -53,14 +53,17 @@ algorithm.  Figures 5 to 8 show block diagrams of the algorithm
      - 16,777,215
 
 .. figure:: ../images/LFSR_8.svg
+   :scale: 22%
 
    8-bit LFSR taps
 
 .. figure:: ../images/LFSR_16.svg
+   :scale: 22%
 
    16-bit LFSR taps
 
 .. figure:: ../images/LFSR_24.svg
+   :scale: 22%
 
    24-bit LFSR taps
 

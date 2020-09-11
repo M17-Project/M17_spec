@@ -157,6 +157,7 @@ The output from the encoder must be read alternately.
           Sub-part A: Common Air Interface
 
 .. figure:: ../images/convolutional.svg
+   :scale: 50%
 
    Convolutional coder diagram
 
@@ -165,7 +166,7 @@ Code puncturing
 
 Removing some of the bits from the convolutional coder’s output is
 called code puncturing. The nominal coding rate of the encoder used in
-M17 is ½. This means the encoder ouputs two bits for every bit of the
+M17 is ½. This means the encoder outputs two bits for every bit of the
 input data stream. To get other (higher) coding rates, a puncturing
 scheme has to be used.
 
@@ -174,19 +175,20 @@ Two different puncturing schemes are used in M17:
 #. leaving 46 from 61 encoded bits
 #. leaving 34 from 41 encoded bits
 
-Scheme P1 is used for the initial LICH link setup info, taking 488 bits
-of encoded data and selecting 368 bits. The :math:`gcf(368, 488)` is 8
-which when used to divide leaves 46 and 61. A full puncture pattern
-requires the output be divisible by the number of polynomials. For
-this case so in this case the full puncture matrix should have 122
+Scheme P1 is used for the initial LICH link setup info, taking 488
+bits of encoded data and selecting 368 bits. The :math:`gcd(368, 488)`
+is 8 which, when used to divide, leaves 46 and 61. A full puncture
+pattern requires the output be divisible by the number of encoding
+polynomials. For this case the full puncture matrix should have 122
 entries with 92 of them being 1.
 
 Scheme P2 is for frames (excluding LICH chunks, which are coded
 differently). This takes 328 encoded bits and selects 272 of the
-bits. The :math:`gcf(272, 328)` si 8 which results in the 34 adn 41
+bits. The :math:`gcd(272, 328)` is 8 which results in the 34 and 41
 reduced ratio. The full matrix will have 82 entries with 68 being 1.
 
-The matrices can be represented more concisely by duplicating a smaller matrix with a *flattening*.
+The matrices can be represented more concisely by duplicating a
+smaller matrix with a *flattening*.
 
 .. math::
    :nowrap:
