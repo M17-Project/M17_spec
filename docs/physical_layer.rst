@@ -140,7 +140,7 @@ Convolutional encoder
 
 The convolutional code shall encode the input bit sequence after
 appending 4 tail bits at the end of the sequence. Rate of the coder is
-R=½ with constraint length K=5. The encoder diagram and generating
+R=½ with constraint length K=5 [NXDN]_. The encoder diagram and generating
 polynomials are shown below
 
 .. math::
@@ -152,6 +152,9 @@ polynomials are shown below
    \end{align}
 
 The output from the encoder must be read alternately.
+
+.. [NXDN] NXDN Technical Specifications, Part 1: Air Interface;
+          Sub-part A: Common Air Interface
 
 .. figure:: ../images/convolutional.svg
 
@@ -242,7 +245,15 @@ The complete linearized representations are:
 Interleaving
 ~~~~~~~~~~~~
 
-To be Documented.
+For interleaving a Quadradic Permutation Polynomial (QPP) is used. The
+polynomial :math:`45x+ 92x^2` is used for a 368 bit interleaving
+pattern [QPP]_. See appendix for example code.
+
+.. [QPP] Trifina, Lucian, Daniela Tarniceriu, and Valeriu
+         Munteanu. "Improved QPP Interleavers for LTE Standard." ISSCS
+         2011 - International Symposium on Signals, Circuits and
+         Systems (2011): n. pag. Crossref. Web. https://arxiv.org/abs/1103.3794
+
 
 Data Whitening
 ~~~~~~~~~~~~~~

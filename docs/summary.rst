@@ -32,9 +32,6 @@ This document attempts to document these layers.
            Mobile Communications and the TETRA System" Wiley 1999,
            ISBN: 9780471987925
 
-.. [NXDN] NXDN Technical Specifications, Part 1: Air Interface;
-          Sub-part A: Common Air Interface
-
 .. [DMR] ETSI TS 102 361-1 V2.2.1 (2013-02): "Electromagnetic
          compatibility and Radio spectrum Matters (ERM); Digital
          Mobile Radio (DMR) Systems; Part 1: DMR Air Interface (AI)

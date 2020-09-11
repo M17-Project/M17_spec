@@ -16,8 +16,8 @@ Welcome to M17 Protocol Specification's documentation!
    application_layer
    address_encoding
    data_whitening
+   interleaving
 
-.. Bibliography.............................................................................................................................................19
 
 .. only:: html
 
