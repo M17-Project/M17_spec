@@ -123,9 +123,9 @@ A 48-bit (type 1) chunk of LICH is partitioned into 4 12-bit parts and
 encoded using Golay (24, 12) code. This produces 96 encoded LICH bits
 of type 2.
 
-164 FN, payload and CRC bits are convolutionally encoded in a manner
-analogous to that of the link setup frame. A total of 168 bits is
-being encoded resulting in 336 type 2 bits. These bits are punctured
+FN, payload and CRC is 160 bits which are convolutionally encoded in a manner
+analogous to that of the link setup frame. A total of 164 bits is
+being encoded resulting in 328 type 2 bits. These bits are punctured
 to generate 272 type 3 bits.
 
 96 type 2 bits of LICH are concatenated with 272 type 3 bits and
@@ -171,12 +171,43 @@ Two different puncturing schemes are used in M17:
 #. leaving 46 from 61 encoded bits
 #. leaving 34 from 41 encoded bits
 
-Both puncturers are defined by their puncturing matrices:
+Scheme P1 is used for the initial LICH link setup info, taking 488 bits
+of encoded data and selecting 368 bits. The :math:`gcf(368, 488)` is 8
+which when used to divide leaves 46 and 61. A full puncture pattern
+requires the output be divisible by the number of polynomials. For
+this case so in this case the full puncture matrix should have 122
+entries with 92 of them being 1.
+
+Scheme P2 is for frames (excluding LICH chunks, which are coded
+differently). This takes 328 encoded bits and selects 272 of the
+bits. The :math:`gcf(272, 328)` si 8 which results in the 34 adn 41
+reduced ratio. The full matrix will have 82 entries with 68 being 1.
+
+The matrices can be represented more concisely by duplicating a smaller matrix with a *flattening*.
 
 .. math::
    :nowrap:
 
-   \setcounter{MaxMatrixCols}{32}
+   \begin{align}
+     S_{} = & \begin{bmatrix}
+     a & \vec{r_1} & c \\
+     b & \vec{r_2} & X
+     \end{bmatrix} \\
+     S_{full} = & \begin{bmatrix}
+     a & \vec{r_1} & c & b & \vec{r_2} \\
+     b & \vec{r_2} & a & \vec{r_1} & c
+     \end{bmatrix}
+   \end{align}
+
+
+The puncturing schemes are defined by their partial puncturing matrices:
+
+.. math::
+   :nowrap:
+
+   .. only:: latex
+      \setcounter{MaxMatrixCols}{32}
+
    \begin{align}
    P1 = & \begin{bmatrix}
    1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 1 \\
@@ -189,10 +220,24 @@ Both puncturers are defined by their puncturing matrices:
    \end{align}
 
 
-Scheme I is used for the initial LICH link setup info, while scheme II
-is for frames (excluding LICH chunks, which are coded differently).
+The complete linearized representations are:
 
-.. todo:: explain what’s the X for
+.. code-block:: python
+   :caption: linearized puncture patterns
+
+   P1 = [1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0,
+   1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0,
+   1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1,
+   0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1,
+   0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1,
+   1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1]
+
+   P2 = [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1,
+   0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1,
+   1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1,
+   0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1]
+
+
 
 Interleaving
 ~~~~~~~~~~~~

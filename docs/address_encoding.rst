@@ -22,7 +22,7 @@ addresses) are encoded into these 6 bytes in the following ways:
 .. table:: Address scheme
 
    +------------------------------+---------------+-------------------+-------------------+
-   |Address Range                 |Category       |Number of addresses |Remarks            |
+   |Address Range                 |Category       |Number of addresses|Remarks            |
    +==============================+===============+===================+===================+
    |0x000000000000                |RESERVED       |1                  |For future use     |
    +------------------------------+---------------+-------------------+-------------------+
