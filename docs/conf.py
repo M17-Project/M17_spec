@@ -142,7 +142,27 @@ latex_documents = [
 latex_elements = {
     'preamble': r'''
 \newcommand{\sphinxlogo}{\sphinxincludegraphics[height=1in]{m17_logo_shadow_400.png}\par}
-''',
+\newcommand{\sphinxbackoftitlepage}{Published \today
+
+Copyright © 1996-2020 Authors
+
+Permission is granted to make and distribute verbatim copies of this
+document provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+document under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this
+document into another language, under the above conditions for
+modified versions, except that this permission notice may be included
+in translations approved by the Free Software Foundation instead of in
+the original English.
+
+See the GNU General Public License version 2 for more details.
+}''',
     'releasename': 'DRAFT',
     }
 latex_logo = '../images/m17_logo_shadow_400.png'
