@@ -79,7 +79,7 @@ referred to with bit types, given in :numref:`table_bit_types`.
    |               |ECC schemes type 3 bits are the same as |
    |               |type 2 bits)                            |
    +---------------+----------------------------------------+
-   |Type 4         |Whitened and interleaved (re-ordered)   |
+   |Type 4         |Randomized and interleaved (re-ordered) |
    |               |type 3 bits                             |
    +---------------+----------------------------------------+
 
@@ -131,6 +131,10 @@ to generate 272 type 3 bits.
 96 type 2 bits of LICH are concatenated with 272 type 3 bits and
 re-ordered to form type 4 bits for transmission. This, along with
 16-bit sync in the beginning of frame, gives a total of 384 bits
+
+The LICH chucks allow for late listening and indepedent decoding to
+check destination address. The goal is to require less complexity to
+decode just the LICH and check if the full message should be decoded.
 
 Convolutional encoder
 ~~~~~~~~~~~~~~~~~~~~~
@@ -257,13 +261,13 @@ pattern [QPP]_. See appendix for example code.
          Systems (2011): n. pag. Crossref. Web. https://arxiv.org/abs/1103.3794
 
 
-Data Whitening
-~~~~~~~~~~~~~~
+Data Randomizer
+~~~~~~~~~~~~~~~
 
 To avoid transmitting long sequences of constant symbols
-(e.g. 010101…), a simple data whitening algorithm is used. All 46
+(e.g. 010101…), a simple algorithm is used. All 46
 bytes of type 4 bits shall be XORed with a pseudorandom, predefined
-stream1 .  The same algorithm has to be used for incoming bits at the
+stream. The same algorithm has to be used for incoming bits at the
 receiver to get the original data stream.
 
 .. todo:: add diagram

@@ -1,7 +1,7 @@
-Data whitening sequence
-=======================
+Data randomizing sequence
+=========================
 
-.. csv-table:: whitening sequence
+.. csv-table:: randomizing sequence
    :header-rows: 1
 
    Seq. number, Value, Seq. number, Value

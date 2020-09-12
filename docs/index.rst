@@ -15,7 +15,7 @@ Welcome to M17 Protocol Specification's documentation!
    data_link_layer
    application_layer
    address_encoding
-   data_whitening
+   data_randomizer
    interleaving
 
 
