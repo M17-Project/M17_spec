@@ -1,7 +1,9 @@
-Data randomizing sequence
-=========================
+Decorrelator sequence
+=====================
 
-.. csv-table:: randomizing sequence
+.. _sec-decorr-seq:
+
+.. csv-table:: Decorrelator scrambling sequence
    :header-rows: 1
 
    Seq. number, Value, Seq. number, Value

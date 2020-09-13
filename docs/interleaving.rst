@@ -1,6 +1,8 @@
 Interleaving
 ============
 
+.. _sec-interleaver:
+
 .. csv-table:: Interleaving table
    :header-rows: 1
 

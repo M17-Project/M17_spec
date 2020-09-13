@@ -140,6 +140,7 @@ latex_documents = [
      latex_author, 'manual'),
 ]
 latex_elements = {
+    'figure_align': 'H',
     'preamble': r'''
 \newcommand{\sphinxlogo}{\sphinxincludegraphics[height=1in]{m17_logo_shadow_400.png}\par}
 \newcommand{\sphinxbackoftitlepage}{Published \today

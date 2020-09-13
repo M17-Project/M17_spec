@@ -161,7 +161,7 @@ The output from the encoder must be read alternately.
           Sub-part A: Common Air Interface
 
 .. figure:: ../images/convolutional.svg
-   :scale: 50%
+   :scale: 30%
 
    Convolutional coder diagram
 
@@ -252,8 +252,8 @@ Interleaving
 ~~~~~~~~~~~~
 
 For interleaving a Quadradic Permutation Polynomial (QPP) is used. The
-polynomial :math:`45x+ 92x^2` is used for a 368 bit interleaving
-pattern [QPP]_. See appendix for example code.
+polynomial :math:`\pi(x)=(45x+92x2)\mod 368` is used for a 368 bit interleaving
+pattern [QPP]_. See appendix :numref:`sec-interleaver` for pattern.
 
 .. [QPP] Trifina, Lucian, Daniela Tarniceriu, and Valeriu
          Munteanu. "Improved QPP Interleavers for LTE Standard." ISSCS
@@ -261,13 +261,13 @@ pattern [QPP]_. See appendix for example code.
          Systems (2011): n. pag. Crossref. Web. https://arxiv.org/abs/1103.3794
 
 
-Data Randomizer
-~~~~~~~~~~~~~~~
+Data Decorrelator
+~~~~~~~~~~~~~~~~~
 
 To avoid transmitting long sequences of constant symbols
 (e.g. 010101…), a simple algorithm is used. All 46
 bytes of type 4 bits shall be XORed with a pseudorandom, predefined
 stream. The same algorithm has to be used for incoming bits at the
-receiver to get the original data stream.
+receiver to get the original data stream. See :numref:`sec-decorr-seq` for sequence.
 
 .. todo:: add diagram
