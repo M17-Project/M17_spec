@@ -1,1 +1,2 @@
+sphinx_rst_theme
 sphinxcontrib-svg2pdfconverter>=1.1.0
