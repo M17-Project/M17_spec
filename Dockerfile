@@ -1,7 +1,7 @@
 FROM alpine
 
 RUN apk add git
-RUN git clone https://git.m17project.org/kc1awv/M17_spec.git
+RUN git clone https://git.m17project.org/m17/M17_spec.git
 
 FROM sphinxdoc/sphinx
 
