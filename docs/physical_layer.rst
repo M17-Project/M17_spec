@@ -89,7 +89,9 @@ all the frame fields.
 
 Error correction coding schemes and bit type conversion
 -------------------------------------------------------
-Two distinct ECC schemes are used for different parts of the transmission.
+
+Two distinct :term:`ECC`/:term:`FEC` schemes are used for different parts of
+the transmission.
 
 
 Link setup frame
