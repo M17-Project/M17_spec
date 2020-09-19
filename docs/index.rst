@@ -6,6 +6,7 @@ M17 Protocol Specification
    :caption: Contents:
 
    summary
+   glossary
    physical_layer
    data_link_layer
    application_layer
