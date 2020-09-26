@@ -23,11 +23,12 @@ to fruition the "Amateur digital radio is just VoIP" dystopian future
 we were all warned about.
 
 
-IP Framing
-----------
+Standard IP Framing
+-------------------
 
 M17 over IP is big endian, consistent with other IP protocols.
-We have standardized on UDP port 17000 for now, so this port is recommended.
+We have standardized on UDP port 17000, this port is recommended but not required.
+Later specifications may require this port.
 
 .. list-table:: Internet frame fields
 
@@ -50,7 +51,12 @@ We have standardized on UDP port 17000 for now, so this port is recommended.
      - 16 bits
      - CRC for the entire packet, as defined earlier (TODO: specific link)
 
-.. 
-   TODO:
-   RF->IP, IP->RF bridging reassembly
-   UDP NAT punching
+
+The CRC checksum must be recomputed after modification or re-assembly
+of the packet, such as when translating from RF to IP framing.
+
+
+
+.. todo:: RF->IP & IP->RF bridging reassembly, UDP NAT punching, callsign routing lookup
+
+.. points_of_contact:: N7TAE, W2FBI
