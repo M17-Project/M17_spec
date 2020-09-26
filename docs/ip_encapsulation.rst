@@ -55,7 +55,70 @@ Later specifications may require this port.
 The CRC checksum must be recomputed after modification or re-assembly
 of the packet, such as when translating from RF to IP framing.
 
-
+Example packet dissection
+-------------------------
+.. raw:: html
+    <embed>
+      <style>
+      .m17_magic{
+         background-color: grey;
+         border: 1px dashed #055;
+      .m17_streamid{
+         background-color: #055;
+         border: 1px dashed grey;
+      }
+      }
+      .m17_addr{
+      }
+      .m17_dst{
+      }
+      .m17_src{
+      }
+      .m17_streamtype{
+      }
+      .m17_nonce{
+      }
+      .m17_frame_number{
+      }
+      .m17_payload{
+      }
+      .m17_crc{
+      }
+      </style>
+      <span class="m17_magic">
+      4d 31 37 20 
+      </span>
+      <span class="m17_streamid">
+      cc cc 
+      </span>
+      <span class="m17_dst m17_addr">
+      00 99 6a 41 93 f8 
+      </span>
+      <span class="m17_src m17_addr">
+      00 00 01 61 
+      <br>
+      ae 1f 
+      </span>
+      <span class="m17_streamtype">
+      00 05 
+      </span>
+      <span class="m17_nonce">
+      41 41 41 41 41 41 41 41 41 41 41 41 
+      <br>
+      41 41 
+      </span>
+      <span class="m17_frame_number">
+      00 0d 
+      </span>
+      <span class="m17_payload">
+      42 42 42 42 42 42 42 42 42 42 42 42 
+      <br>
+      42 42 42 42 
+      <span class="m17_crc">
+      ff ff 
+      </span>
+      <br>
+    </embed>
 
 .. todo:: RF->IP & IP->RF bridging reassembly, UDP NAT punching, callsign routing lookup
 
