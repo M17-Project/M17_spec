@@ -18,7 +18,8 @@ No encryption is performed, payload is sent in clear text.
 
 Scrambler
 ~~~~~~~~~
-Encryption type = :math:`10_2`
+
+Encryption type = :math:`01_2`
 
 Scrambling is an encryption by bit inversion using a bitwise
 exclusive-or (XOR) operation between bit sequence of data and
@@ -70,6 +71,7 @@ algorithm.  Figures 5 to 8 show block diagrams of the algorithm
 
 Advanced Encryption Standard (AES)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Encryption type = :math:`10_2`
 
 This method uses AES block cipher in counter (CTR) mode. 96-bit nonce
