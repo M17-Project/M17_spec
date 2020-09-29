@@ -138,7 +138,7 @@ latex_author = '{}: \\\\ \\hline \\\\\n'.format(author.split(':')[0]) +  '\\\\\n
 latex_documents = [
     ('indexPartI', 'M17ProtocolSpecification.tex', 'M17 Protocol Specification',
      latex_author, 'manual'),
-    ('indexPartII'. 'M17ProtocolCodeplug.tex', 'M17 Protocol Codeplug',
+    ('indexPartII', 'M17ProtocolCodeplug.tex', 'M17 Protocol Codeplug',
      latex_author, 'manual')
 ]
 latex_elements = {
