@@ -134,7 +134,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
-latex_author = '{\\begin{tabular}{ll}' + '{} & \\\\\n\\hline\n'.format(author.split(':')[0]) +  ''.join(['{} & {}\\\\\n'.format(*auth.split()) for auth in author.split(':')[1].split(',')]) + '\\end{tabular}}'
+latex_author = '{}: \\\\ \\hline \\\\\n'.format(author.split(':')[0]) +  '\\\\\n'.join(['{} \\hfill {}'.format(*auth.split()) for auth in author.split(':')[1].split(',')])
 latex_documents = [
     (master_doc, 'M17ProtocolSpecification.tex', 'M17 Protocol Specification',
      latex_author, 'manual'),
@@ -142,7 +142,8 @@ latex_documents = [
 latex_elements = {
     'figure_align': 'H',
     'preamble': r'''
-\newcommand{\sphinxlogo}{\sphinxincludegraphics[height=1in]{m17_logo_shadow_400.png}\par}
+\usepackage[toc,page]{appendix}
+
 \newcommand{\sphinxbackoftitlepage}{Published \today
 
 Copyright © 1996-2020 Authors
@@ -163,7 +164,8 @@ in translations approved by the Free Software Foundation instead of in
 the original English.
 
 See the GNU General Public License version 2 for more details.
-}''',
+}
+''',
     'releasename': 'DRAFT',
     }
 latex_logo = '../images/m17_logo_shadow_400.png'
