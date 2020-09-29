@@ -136,8 +136,10 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_author = '{}: \\\\ \\hline \\\\\n'.format(author.split(':')[0]) +  '\\\\\n'.join(['{} \\hfill {}'.format(*auth.split()) for auth in author.split(':')[1].split(',')])
 latex_documents = [
-    (master_doc, 'M17ProtocolSpecification.tex', 'M17 Protocol Specification',
+    ('indexPartI', 'M17ProtocolSpecification.tex', 'M17 Protocol Specification',
      latex_author, 'manual'),
+    ('indexPartII', 'M17ProtocolCodeplug.tex', 'M17 Protocol Codeplug',
+     latex_author, 'manual')
 ]
 latex_elements = {
     'figure_align': 'H',

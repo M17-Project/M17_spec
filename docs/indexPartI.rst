@@ -11,12 +11,6 @@ M17 Protocol Specification
    data_link_layer
    application_layer
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Part II - Codeplug:
-
-   codeplug
-
 .. raw:: latex
 
    \appendix
