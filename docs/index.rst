@@ -3,7 +3,7 @@ M17 Protocol Specification
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Part I - Air and IP Interface:
 
    summary
    glossary
@@ -11,6 +11,11 @@ M17 Protocol Specification
    data_link_layer
    application_layer
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Part II - Codeplug:
+
+   codeplug
 
 .. raw:: latex
 
