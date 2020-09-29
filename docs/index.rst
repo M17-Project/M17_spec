@@ -23,6 +23,7 @@ M17 Protocol Specification
 
 .. toctree::
    :maxdepth: 2
+   :caption: Appendix:
 
    address_encoding
    decorrelator
