@@ -211,6 +211,7 @@ is) different than Talk Group XYZ on a private cBridge system.
 * DMR Talk Groups are encoded by their network. Currently, the
   following networks are defined:
 * Brandmeister: BM<number> eg: BM31075
+* DMRPlus: DP<number> eg: DP262
 * More networks to be defined here.
 
 D-Star
