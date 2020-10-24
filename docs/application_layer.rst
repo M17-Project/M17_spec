@@ -94,8 +94,8 @@ approaches 1. We assume that the transmission is secure for 237 frames
 using a single key. It is recommended to change keys after that
 period.
 
-To combat replay attacks, a 64-bit timestamp shall be embedded into
-the NONCE field. The field structure is shown in Table 9. Timestamp is
+To combat replay attacks, a 32-bit timestamp shall be embedded into
+the NONCE field. The field structure is shown in Table 9. Timestamp is 32 LSB portion of
 the number of seconds that elapsed since the beginning of 1970-01-01,
 00:00:00 UTC, minus leap seconds (a.k.a. “unix time”).
 
@@ -105,8 +105,8 @@ the number of seconds that elapsed since the beginning of 1970-01-01,
    * - TIMESTAMP
      - NONCE
      - CTR_HIGH
-   * - 64
-     - 32
+   * - 32
+     - 64
      - 16
 
 **CTR_HIGH** field initializes the highest 16 bits of the CTR, with
