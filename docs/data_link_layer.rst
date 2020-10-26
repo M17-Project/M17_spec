@@ -219,9 +219,9 @@ detecting all errors up to hamming distance of 5 with payloads up to
 As M17’s native bit order is most significant bit first, neither the
 input nor the output of the CRC algorithm gets reflected.
 
-The input to the CRC algorithm consists of the 48 bits of LICH, 16
-bits of FN, 128 bits of payload, and then depending on whether the CRC
-is being computed or verified either 16 zero bits or the received CRC.
+The input to the CRC algorithm consists of the 16 bits of FN and 128
+bits of payload, and then depending on whether the CRC is being computed
+or verified either 16 zero bits or the received CRC.
 
 The test vectors in Table 6 are calculated by feeding the given
 message and then 16 zero bits to the CRC algorithm.
