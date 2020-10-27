@@ -69,19 +69,19 @@ referred to with bit types, given in :numref:`table_bit_types`.
 .. _table_bit_types:
 .. table:: Bit types
 
-   +---------------+----------------------------------------+
-   |Type 1         |Data link layer bits                    |
-   +---------------+----------------------------------------+
-   |Type 2         |Bits after appropriate encoding         |
-   +---------------+----------------------------------------+
-   |Type 3         |Bits after puncturing (only for         |
-   |               |convolutionally coded data, for other   |
-   |               |ECC schemes type 3 bits are the same as |
-   |               |type 2 bits)                            |
-   +---------------+----------------------------------------+
-   |Type 4         |Randomized and interleaved (re-ordered) |
-   |               |type 3 bits                             |
-   +---------------+----------------------------------------+
+   +---------------+------------------------------------------+
+   |Type 1         |Data link layer bits                      |
+   +---------------+------------------------------------------+
+   |Type 2         |Bits after appropriate encoding           |
+   +---------------+------------------------------------------+
+   |Type 3         |Bits after puncturing (only for           |
+   |               |convolutionally coded data, for other     |
+   |               |ECC schemes type 3 bits are the same as   |
+   |               |type 2 bits)                              |
+   +---------------+------------------------------------------+
+   |Type 4         |Decorrelated and interleaved (re-ordered) |
+   |               |type 3 bits                               |
+   +---------------+------------------------------------------+
 
 Type 4 bits are used for transmission over the RF. Incoming type 4
 bits shall be decoded to type 1 bits, which are then used to extract
