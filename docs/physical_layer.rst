@@ -253,7 +253,7 @@ The complete linearized representations are:
 Interleaving
 ~~~~~~~~~~~~
 
-For interleaving a Quadradic Permutation Polynomial (QPP) is used. The
+For interleaving a Quadratic Permutation Polynomial (QPP) is used. The
 polynomial :math:`\pi(x)=(45x+92x^2)\mod 368` is used for a 368 bit interleaving
 pattern [QPP]_. See appendix :numref:`sec-interleaver` for pattern.
 
