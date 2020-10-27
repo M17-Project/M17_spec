@@ -254,7 +254,7 @@ Interleaving
 ~~~~~~~~~~~~
 
 For interleaving a Quadradic Permutation Polynomial (QPP) is used. The
-polynomial :math:`\pi(x)=(45x+92x2)\mod 368` is used for a 368 bit interleaving
+polynomial :math:`\pi(x)=(45x+92x^2)\mod 368` is used for a 368 bit interleaving
 pattern [QPP]_. See appendix :numref:`sec-interleaver` for pattern.
 
 .. [QPP] Trifina, Lucian, Daniela Tarniceriu, and Valeriu
