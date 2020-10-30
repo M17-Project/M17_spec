@@ -41,8 +41,10 @@ physical layer. The *stream* is broken up into parts, called *frames* to not con
 in packet mode. Frames contain payload data interleaved with frame signalling (similar to packets).
 Frame signalling is contained within the **Link Information Channel (LICH)**.
 
-All frames are preceded by a 16-bit *synchronization burst*,
-which consists of 0x3243 (first 16-bit of pi) in type 4 bits.
+All frames are preceded by a 16-bit *synchronization burst*. Link setup frames shall be preceded with 0x5DDD,
+while data frames with 0xDDDD. All syncwords are type 4 bits.
+
+.. todo:: Find better syncwords.
 
 Link setup frame
 ~~~~~~~~~~~~~~~~
@@ -93,10 +95,10 @@ the link setup frame, and is not part of any superframes.
 
 The fields in Table 3 (except tail) form initial LICH. It contains all
 information needed to establish M17 link. Later in the transmission,
-the initial LICH is divided into 5 "chunks" and transmitted
+the initial LICH is divided into 6 "chunks" and transmitted
 interleaved with data. The purpose of that is to allow late-joiners to
 receive the LICH at any point of the transmission. The process of
-collecting full LICH takes 5 frames or 5*40 ms = 200 ms. Four TAIL
+collecting full LICH takes 6 frames or 6*40 ms = 240 ms. Four TAIL
 bits are needed for the convolutional coder to go back to state 0, so
 also the ending trellis position is known.
 
@@ -123,7 +125,7 @@ Subsequent frames
 
    * - LICH
      - 48 bits
-     - LICH chunk, one of 5
+     - LICH chunk, one of 6
    * - FN
      - 16 bits
      - Frame number, starts from 0 and increments every frame to a max of 0x7fff where it will then wrap back to 0. High bit set indicates this frame is the last of the stream.
@@ -144,6 +146,18 @@ end signalling. When transmitting the last frame, it shall be set to 1
 The payload is used so that earlier data in the voice stream is sent first.
 For mixed voice and data payloads, the voice data is stored first, then the data.
 
+.. list-table:: LICH chunk structure
+   :header-rows: 1
+
+   * - Bits
+     - Content
+   * - 0..39
+     - 40 bits of full LICH
+   * - 40..42
+     - A modulo 6 counter (LICH_CNT) for LICH re-assembly
+   * - 43..47
+     - 5-bit Color Code (CC)
+
 .. table:: Payload examples
 
    +-------------------------------+---------------+---------------+
@@ -159,7 +173,7 @@ Superframes
 
 Each frame contains a chunk of the LICH frame that was used to
 establish the stream. Frames are grouped into superframes, which is
-the group of 5 frames that contain everything needed to rebuild the
+the group of 6 frames that contain everything needed to rebuild the
 original LICH packet, so that the user who starts listening in the
 middle of a stream (late-joiner) is eventually able to reconstruct the
 LICH message and understand how to receive the in-progress stream.
