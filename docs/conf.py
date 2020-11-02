@@ -113,6 +113,8 @@ htmlhelp_basename = 'M17ProtocolSpecificationdoc'
 
 # -- Options for LaTeX output ------------------------------------------------
 
+latex_engine = 'xelatex'
+
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
@@ -142,6 +144,7 @@ latex_documents = [
      latex_author, 'manual')
 ]
 latex_elements = {
+    'fncychap': '\\usepackage[Sonny]{fncychap}',
     'figure_align': 'H',
     'preamble': r'''
 \usepackage[toc,page]{appendix}

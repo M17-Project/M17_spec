@@ -158,11 +158,13 @@ For mixed voice and data payloads, the voice data is stored first, then the data
    * - 43..47
      - 5-bit Color Code (CC)
 
-.. table:: Payload examples
+.. table:: Payload example 1
 
    +-------------------------------+---------------+---------------+
    |    Codec2 encoded frame t + 0 |   Codec2 encoded frame t + 1  |
    +---------------+---------------+---------------+---------------+
+
+.. table:: Payload Example 2
 
    +-------------------------------+---------------+---------------+
    |    Codec2 encoded frame t + 0 |       Mixed data t + 0        |

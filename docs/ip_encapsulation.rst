@@ -57,7 +57,7 @@ of the packet, such as when translating from RF to IP framing.
 
 .. todo:: RF->IP & IP->RF bridging reassembly, UDP NAT punching, callsign routing lookup
 
-.. points_of_contact:: N7TAE, W2FBI
+.. points_of_contact N7TAE, W2FBI
 
 Control Packets
 ----------------------
