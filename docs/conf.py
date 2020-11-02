@@ -148,7 +148,7 @@ latex_elements = {
 
 \newcommand{\sphinxbackoftitlepage}{Published \today
 
-Copyright © 2019-2020 Authors
+Copyright © 2019-2020 M17 Working Group
 
 Permission is granted to make and distribute verbatim copies of this
 document provided the copyright notice and this permission notice are
