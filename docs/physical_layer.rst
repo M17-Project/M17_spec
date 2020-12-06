@@ -138,6 +138,29 @@ The LICH chucks allow for late listening and indepedent decoding to
 check destination address. The goal is to require less complexity to
 decode just the LICH and check if the full message should be decoded.
 
+Golay (24,12)
+~~~~~~~~~~~~~
+
+The Golay (24,12) encoder uses the polynomial 0xC75 to generate the 11
+check bits.  The check bits and an overall parity bit are appended to
+the 12 bit data, resulting in a 24 bit encoded chunk.
+
+.. math::
+  
+   \begin{align}
+   G =& (x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1)
+   \end{align}
+
+The output of the Golay encoder looks like:
+
+   +-----------------+----------------+---------------+
+   | Data            | Check bits     | Parity        |
+   +-----------------+----------------+---------------+
+   | 23-12 (12 bits) | 11-1 (11 bits) | 0 (1 bit)     |
+   +-----------------+----------------+---------------+
+
+Four of these 24-bit blocks are used to encode the LICH.
+
 Convolutional encoder
 ~~~~~~~~~~~~~~~~~~~~~
 
