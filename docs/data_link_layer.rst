@@ -41,10 +41,17 @@ physical layer. The *stream* is broken up into parts, called *frames* to not con
 in packet mode. Frames contain payload data interleaved with frame signalling (similar to packets).
 Frame signalling is contained within the **Link Information Channel (LICH)**.
 
-All frames are preceded by a 16-bit *synchronization burst*. Link setup frames shall be preceded with 0x5DDD,
-while data frames with 0xDDDD. All syncwords are type 4 bits.
+Sync Burst
+~~~~~~~~~~
 
-.. todo:: Find better syncwords.
+All frames are preceded by a 16-bit *synchronization burst*.
+
+    * Link setup frames shall be preceded with 0x55F7.
+    * Stream frames shall be preceeded with 0xFF5D.
+    * Packet frames shall be preceeded with 0x75FF.
+
+All syncwords are type 4 bits.
+
 
 Link setup frame
 ~~~~~~~~~~~~~~~~
