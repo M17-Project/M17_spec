@@ -52,6 +52,10 @@ All frames are preceded by a 16-bit *synchronization burst*.
 
 All syncwords are type 4 bits.
 
+These sync words are based on `Barker codes`_.  The sequence 0xDF55 (symbols -3 +3 -3 -3 +3 +3 +3 +3) is reserved.
+
+.. _`Barker codes`: https://en.wikipedia.org/wiki/Barker_code
+
 
 Link setup frame
 ~~~~~~~~~~~~~~~~
