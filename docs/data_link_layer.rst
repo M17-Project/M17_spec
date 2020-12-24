@@ -19,20 +19,6 @@ mode.~~
 As is the convention with networking protocols, all quantities
 larger than 8 bits are encoded in bigendian.
 
-Packet Mode
------------
-
-In *packet mode*, a finite amount of payload data (for example – text
-messages or application layer data) is wrapped with a packet, sent
-over the physical layer, and is completed when done. ~~Any
-acknowledgement or error correction is done at the application
-layer.~~
-
-Packet Format
-~~~~~~~~~~~~~
-
-.. todo:: More detail here about endianness, etc
-
 Stream Mode
 -----------
 
@@ -266,3 +252,146 @@ message and then 16 zero bits to the CRC algorithm.
      - 0x772B
    * - Bytes from 0x00 to 0xFF
      - 0x1C31
+
+Packet Mode
+-----------
+
+In *packet mode*, a finite amount of payload data (for example – text
+messages or application layer data) is wrapped with a packet, sent
+over the physical layer, and is completed when done. ~~Any
+acknowledgement or retransmission is done at the application
+layer.~~
+
+Link Setup Frame
+~~~~~~~~~~~~~~~~
+
+Packet mode uses the same link setup frame that has been defined for stream mode above.
+The packet/stream indicator is set to 0 in the type field.
+
+.. list-table:: Bitfields of type field
+   :header-rows: 1
+
+   * - Bits
+     - Meaning
+   * - 0
+     - Packet/stream indicator, 0=packet, 1=stream
+   * - 1-2
+     - Data type indicator, :math:`01_2` =raw (D), :math:`10_2` =encapsulated
+       (V), :math:`11_2` =reserved, :math:`00_2` =reserved
+   * - 3-4
+     - Encryption type, :math:`00_2` =none, :math:`01_2` =AES,
+       :math:`10_2` =scrambling, :math:`11_2` =other/reserved
+   * - 5-6
+     - Encryption subtype (meaning of values depends on encryption type)
+   * - 7-15
+     - Reserved (don't care)
+
+Raw packet frames have no packet type metadata associated with them.  Encapsulated packet
+format is discussed in :ref:`packet-superframes` in the Application Layer section.  This
+provides data type information and is the preferred format for use on M17.
+
+Currently the contents of the source and destination fields are arbitrary as no behavior
+is defined which depends on the content of these fields.  The only requirement is that
+the content is base-40 encoded.
+
+Packet Format
+~~~~~~~~~~~~~
+
+M17 packet mode can transmit up to 798 bytes of payload data.  It acheives a base throughput
+of 5kbps, and a net throughput of about 4.7kbps for the largest data payload, and over 3kbps
+for 100-byte payloads.  (Net throughput takes into account preamble and link setup overhead.)
+
+The packet superframe consists of 798 payload data bytes and a 2-byte CCITT CRC-16 checksum.
+
+.. list-table:: Byte fields of packet superframe
+   :header-rows: 1
+
+   * - Bytes
+     - Meaning
+   * - 1-798
+     - Packet payload
+   * - 2
+     - CCITT CRC-16
+
+
+Packet data is split into frames of 368 type 4 bits preceded by a packet-specific 16-bit sync
+word (0xFF5D).  This is the same size frame used by stream mode.
+
+The packet frame starts with a 210 byte frame of type 1 data.  It is noteworthy that it does
+not terminate on a byte boundary.
+
+The frame has 200 bits (25 bytes) of payload data, 6 bits of frame metadata, and 4 bits to
+flush the convolutional coder.
+
+.. list-table:: Bit fields of packet frame
+   :header-rows: 1
+
+   * - Bits
+     - Meaning
+   * - 0-199
+     - Packet payload
+   * - 1
+     - EOF indicator
+   * - 5
+     - Frame/byte count
+   * - 4
+     - Flush bits for convolutional coder
+
+   
+The metadata field contains a 1 bit **end of frame** (**EOF**) indicator, and a 5-bit frame/byte counter.
+
+The **EOF** bit is 1 only on the last frame.  The **counter** field is used to indicate the frame number
+when **EOF** is 0, and the number of bytes in the last frame when **EOF** is 1.  This encodes the
+exact packet size, up to 800 bytes, in a 6-bit field.
+
+.. list-table:: Metadata field with EOF = 0
+   :header-rows: 1
+
+   * - Bits
+     - Meaning
+   * - 0
+     - Set to 0, Not end of frame
+   * - 1-5
+     - Frame number, 0..31
+
+.. list-table:: Metadata field with EOF = 1
+   :header-rows: 1
+
+   * - Bits
+     - Meaning
+   * - 0
+     - Set to 1, End of frame
+   * - 1-5
+     - Number of bytes in frame, 1..25
+
+Note that it is non-conforming to send a last frame with a length of 0 bytes.
+
+Convolutional Coding
+~~~~~~~~~~~~~~~~~~~~
+
+The entire frame is convolutionally coded, giving 420 bits of type 2 data.  It is then punctured using
+a 7/8 puncture matrix (1,1,1,1,1,1,1,0) to give 368 type 3 bits.  These are then interleaved and
+decorrelated to give 368 type 4 bits.
+
+.. list-table:: Packet frame
+   :header-rows: 1
+
+   * - Bits
+     - Meaning
+   * - 16 bits
+     - Sync word 0xFF5D
+   * - 368 bits
+     - Payload
+
+
+Carrier-sense Multiple Access
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When sending packets, the sender is reponsible for ensuring the channel is clear before transmitting.
+`CSMA <https://en.wikipedia.org/wiki/Carrier-sense_multiple_access>`_ is used to minimize collisions on
+a shared network.  Specifically, P-persistent access is used.  Each time slot is 40ms (one packet length)
+and the probability SHOULD default to 25%.  In terms of the values used by the KISS protocol, these
+equate to a slot time of 4 and a P-persistence value of 63.
+
+The benefit of this method is that it imposes no penalty on uncontested networks.
+
