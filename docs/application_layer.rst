@@ -3,6 +3,42 @@ Application Layer
 
 PARTS 1 AND 2 REMOVED – will add this later.
 
+.. _packet-superframes:
+
+Packet Superframes
+------------------
+
+Packet superframes are composed of a 1..n byte data type specifier, 0..797 bytes of
+payload data.  The data type specifier is encoded in the same way as UTF-8.  It provides
+efficient coding of common data types.  And it can be extended to include a very large
+number of distinct packet data type codes.
+
+The data type specifier can also be used as a protocol specifier.  For example,
+the following protocol identifers are reserved in the M17 packet spec:
+
+.. list-table::  Reserved Protocols
+   :header-rows: 1
+
+   * - Identifer
+     - Protocol
+   * - 0x00
+     - RAW
+   * - 0x01
+     - AX.25
+   * - 0x02
+     - APRS
+   * - 0x03
+     - 6LoWPAN
+   * - 0x04
+     - IPv4
+   * - 0x05
+     - SMS
+   * - 0x06
+     - WinLink
+
+ 
+The data type specifier is used to compute the CRC, along with the payload.
+
 Encryption Types
 ----------------
 
