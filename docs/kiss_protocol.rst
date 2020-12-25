@@ -2,12 +2,12 @@
 KISS Protocol
 *************
 
-The purpose of this appendix is to document convetions for adapting KISS TNCs
+The purpose of this appendix is to document conventions for adapting KISS TNCs
 to M17 packet and streaming modes.  M17 is a more complex protocol, both at
 the baseband level and at the data link layer than is typical for HDLC-based
 protocols commonly used on KISS TNCs.  However, it is well suited for modern
-packet data links, and can even be used to stream audio between a host and
-a radio.
+packet data links, and can even be used to stream digital audio between a host
+and a radio.
 
 This appendix assumes the reader is familiar with the streaming and packet
 modes defined in the M17 spec.
@@ -17,59 +17,108 @@ responsible for frame construction, FEC encoding, puncturing, interleaving
 and decorrelation.  It is also responsible for baseband modulation.
 
 For streaming modes, all voice encoding (Codec2) is done on the host and
-not on the TNC.
+not on the TNC.  The host is also responsible for constructing the LICH.
+
 
 References
 ==========
 
  - http://www.ax25.net/kiss.aspx
  - https://packet-radio.net/wp-content/uploads/2017/04/multi-kiss.pdf
- 
+ - https://en.wikipedia.org/wiki/OSI_model
+
+
+Glossary
+========
+
+.. glossary::
+
+   port
+     A logical port on a TNC. This allowed a single TNC to connect to multiple
+     radios.  But its specific use is loosely defined.  The high nibble of the
+     KISS :term:`type indicator`.
+
+   command
+     A KISS command. This tells the TNC or host how to interpret the KISS
+     packet contents.  The low nibble of the KISS :term:`type indicator`.
+
+   type indicator
+     A one byte code at the beginning of a KISS frame which indicates the TNC
+     :term:`port` and KISS :term:`command`.
+
+   CSMA
+     Carrier-sense multiple access -- a protocol used to allow network devices
+     to minimize collisions on a shared communications channel.
+
+   TNC
+     Terminal node controller -- a baseband network interface device to allow
+     host computers to send data over a radio network, similar to a modem. It
+     connects a computer to a radio and handles the baseband portion of the
+     physical layer and the data link layer of network protocol stack.
+
+   KISS
+     Short for "Keep it simple, stupid".  A simplified TNC protocol designed
+     to move everything except for the physical layer and the data link layer
+     out of the TNC.  Early TNCs could include everything up through the
+     application layer of the OSI network model.
+
+   HDLC
+     High-Level Data Link Control -- a data link layer framing protocol used
+     in many AX.25 packet radio networks.  Many existing protocol documents,
+     including KISS, reference HDLC because of its ubiquity when the protocols
+     were invented.  However, HDLC is not a requirement for higher level
+     protocols like KISS which are data link layer agnostic.
+
+
 M17 Protocols
 =============
 
-The specification defines KISS TNC modes for M17 packet modes, both RAW
-and ENCAPSULATED.  And it defines a bidirectional streaming mode, allowing
-KISS protocol to be used to send and receive M17 voice data.
+This specification defines KISS TNC modes for M17 packet and streaming modes,
+allowing the KISS protocol to be used to send and receive M17 packet and voice
+data. Both are bidirectional.  There are two packet modes defined. This is done
+to provide complete access to the M17 protocol while maintaining the greatest
+degree of backwards compatibility with existing packet applications.
 
-These protocols map to specific KISS TNC ports.  The host tells the TNC what
-type of data to transmit based on the TNC port used in host to TNC transfers.
-And the TNC tells the host what data it has received by the TNC port set on
-TNC to host transfers.
+These protocols map to specific KISS :term:`port`.  The host tells the TNC what
+type of data to transmit based on the port used in host to TNC transfers. And
+the TNC tells the host what data it has received by the port set on TNC to
+host transfers.
+
+This document outlines first the two packet protocols, followed by the
+streaming protocol.
 
 Packet Protocols
 ================
 
 In order to provide backward compatibility with the widest range of existing
 ham radio software, and to make use of features in the the M17 protocol
-itself, we will define two distint packet interfaces *RAW* and *ENCAPSULATED*.
+itself, we will define two distint packet interfaces *BASIC* and *FULL*.
 
-The KISS protocol allows us to target specific modems using the modem
-identifier in the command byte.  The KISS protocol defines this as an
-**HDLC port**.
+The KISS protocol allows us to target specific modems using the port
+identifier in the control byte.
 
-We will also be extending the KISS protocol, using undefined command codes
-to set things like SOURCE and DESTINATION addresses.
+We first define basic packet mode as this is initially likely to be the
+most commonly used mode over KISS.
 
-M17 Raw Packet Mode
--------------------
+M17 Basic Packet Mode
+---------------------
 
-Raw packet mode uses only the standard KISS protocol on **HDLC port** 0.  This
-is the default port for all TNCs.  Packets are sent using command 0.  Again,
-this is normal behavior for KISS client applications.
+Basic packet mode uses only the standard KISS protocol on **TNC port** 0.
+This is the default port for all TNCs.  Packets are sent using command 0.
+Again, this is normal behavior for KISS client applications.
 
 Sending Data
 ^^^^^^^^^^^^
 
-In raw mode, the TNC only expects to receive packets from the host, as it
+In basic mode, the TNC only expects to receive packets from the host, as it
 would for any other mode supported AFSK, G3RUH, etc.
 
 If the TNC is configured for half-duplex, the TNC will do P-persistence CSMA
 using a 40ms slot time and obey the P value set via the KISS interface.  CSMA
 is disabled in full-duplex mode.
 
-The **TX Delay** and **TX Tail** values are ignored as the M17 preamble length is
-pre-defined.
+The **TX Delay** and **TX Tail** values are ignored as the M17 preamble length
+is pre-defined.
 
 The TNC sends the preamble burst.
 
@@ -77,6 +126,9 @@ The TNC is responsible for constructing the link setup frame, identifying the
 content as a raw mode packet.  The source field is an encoded TNC identifier,
 similar to the APRS TOCALL, but it can be an arbitrary text string up to 9
 characters in length.  The destination is set to the broadcast address.
+
+In basic packet mode, it is expected that the sender callsign is embedded within
+the packet payload.
 
 The TNC sends the link setup frame.
 
@@ -105,19 +157,136 @@ and verify that the following frames contain raw packet data.
 The TNC is responsible for decoding each packet, assembling the packet from
 the sequence of frames received, and verifying the packet checksum.  If the
 checksum is valid, the TNC transfers the packet, excluding the CRC to the host
-using **HDLC port** 0.
+using **KISS port** 0.
 
-M17 Encapsulated Packet Mode
-----------------------------
+M17 Full Packet Mode
+---------------------
 
-The purpose of encapsulated packet mode is to provide access to the entire
-M17 protocol stream to the host.  This allows the host to set the source and
-destination fields, filter received packets based on the content these fields,
-and send and receive type-coded frames.
+The purpose of full packet mode is to provide access to the entire M17 packet
+protocol to the host.  This allows the host to set the source and destination
+fields, filter received packets based on the content these fields, enable
+encryption, and send and receive type-coded frames.
 
-To communicate the source and destination between the host and TNC, we are
-extending the KISS protocol.  We are chosing command words that are not
-currently known to be in use.
+Use M17 full packet mode by sending to **KISS port** 1.  In this mode the host
+is responsible for sending both the link setup frame and the packet data.  It
+does this by prepending the 30-byte link setup frame to the packet data,
+sending this to the TNC in a single KISS frame.  The TNC uses the first 30
+bytes as the link setup frame verbatim, then splits the remaining data into
+M17 packet frames.
 
-One of the design goals for the KISS protocols is a symmetric protocol between
-host and TNC.
+As with basic mode, the TNC uses the **Duplex** setting to enable/disable CSMA,
+and uses the **P value** for CSMA, with a fixes slot time of "4" (40 ms).
+
+Receiving Data
+^^^^^^^^^^^^^^
+
+For TNC to host transfers, the same occurs.  The TNC combines the link setup
+frame with the packet frame and sends both in one KISS frame to the host using
+**KISS port** 1.
+
+Stream Protocol
+===============
+
+The streaming protocol is fairly trivial to describe.  It is used by sending
+first a link setup frame followed by a stream of 26-byte data frames to
+**KISS port** 2.
+
+Stream Format
+-------------
+
+.. list-table:: M17 KISS Stream Protocol
+   :header-rows: 1
+
+   * - Frame Size
+     - Contents
+   * - 30
+     - Link Setup Frame
+   * - 26
+     - LICH + Payload
+   * - 26
+     - LICH + Pyaload
+   * - ...
+     - ...
+   * - 26
+     - LICH + Payload with EOS bit set.
+
+Data Frames
+-----------
+
+The data frames contain a 6-byte (48-bit) LICH segment followed by a 20 byte
+payload segment consisting of frame number, 16-byte data payload and CRC. The
+TNC is responsible for parsing the frame number and detecting the end-of-stream
+bit to stop transmitting.
+
+.. list-table:: KISS Stream Data Frame
+   :header-rows: 1
+
+   * - Frame Size
+     - Contents
+   * - 6
+     - LICH (48 bits)
+   * - 2
+     - Frame number and EOS flag
+   * - 16
+     - Payload
+   * - 2
+     - M17 CRC of frame number and payload
+
+The TNC is responsible for FEC-encoding both the LICH the payload, as well
+as interleaving, decorrelation, and baseband modulation.
+
+Timing Constraints
+------------------
+
+Streaming mode provides additional timing constraints on both host to TNC
+transfers and on TNC to host transfers.  Payload frames must arrive every
+40ms and must have a jitter below 40ms.  In general, it is expected that the
+TNC has up to 2 frames buffered (buffering occurs while sending the preamble
+and link setup frames), it should be able to keep the transmit buffers filled
+with packet jitter of 40ms.
+
+The TNC must stop transmitting if the transmit buffers are empty.  The TNC
+communicates that it has stopped transmitting early (before seeing a frame
+with the **end of stream** indicator set) by sending an empty data frame to
+the host.
+
+TNC to Host Transfers
+---------------------
+
+TNC to host transfers are similar in that the TNC first sends the 30-byte
+link setup frame received to the host, followed by a stream of 26-byte data
+frames as described above.  These are sent using **KISS port** 2.
+
+The TNC must send the link setup frame first.  This means that tne TNC must
+be able to decode LICH segments and assemble a valid link setup frame before
+it sends the first data frame.  The TNC will only send a link setup frame
+with a valid CRC to the host.  After the link setup frame is sent, the TNC
+ignores the CRC and sends all valid frames (those received after a valid
+sync word) to the host.  If the stream is lost before seeing an end-of-stream
+flag, the TNC sends a 0-byte data frame to indicate loss of signal.
+
+The TNC must then re-acquire the signal by decoding a valid link setup frame
+from the LICH in order to resume sending to the host.
+
+Busy Channel Lockout
+--------------------
+
+The TNC implements **busy channel lockout** by enabling half-duplex mode on
+the TNC, and disables **busy channel lockout** by enabling full-duplex mode.
+When busy channel lockout occurs, the TNC keeps the link setup frame and
+discards all data frames until the channel is available.  It then sends the
+preamble, link setup frame, and starts sending the data frames as they are
+received.
+
+Note: BCL will be apparent to a receiver as the first frame received after
+the link setup frame will not start with frame number 0.
+
+Limitations
+-----------
+
+Information is lost by having the TNC decode the LICH.  It is not possible to
+communicate to the host that the LICH bytes are known to be invalid.
+
+Should we have the TNC signal the host by dropping known invalid LICH segments?
+The host can tell that the LICH is missing by looking at the frame size.
+
