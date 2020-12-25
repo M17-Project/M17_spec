@@ -10,7 +10,7 @@ packet data links, and can even be used to stream digital audio between a host
 and a radio.
 
 This appendix assumes the reader is familiar with the streaming and packet
-modes defined in the M17 spec.
+modes defined in the M17 spec, and with KISS TNCs and the KISS protocol.
 
 In all cases, the TNC expects to get the data payload to be sent and is
 responsible for frame construction, FEC encoding, puncturing, interleaving
@@ -33,23 +33,6 @@ Glossary
 
 .. glossary::
 
-   port
-     A logical port on a TNC. This allowed a single TNC to connect to multiple
-     radios.  But its specific use is loosely defined.  The high nibble of the
-     KISS :term:`type indicator`.
-
-   command
-     A KISS command. This tells the TNC or host how to interpret the KISS
-     packet contents.  The low nibble of the KISS :term:`type indicator`.
-
-   type indicator
-     A one byte code at the beginning of a KISS frame which indicates the TNC
-     :term:`port` and KISS :term:`command`.
-
-   CSMA
-     Carrier-sense multiple access -- a protocol used to allow network devices
-     to minimize collisions on a shared communications channel.
-
    TNC
      Terminal node controller -- a baseband network interface device to allow
      host computers to send data over a radio network, similar to a modem. It
@@ -62,12 +45,46 @@ Glossary
      out of the TNC.  Early TNCs could include everything up through the
      application layer of the OSI network model.
 
+   SLIP
+     `Serial Line Internet Protocol <https://en.wikipedia.org/wiki/Serial_Line_Internet_Protocol>`_ --
+     the base protocol used by the KISS protocol, extended by adding a single
+     :term:`type indicator` byte at the start of a frame.
+
+   type indicator
+     A one byte code at the beginning of a KISS frame which indicates the TNC
+     :term:`port` and KISS :term:`command`.
+     
+   port
+     A logical port on a TNC. This allowed a single TNC to connect to multiple
+     radios.  Its specific use is loosely defined in the KISS spec.  The high
+     nibble of the KISS :term:`type indicator`.  Port 0xF is reserved.
+
+   command
+     A KISS command. This tells the TNC or host how to interpret the KISS
+     frame contents.  The low nibble of the KISS :term:`type indicator`.
+     Command 0xF is reserved.
+
+   CSMA
+     `Carrier-sense multiple access <https://en.wikipedia.org/wiki/Carrier-sense_multiple_access>`_ --
+     a protocol used by network devices to minimize collisions on a shared
+     communications channel.
+
    HDLC
-     High-Level Data Link Control -- a data link layer framing protocol used
-     in many AX.25 packet radio networks.  Many existing protocol documents,
-     including KISS, reference HDLC because of its ubiquity when the protocols
-     were invented.  However, HDLC is not a requirement for higher level
-     protocols like KISS which are data link layer agnostic.
+     `High-Level Data Link Control <https://en.wikipedia.org/wiki/High-Level_Data_Link_Control>`_ --
+     a data link layer framing protocol used in many AX.25 packet radio
+     networks.  Many existing protocol documents, including KISS, reference
+     HDLC because of its ubiquity when the protocols were invented.  However,
+     HDLC is not a requirement for higher level protocols like KISS which
+     are agnostic to the framing used at the data link layer.
+
+   EOS
+     End of stream -- an indicator bit in the frame number field of a stream
+     data frame.
+   
+   LICH
+     Link information channel -- a secondary data channel in the stream data
+     frame containing supplemental information, including a copy of the link
+     setup frame.
 
 
 M17 Protocols
@@ -210,6 +227,18 @@ Stream Format
    * - 26
      - LICH + Payload with EOS bit set.
 
+The host must not send any frame to any other KISS port while a stream is
+active (a frame with the EOS bit has not been sent).
+
+It is a protocol violation to send anything other than a link setup frame with
+the stream mode bit set in the first field as the first frame in a stream
+transfer to KISS port 2.  Any such frame is ignored.
+
+It is a protocol violation to send anything to any other KISS port while a
+stream is active.  If that happens the stream is terminated and the packet
+that caused the protocol violation is dropped.
+
+
 Data Frames
 -----------
 
@@ -289,4 +318,29 @@ communicate to the host that the LICH bytes are known to be invalid.
 
 Should we have the TNC signal the host by dropping known invalid LICH segments?
 The host can tell that the LICH is missing by looking at the frame size.
+
+Mixing Modes
+============
+
+An M17 KISS TNC need not keep track of state across distinct TNC ports.  Packet
+transfers are sent one packet at a time.  It is OK to send to port 0 and port 1
+in subsequent transfers.  It is also OK to send a packet followed immediately
+by a voice streams.  As mentioned earlier, it is a protocol violation to sent
+a KISS frame to any other port while a stream is active.  However, a packet
+can be sent immediately following a voice stream (after EOS is sent).
+
+Back-to-back Transfers
+----------------------
+
+The TNC is expected to detect back-to-back transfers from the host, even across
+different KISS ports, and suppress the generation of the preamble.
+
+For example, a packet containing APRS data sent immediately on PTT key-up
+should be sent immediately after the EOS frame.
+
+Back-to-back transfers are common for packet communication where the
+**window size** determines the number of unacknowledged frames which may be
+outstanding (unacknowledged). Packet applications will frequently send
+back-to-back packets (up to **window size** packets) before waiting for
+the remote end to send ACKs for each of the packets.
 
