@@ -104,6 +104,27 @@ host transfers.
 This document outlines first the two packet protocols, followed by the
 streaming protocol.
 
+KISS Basics
+===========
+
+TX Delay
+--------
+
+If a KISS **TX delay** :math:`T_d` greater than 0 is specified, the transmitter
+is keyed for :math:`T_d * 10 ms` with only a DC signal present.
+
+The value should be adjusted to the minimum required by the transmitter in
+order to transmit the bull preamble reliably.
+
+Only a single 40ms preamble frame is ever sent.
+
+.. note::
+
+   A TX delay may be necessary because many radios require some time between
+   when PTT is engaged and the transmitter can begin transmitting a modulated
+   signal.
+
+
 Packet Protocols
 ================
 
@@ -134,8 +155,7 @@ If the TNC is configured for half-duplex, the TNC will do P-persistence CSMA
 using a 40ms slot time and obey the P value set via the KISS interface.  CSMA
 is disabled in full-duplex mode.
 
-The **TX Delay** and **TX Tail** values are ignored as the M17 preamble length
-is pre-defined.
+The **TX Tail** value is deprecated and is ignored.
 
 The TNC sends the preamble burst.
 
@@ -343,4 +363,33 @@ Back-to-back transfers are common for packet communication where the
 outstanding (unacknowledged). Packet applications will frequently send
 back-to-back packets (up to **window size** packets) before waiting for
 the remote end to send ACKs for each of the packets.
+
+Implementation Details
+======================
+
+Polarity
+--------
+
+One of the issues that must be addressed by the TNC designer, and one which
+the KISS protocol offers no ready solution for, is the issue of polarity.
+
+A TNC must interface with a RF transceiver for a complete M17 physical layer
+implementation.  RF transceivers may have different polarity for their
+TX and RX paths.
+
+M17 defines that the +3 symbol is transmitted with a +2.4 kHz deviation
+(2.4 kHz above the carrier).  **Normal polarity** in a transceiver results
+in a positive voltage driving the frequency higher and a lower voltage
+driving the frequency lower.  **Reverse polarity** is the opposite.  A
+higher voltage drives the frequency lower.
+
+On the receive side the same issue exists.  **Normal polarity** results
+in a positive voltage output when the received signal is above the carrier
+frequency. **Reverse polarity** results in a positive voltage when the
+frequency is below the carrier.
+
+Just as with transmitter deviation levels and received signal levels, the
+polarity of the transmit and receive path must be adjustable on a 4-FSK
+modem.  The way these adjustments are made to the TNC are not addressed
+by the KISS specification.
 
