@@ -113,8 +113,8 @@ TX Delay
 If a KISS **TX delay** :math:`T_d` greater than 0 is specified, the transmitter
 is keyed for :math:`T_d * 10 ms` with only a DC signal present.
 
-The value should be adjusted to the minimum required by the transmitter in
-order to transmit the bull preamble reliably.
+The :math:`T_d` value should be adjusted to the minimum required by the
+transmitter in order to transmit the full preamble reliably.
 
 Only a single 40ms preamble frame is ever sent.
 
