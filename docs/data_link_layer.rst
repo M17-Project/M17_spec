@@ -46,8 +46,8 @@ These sync words are based on `Barker codes`_.  The sequence 0xDF55 (symbols -3 
 Link setup frame
 ~~~~~~~~~~~~~~~~
 
-First frame of the transmission contains full LICH data. It’s called
-the link setup frame, and is not part of any superframes.
+First frame of the transmission contains full LSF data. It’s called
+the **Link Setup Frame (LSF)**, and is not part of any superframes.
 
 .. list-table:: Link setup frame fields
 
@@ -122,7 +122,7 @@ Subsequent frames
 
    * - LICH
      - 48 bits
-     - LICH chunk, one of 5
+     - LSF chunk, one of 5
    * - FN
      - 16 bits
      - Frame number, starts from 0 and increments every frame to a max of 0x7fff where it will then wrap back to 0. High bit set indicates this frame is the last of the stream.
@@ -149,7 +149,7 @@ For mixed voice and data payloads, the voice data is stored first, then the data
    * - Bits
      - Content
    * - 0..39
-     - 40 bits of full LICH
+     - 40 bits of full LSF
    * - 40..42
      - A modulo 6 counter (LICH_CNT) for LICH re-assembly
    * - 43..47
@@ -170,12 +170,12 @@ For mixed voice and data payloads, the voice data is stored first, then the data
 Superframes
 ~~~~~~~~~~~
 
-Each frame contains a chunk of the LICH frame that was used to
+Each frame contains a chunk of the LSF frame that was used to
 establish the stream. Frames are grouped into superframes, which is
-the group of 6 frames that contain everything needed to rebuild the
-original LICH packet, so that the user who starts listening in the
+the group of 5 frames that contain everything needed to rebuild the
+original LSF packet, so that the user who starts listening in the
 middle of a stream (late-joiner) is eventually able to reconstruct the
-LICH message and understand how to receive the in-progress stream.
+LSF message and understand how to receive the in-progress stream.
 
 .. figure:: ../images/M17_stream.png
 
