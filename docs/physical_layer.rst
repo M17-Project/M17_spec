@@ -134,7 +134,7 @@ to generate 272 type 3 bits.
 re-ordered to form type 4 bits for transmission. This, along with
 16-bit sync in the beginning of frame, gives a total of 384 bits
 
-The LICH chucks allow for late listening and indepedent decoding to
+The LICH chunks allow for late listening and indepedent decoding to
 check destination address. The goal is to require less complexity to
 decode just the LICH and check if the full message should be decoded.
 
