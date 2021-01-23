@@ -148,7 +148,7 @@ the 12 bit data, resulting in a 24 bit encoded chunk.
 .. math::
   
    \begin{align}
-   G =& (x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1)
+   G =& x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1
    \end{align}
 
 The output of the Golay encoder looks like:
@@ -199,19 +199,19 @@ M17 is ½. This means the encoder outputs two bits for every bit of the
 input data stream. To get other (higher) coding rates, a puncturing
 scheme has to be used.
 
-Two different puncturing schemes are used in M17:
+Two different puncturing schemes are used in M17 stream mode:
 
-#. leaving 46 from 61 encoded bits
-#. leaving 34 from 41 encoded bits
+#. :math:`P_1` leaving 46 from 61 encoded bits
+#. :math:`P_2` leaving 34 from 41 encoded bits
 
-Scheme P1 is used for the initial LICH link setup info, taking 488
+Scheme :math:`P_1` is used for the initial LICH link setup info, taking 488
 bits of encoded data and selecting 368 bits. The :math:`gcd(368, 488)`
 is 8 which, when used to divide, leaves 46 and 61. A full puncture
 pattern requires the output be divisible by the number of encoding
 polynomials. For this case the full puncture matrix should have 122
 entries with 92 of them being 1.
 
-Scheme P2 is for frames (excluding LICH chunks, which are coded
+Scheme :math:`P_2` is for frames (excluding LICH chunks, which are coded
 differently). This takes 328 encoded bits and selects 272 of the
 bits. The :math:`gcd(272, 328)` is 8 which results in the 34 and 41
 reduced ratio. The full matrix will have 82 entries with 68 being 1.
@@ -243,11 +243,11 @@ The puncturing schemes are defined by their partial puncturing matrices:
       \setcounter{MaxMatrixCols}{32}
 
    \begin{align}
-   P1 = & \begin{bmatrix}
+   P_1 = & \begin{bmatrix}
    1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 1 \\
    1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & X
    \end{bmatrix} \\
-   P2 = & \begin{bmatrix}
+   P_2 = & \begin{bmatrix}
    1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
    1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & X
    \end{bmatrix}
@@ -286,7 +286,7 @@ pattern [QPP]_. See appendix :numref:`sec-interleaver` for pattern.
          Systems (2011): n. pag. Crossref. Web. https://arxiv.org/abs/1103.3794
 
 
-Data Decorrelator
+Data decorrelator
 ~~~~~~~~~~~~~~~~~
 
 To avoid transmitting long sequences of constant symbols
