@@ -92,10 +92,10 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
 
 The fields in Table 3 (except tail) form initial LSF. It contains all
 information needed to establish M17 link. Later in the transmission,
-the initial LSF is divided into 5 "chunks" and transmitted
+the initial LSF is divided into 6 "chunks" and transmitted
 interleaved with data. The purpose of that is to allow late-joiners to
 receive the LICH at any point of the transmission. The process of
-collecting full LSF takes 5 frames or 5*40 ms = 200 ms. Four TAIL
+collecting full LSF takes 6 frames or 6*40 ms = 240 ms. Four TAIL
 bits are needed for the convolutional coder to go back to state 0, so
 also the ending trellis position is known.
 
@@ -122,7 +122,7 @@ Subsequent frames
 
    * - LICH
      - 48 bits
-     - LSF chunk, one of 5
+     - LSF chunk, one of 6
    * - FN
      - 16 bits
      - Frame number, starts from 0 and increments every frame to a max of 0x7fff where it will then wrap back to 0. High bit set indicates this frame is the last of the stream.
@@ -143,7 +143,7 @@ end signalling. When transmitting the last frame, it shall be set to 1
 The payload is used so that earlier data in the voice stream is sent first.
 For mixed voice and data payloads, the voice data is stored first, then the data.
 
-.. list-table:: LICH chunk structure
+.. list-table:: LSF chunk structure
    :header-rows: 1
 
    * - Bits
@@ -172,7 +172,7 @@ Superframes
 
 Each frame contains a chunk of the LSF frame that was used to
 establish the stream. Frames are grouped into superframes, which is
-the group of 5 frames that contain everything needed to rebuild the
+the group of 6 frames that contain everything needed to rebuild the
 original LSF packet, so that the user who starts listening in the
 middle of a stream (late-joiner) is eventually able to reconstruct the
 LSF message and understand how to receive the in-progress stream.
@@ -210,8 +210,8 @@ LSF message and understand how to receive the in-progress stream.
      framecomb[label="Frame Combiner"]
      supercomb[label="Superframe Combiner"]
 
-     LICH -> c0 -> p0 -> i0 -> w0 -> s0 -> supercomb
-     LICH -> chunker_48 -> golay_24_12 -> framecomb
+     LSF -> c0 -> p0 -> i0 -> w0 -> s0 -> supercomb
+     LSF -> chunker_48 -> golay_24_12 -> framecomb
      data -> chunker_128 -> fn -> CRC -> c1 -> p1 -> framecomb
      framecomb -> i1 -> w1 -> s1 -> supercomb
      Preamble -> supercomb
