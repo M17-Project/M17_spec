@@ -122,7 +122,7 @@ Subsequent frames
 
    * - LICH
      - 48 bits
-     - LICH chunk, one of 6
+     - LICH chunk, one of 5
    * - FN
      - 16 bits
      - Frame number, starts from 0 and increments every frame to a max of 0x7fff where it will then wrap back to 0. High bit set indicates this frame is the last of the stream.
