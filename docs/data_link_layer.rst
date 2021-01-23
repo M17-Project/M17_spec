@@ -90,12 +90,12 @@ the link setup frame, and is not part of any superframes.
    * - 7-15
      - Reserved (don't care)
 
-The fields in Table 3 (except tail) form initial LICH. It contains all
+The fields in Table 3 (except tail) form initial LSF. It contains all
 information needed to establish M17 link. Later in the transmission,
-the initial LICH is divided into 6 "chunks" and transmitted
+the initial LSF is divided into 5 "chunks" and transmitted
 interleaved with data. The purpose of that is to allow late-joiners to
 receive the LICH at any point of the transmission. The process of
-collecting full LICH takes 6 frames or 6*40 ms = 240 ms. Four TAIL
+collecting full LSF takes 5 frames or 5*40 ms = 200 ms. Four TAIL
 bits are needed for the convolutional coder to go back to state 0, so
 also the ending trellis position is known.
 
