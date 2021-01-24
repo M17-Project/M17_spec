@@ -10,5 +10,5 @@ jobs:
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
-        pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-xetex texlive-latex-extra texlive-fonts-recommended"
+        pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-xetex texlive-latex-extra texlive-fonts-recommended fonts-freefont-ttf"
         build-command: "make latexpdf"
