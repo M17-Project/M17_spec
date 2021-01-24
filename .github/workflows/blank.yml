@@ -14,5 +14,5 @@ jobs:
         build-command: "make latexpdf"
     - uses: actions/upload-artifact@v1
       with:
-        name: DocumentationPDF
-        path: docs/_build/latex/
+        name: DocumentationPDFSpecification
+        path: docs/_build/latex/M17Protocol*.pdf
