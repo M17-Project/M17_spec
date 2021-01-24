@@ -15,4 +15,4 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: DocumentationPDF
-        path: docs/_build/pdf/
+        path: docs/_build/latex/
