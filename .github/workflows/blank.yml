@@ -15,9 +15,7 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: DocumentationPDFSpecification
-        path: |
-          docs/_build/latex/M17ProtocolSpecification.pdf
-          docs/_build/latex/M17ProtocolCodeplug.pdf
+        path: docs/_build/latex/
     # Publish built docs to gh-pages branch.
     # ===============================
     - name: Commit documentation changes
