@@ -21,7 +21,7 @@ jobs:
     - name: Commit documentation changes
       run: |
         git clone https://github.com/ammaraskar/sphinx-action-test.git --branch gh-pages --single-branch gh-pages
-        cp -r docs/_build/html/M17Protocol*.pdf gh-pages/
+        cp -r docs/_build/latex/M17Protocol*.pdf gh-pages/
         cd gh-pages
         touch .nojekyll
         git config --local user.email "smiller@kc1awv.net"
