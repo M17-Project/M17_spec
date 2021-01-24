@@ -12,3 +12,7 @@ jobs:
         docs-folder: "docs/"
         pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-xetex texlive-latex-extra texlive-fonts-recommended fonts-freefont-otf"
         build-command: "make latexpdf"
+    - uses: actions/upload-artifact@v1
+      with:
+        name: DocumentationPDF
+        path: docs/_build/pdf/
