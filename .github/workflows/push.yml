@@ -1,6 +1,8 @@
 name: "Push Generate Docs"
 on: 
-- push
+  push:
+    branches: 
+      - master
 
 jobs:
   docs:
