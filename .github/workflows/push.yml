@@ -31,8 +31,7 @@ jobs:
     # ===============================
     - name: Commit documentation changes
       run: |
-        git clone https://github.com/kc1awv/M17_spec.git --branch gh-pages --single-branch gh-pages
-        git clone https://github.com/M17-Project/M17_spec.git
+        git clone https://github.com/M17-Project/M17_spec.git --branch gh-pages --single-branch gh-pages
         cp -r docs/_build/html/* gh-pages/
         cp -r docs/_build/latex/M17Protocol*.pdf gh-pages/
         cd gh-pages
@@ -40,7 +39,7 @@ jobs:
         git config --local user.email "smiller@kc1awv.net"
         git config --local user.name "kc1awv"
         git add .
-        git commit -m "Update PDF documentation" -a || true
+        git commit -m "Update live documentation" -a || true
         # The above command will fail if no changes were present, so we ignore
         # that.
     - name: Push changes
