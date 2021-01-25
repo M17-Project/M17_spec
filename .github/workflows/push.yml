@@ -1,4 +1,4 @@
-name: "Pull Request Docs Check"
+name: "Push Generate Docs"
 on: 
 - push
 
@@ -30,6 +30,7 @@ jobs:
     - name: Commit documentation changes
       run: |
         git clone https://github.com/kc1awv/M17_spec.git --branch gh-pages --single-branch gh-pages
+        git clone https://github.com/M17-Project/M17_spec.git
         cp -r docs/_build/html/* gh-pages/
         cp -r docs/_build/latex/M17Protocol*.pdf gh-pages/
         cd gh-pages
