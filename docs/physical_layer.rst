@@ -8,7 +8,7 @@ M17 standard uses 4FSK modulation running at 4800 symbols/s (9600
 bits/s) with a deviation index h=0.33 for transmission in 9 kHz
 channel bandwidth. Channel spacing is 12.5 kHz. The symbol stream is
 converted to a series of impulses which pass through a
-root-raised-cosine (α=0.5) shaping filter before frequency modulation
+root-raised-cosine (alpha=0.5) shaping filter before frequency modulation
 at the transmitter and again after frequency demodulation at the
 receiver.
 
