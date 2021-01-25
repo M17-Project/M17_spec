@@ -97,7 +97,7 @@ the transmission.
 Link setup frame
 ~~~~~~~~~~~~~~~~
 
-.. figure:: ../images/link_setup_frame_encoding.svg
+.. figure:: ../images/link_setup_frame_encoding.*
 
    ECC stages for the link setup frame
 
@@ -117,7 +117,7 @@ transmitted. Interleaving is used to combat error bursts.
 Subsequent frames
 ~~~~~~~~~~~~~~~~~
 
-.. figure:: ../images/frame_encoding.svg
+.. figure:: ../images/frame_encoding.*
 
    ECC stages of subsequent frames
 
@@ -185,7 +185,7 @@ The output from the encoder must be read alternately.
 .. [NXDN] NXDN Technical Specifications, Part 1: Air Interface;
           Sub-part A: Common Air Interface
 
-.. figure:: ../images/convolutional.svg
+.. figure:: ../images/convolutional.*
    :scale: 30%
 
    Convolutional coder diagram

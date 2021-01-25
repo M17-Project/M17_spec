@@ -1,0 +1,27 @@
+name: "Pull Request Docs Check"
+on: 
+- pull_request
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: ammaraskar/sphinx-action@master
+      with:
+        build-command: "make html"
+        docs-folder: "docs/"
+    - uses: ammaraskar/sphinx-action@master
+      with:
+        docs-folder: "docs/"
+        pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-xetex texlive-latex-extra texlive-fonts-recommended fonts-freefont-otf"
+        build-command: "make latexpdf"
+    # Create an artifact of the html output.
+    - uses: actions/upload-artifact@v1
+      with:
+        name: DocumentationHTML
+        path: docs/_build/html/
+    - uses: actions/upload-artifact@v1
+      with:
+        name: DocumentationPDFSpecification
+        path: docs/_build/latex/
