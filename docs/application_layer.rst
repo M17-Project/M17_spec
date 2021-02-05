@@ -130,6 +130,13 @@ approaches 1. We assume that the transmission is secure for 237 frames
 using a single key. It is recommended to change keys after that
 period.
 
+.. warning::
+    In CTR mode, AES encryption is malleable. That is, an attacker can change
+    the contents of the encrypted message without decrypting it. This means that
+    recipients of AES-encrypted data must not trust that the data is authentic.
+    Users who require that received messages are proven to be exactly as-sent by
+    the sender should add application-layer authentication, such as HMAC.
+
 To combat replay attacks, a 32-bit timestamp shall be embedded into
 the NONCE field. The field structure is shown in Table 9. Timestamp is 32 LSB portion of
 the number of seconds that elapsed since the beginning of 1970-01-01,
