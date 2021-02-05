@@ -131,11 +131,14 @@ using a single key. It is recommended to change keys after that
 period.
 
 .. warning::
-    In CTR mode, AES encryption is malleable. That is, an attacker can change
-    the contents of the encrypted message without decrypting it. This means that
-    recipients of AES-encrypted data must not trust that the data is authentic.
+    In CTR mode, AES encryption is malleable [McGrew2002]_ [Rogaway2011]_.
+    That is, an attacker can change the contents of the encrypted message
+    without decrypting it. This means that recipients of AES-encrypted data
+    must not trust that the data is authentic.
     Users who require that received messages are proven to be exactly as-sent by
     the sender should add application-layer authentication, such as HMAC.
+    In the future, use of a different mode, such as Galois/Counter Mode, could
+    alleviate this issue [Rogaway2011]_.
 
 To combat replay attacks, a 32-bit timestamp shall be embedded into
 the NONCE field. The field structure is shown in Table 9. Timestamp is 32 LSB portion of
@@ -154,3 +157,9 @@ the number of seconds that elapsed since the beginning of 1970-01-01,
 
 **CTR_HIGH** field initializes the highest 16 bits of the CTR, with
 the rest of the counter being equal to the FN counter.
+
+.. [McGrew2002]
+    https://cr.yp.to/bib/2002/mcgrew.pdf
+
+.. [Rogaway2011]
+    https://web.cs.ucdavis.edu/~rogaway/papers/modes.pdf
