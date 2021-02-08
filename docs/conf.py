@@ -20,7 +20,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'M17 Protocol Specification'
-copyright = '2020, Project M17'
+copyright = '2021, Project M17'
 author = 'M17 Working Group: Wojciech SP5WWP, Juhani OH1CAU, Elms KM6VMZ, Nikoloz SO3ALG, Mark KR6ZY, Steve KC1AWV, Mathis DB9MAT, Tom N7TAE, Mike W2FBI '
 
 # The short X.Y version
@@ -151,7 +151,7 @@ latex_elements = {
 
 \newcommand{\sphinxbackoftitlepage}{Published \today
 
-Copyright © 2019-2020 M17 Working Group
+Copyright © 2019-2021 M17 Working Group
 
 Permission is granted to make and distribute verbatim copies of this
 document provided the copyright notice and this permission notice are
