@@ -2,9 +2,9 @@ Data Link Layer
 ===============
 The Data Link layer is split into two modes:
 
-#. Packet mode: data are sent in small bursts, on the order of 100s to 1000s of bytes at a time, after
+* Packet mode: data are sent in small bursts, on the order of 100s to 1000s of bytes at a time, after
 which the physical layer stops sending data. eg: messages, beacons, etc.
-#. Stream mode: data are sent in a continuous stream for an indefinite amount of time, with no
+* Stream mode: data are sent in a continuous stream for an indefinite amount of time, with no
 break in physical layer output, until the stream ends. eg: voice data, bulk data transfers, etc.
 
 When the physical layer is idle (no RF being transmitted or received),
