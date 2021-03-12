@@ -151,7 +151,7 @@ For mixed voice and data payloads, the voice data is stored first, then the data
    * - 0..39
      - 40 bits of full LSF
    * - 40..42
-     - A modulo 6 counter (LICH_CNT) for LICH re-assembly
+     - A modulo 6 counter (LICH_CNT) for LSF re-assembly
    * - 43..47
      - 5-bit Color Code (CC)
 
@@ -191,30 +191,33 @@ LSF message and understand how to receive the in-progress stream.
      {rank=same p0 p1}
      {rank=same i0 i1}
 
-     c0[label="conv coder"]
-     p0[label="Puncture P1"]
-     i0[label="interleave"]
+     c0[label="conv. coder"]
+     p0[label="P_1 puncturer"]
+     i0[label="interleaver"]
      w0[label="decorrelator"]
-     s0[label="add sync"]
-     chunker_48[label="chunk 48 bits"]
-     golay_24_12[label="golay(24, 12)"]
+     s0[label="add LSF_SYNC"]
+     l0[label="LICH combiner"]
+     chunker_40[label="chunk 40 bits"]
+     golay_24_12[label="Golay (24, 12)"]
 
-     c1[label="conv coder"]
-     p1[label="Puncture P2"]
-     i1[label="interleave"]
+     c1[label="conv. coder"]
+     p1[label="P_2 puncturer"]
+     i1[label="interleaver"]
      w1[label="decorrelator"]
-     s1[label="add sync"]
-     fn[label="Add FN"]
+     s1[label="add FRAME_SYNC"]
+     fn[label="add FN"]
      chunker_128[label="chunk 128 bits"]
 
      framecomb[label="Frame Combiner"]
      supercomb[label="Superframe Combiner"]
 
+     counter -> l0
+     "color code" -> l0
      LSF -> c0 -> p0 -> i0 -> w0 -> s0 -> supercomb
-     LSF -> chunker_48 -> golay_24_12 -> framecomb
+     LSF -> chunker_40 -> l0 -> golay_24_12 -> framecomb
      data -> chunker_128 -> fn -> CRC -> c1 -> p1 -> framecomb
      framecomb -> i1 -> w1 -> s1 -> supercomb
-     Preamble -> supercomb
+     preamble -> supercomb
    }
 
 CRC
