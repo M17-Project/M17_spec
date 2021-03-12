@@ -219,18 +219,3 @@ D-Star
 ++++++
 
 D-Star reflectors have well defined names: REFxxxY which are encoded directly into base40.
-
-.. todo:: Individuals? Just callsigns?
-
-Interoperability Challenges
-+++++++++++++++++++++++++++
-
-We'll need to provide a source ID on the other network. Not sure how
-to do that, and it'll probably be unique for each network we want to
-interoperate with. Maybe write the DMR/BM gateway to automatically
-lookup a callsign in the DMR database and map it to a DMR ID? Just
-thinking out loud.
-
-We will have to transcode CODEC2 to whatever the other network uses
-(pretty much AMBE of one flavor or another.) I'd be curious to see how
-that sounds.
