@@ -151,7 +151,7 @@ For mixed voice and data payloads, the voice data is stored first, then the data
    * - 0..39
      - 40 bits of full LSF
    * - 40..42
-     - A modulo 6 counter (LICH_CNT) for LICH re-assembly
+     - A modulo 6 counter (LICH_CNT) for LSF re-assembly
    * - 43..47
      - 5-bit Color Code (CC)
 
