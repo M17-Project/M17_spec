@@ -54,7 +54,7 @@ Preamble
 --------
 
 Every transmission starts with a preamble, which shall consist of at
-least 40ms of alternating -3, +3... symbols. This is equivalent to 40
+least 40 ms of alternating -3, +3... symbols. This is equivalent to 40
 milliseconds of a 2400 Hz tone
 
 
@@ -94,7 +94,7 @@ Two distinct :term:`ECC`/:term:`FEC` schemes are used for different parts of
 the transmission.
 
 
-Link setup frame
+Link setup frame (LSF)
 ~~~~~~~~~~~~~~~~
 
 .. figure:: ../images/link_setup_frame_encoding.*
@@ -121,9 +121,9 @@ Subsequent frames
 
    ECC stages of subsequent frames
 
-A 48-bit (type 1) chunk of LICH is partitioned into 4 12-bit parts and
-encoded using Golay (24, 12) code. This produces 96 encoded LICH bits
-of type 2.
+A 48-bit (type 1) chunk of the LSF is partitioned into 4 12-bit parts and
+encoded using Golay (24, 12) code. This produces 96 encoded bits
+of type 2. These bits are used in the Link Information Channel (LICH).
 
 FN, payload and CRC is 160 bits which are convolutionally encoded in a manner
 analogous to that of the link setup frame. A total of 164 bits is
@@ -151,15 +151,17 @@ the 12 bit data, resulting in a 24 bit encoded chunk.
    G =& x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1
    \end{align}
 
-The output of the Golay encoder looks like:
+The output of the Golay encoder is shown in the table below.
 
-   +-----------------+----------------+---------------+
-   | Data            | Check bits     | Parity        |
-   +-----------------+----------------+---------------+
-   | 23-12 (12 bits) | 11-1 (11 bits) | 0 (1 bit)     |
-   +-----------------+----------------+---------------+
+   +------------+----------+-------------+---------+
+   | Field      | Data     | Check bits  | Parity  |
+   +------------+----------+-------------+---------+
+   | Position   | 23..12   | 11..1       | 0       |
+   +------------+----------+-------------+---------+
+   | Length     | 12       | 11          | 1       |
+   +------------+----------+-------------+---------+
 
-Four of these 24-bit blocks are used to encode the LICH.
+Four of these 24-bit blocks are used to reconstruct the LSF.
 
 Convolutional encoder
 ~~~~~~~~~~~~~~~~~~~~~
