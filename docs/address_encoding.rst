@@ -6,8 +6,6 @@ addresses) are encoded into these 6 bytes in the following ways:
 
 *  An address of 0 is invalid.
 
-.. todo:: Do we want to use zero as a flag value of some kind?
-
 * Address values between 1 and 262143999999999 (which is
   :math:`40^9-1`), up to 9 characters of text are encoded using
   base40, described below.
@@ -173,31 +171,27 @@ Multiple Stations
 
 To allow for multiple stations by the same operator, we borrow the use
 of the '-' character from AX.25 and the SSID field. A callsign such as
-"KR6ZY-1" is considered a different station than "KR6ZY-2" or even
-"KR6ZY", but it is understood that these all belong to the same
-operator, "KR6ZY"
+"AB1CD-1" is considered a different station than "AB1CD-2" or even
+"AB1CD", but it is understood that these all belong to the same
+operator, "AB1CD"
 
 Temporary Modifiers
 ~~~~~~~~~~~~~~~~~~~
 
 Similarly, suffixes are often added to callsign to indicate temporary
-changes of status, such as "KR6ZY/M" for a mobile station, or
-"KR6ZY/AE" to signify that I have Amateur Extra operating privileges
+changes of status, such as "AB1CD/M" for a mobile station, or
+"AB1CD/AE" to signify that I have Amateur Extra operating privileges
 even though the FCC database may not yet be updated. So the '/' is
 included in the base40 alphabet.  The difference between '-' and '/'
 is that '-' are considered different stations, but '/' are NOT. They
 are considered to be a temporary modification to the same
 station.
 
-.. todo:: I'm not sure what impact this actually has.
-
 Interoperability
 ~~~~~~~~~~~~~~~~
 
 It may be desirable to bridge information between M17 and other
 networks. The 9 character base40 encoding allows for this:
-
-.. todo:: Define more interoperability standards here. System Fusion? P25? IRLP? AllStar?
 
 DMR
 +++
@@ -219,18 +213,3 @@ D-Star
 ++++++
 
 D-Star reflectors have well defined names: REFxxxY which are encoded directly into base40.
-
-.. todo:: Individuals? Just callsigns?
-
-Interoperability Challenges
-+++++++++++++++++++++++++++
-
-We'll need to provide a source ID on the other network. Not sure how
-to do that, and it'll probably be unique for each network we want to
-interoperate with. Maybe write the DMR/BM gateway to automatically
-lookup a callsign in the DMR database and map it to a DMR ID? Just
-thinking out loud.
-
-We will have to transcode CODEC2 to whatever the other network uses
-(pretty much AMBE of one flavor or another.) I'd be curious to see how
-that sounds.
