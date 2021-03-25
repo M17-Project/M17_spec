@@ -155,7 +155,7 @@ For mixed voice and data payloads, the voice data is stored first, then the data
    * - 40..42
      - A modulo 6 counter (LICH_CNT) for LSF re-assembly
    * - 43..47
-     - 5-bit Color Code (CC)
+     - 5-bit Channel Access Number (CAN)
 
 .. table:: Payload example 1
 
@@ -214,7 +214,7 @@ LSF message and understand how to receive the in-progress stream.
      supercomb[label="Superframe Combiner"]
 
      counter -> l0
-     "color code" -> l0
+     "CAN" -> l0
      LSF -> c0 -> p0 -> i0 -> w0 -> s0 -> supercomb
      LSF -> chunker_40 -> l0 -> golay_24_12 -> framecomb
      data -> chunker_128 -> fn -> CRC -> c1 -> p1 -> framecomb
