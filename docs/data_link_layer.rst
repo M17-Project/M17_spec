@@ -79,15 +79,17 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
      - Meaning
    * - 0
      - Packet/stream indicator, 0=packet, 1=stream
-   * - 1-2
+   * - 1..2
      - Data type indicator, :math:`01_2` =data (D), :math:`10_2` =voice
        (V), :math:`11_2` =V+D, :math:`00_2` =reserved
-   * - 3-4
+   * - 3..4
      - Encryption type, :math:`00_2` =none, :math:`01_2` =AES,
        :math:`10_2` =scrambling, :math:`11_2` =other/reserved
-   * - 5-6
+   * - 5..6
      - Encryption subtype (meaning of values depends on encryption type)
-   * - 7-15
+   * - 7..11
+     - Channel Access Number (CAN)
+   * - 12..15
      - Reserved (don't care)
 
 The fields in Table 3 (except tail) form initial LSF. It contains all
