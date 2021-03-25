@@ -87,9 +87,9 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
        :math:`10_2` =scrambling, :math:`11_2` =other/reserved
    * - 5..6
      - Encryption subtype (meaning of values depends on encryption type)
-   * - 7..11
+   * - 7..10
      - Channel Access Number (CAN)
-   * - 12..15
+   * - 11..15
      - Reserved (don't care)
 
 The fields in Table 3 (except tail) form initial LSF. It contains all
@@ -154,8 +154,10 @@ For mixed voice and data payloads, the voice data is stored first, then the data
      - 40 bits of full LSF
    * - 40..42
      - A modulo 6 counter (LICH_CNT) for LSF re-assembly
-   * - 43..47
-     - 5-bit Channel Access Number (CAN)
+   * - 43..46
+     - 4-bit Channel Access Number (CAN)
+   * - 47
+     - Reserved
 
 .. table:: Payload example 1
 
