@@ -79,15 +79,17 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
      - Meaning
    * - 0
      - Packet/stream indicator, 0=packet, 1=stream
-   * - 1-2
+   * - 1..2
      - Data type indicator, :math:`01_2` =data (D), :math:`10_2` =voice
        (V), :math:`11_2` =V+D, :math:`00_2` =reserved
-   * - 3-4
+   * - 3..4
      - Encryption type, :math:`00_2` =none, :math:`01_2` =AES,
        :math:`10_2` =scrambling, :math:`11_2` =other/reserved
-   * - 5-6
+   * - 5..6
      - Encryption subtype (meaning of values depends on encryption type)
-   * - 7-15
+   * - 7..10
+     - Channel Access Number (CAN)
+   * - 11..15
      - Reserved (don't care)
 
 The fields in Table 3 (except tail) form initial LSF. It contains all
@@ -152,8 +154,10 @@ For mixed voice and data payloads, the voice data is stored first, then the data
      - 40 bits of full LSF
    * - 40..42
      - A modulo 6 counter (LICH_CNT) for LSF re-assembly
-   * - 43..47
-     - 5-bit Color Code (CC)
+   * - 43..46
+     - 4-bit Channel Access Number (CAN)
+   * - 47
+     - Reserved
 
 .. table:: Payload example 1
 
@@ -212,7 +216,7 @@ LSF message and understand how to receive the in-progress stream.
      supercomb[label="Superframe Combiner"]
 
      counter -> l0
-     "color code" -> l0
+     "CAN" -> l0
      LSF -> c0 -> p0 -> i0 -> w0 -> s0 -> supercomb
      LSF -> chunker_40 -> l0 -> golay_24_12 -> framecomb
      data -> chunker_128 -> fn -> CRC -> c1 -> p1 -> framecomb
