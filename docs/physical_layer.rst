@@ -125,9 +125,9 @@ A 48-bit (type 1) chunk of the LSF is partitioned into 4 12-bit parts and
 encoded using Golay (24, 12) code. This produces 96 encoded bits
 of type 2. These bits are used in the Link Information Channel (LICH).
 
-FN, payload and CRC is 160 bits which are convolutionally encoded in a manner
-analogous to that of the link setup frame. A total of 164 bits is
-being encoded resulting in 328 type 2 bits. These bits are punctured
+16-bit FN and 128 bits of payload (144 bits total) are convolutionally encoded in a manner
+analogous to that of the link setup frame. A total of 148 bits is
+being encoded resulting in 296 type 2 bits. These bits are punctured
 to generate 272 type 3 bits.
 
 96 type 2 bits of LICH are concatenated with 272 type 3 bits and
@@ -204,7 +204,7 @@ scheme has to be used.
 Two different puncturing schemes are used in M17 stream mode:
 
 #. :math:`P_1` leaving 46 from 61 encoded bits
-#. :math:`P_2` leaving 34 from 41 encoded bits
+#. :math:`P_2` leaving 11 from 12 encoded bits
 
 Scheme :math:`P_1` is used for the initial LICH link setup info, taking 488
 bits of encoded data and selecting 368 bits. The :math:`gcd(368, 488)`
@@ -214,11 +214,11 @@ polynomials. For this case the full puncture matrix should have 122
 entries with 92 of them being 1.
 
 Scheme :math:`P_2` is for frames (excluding LICH chunks, which are coded
-differently). This takes 328 encoded bits and selects 272 of the
-bits. The :math:`gcd(272, 328)` is 8 which results in the 34 and 41
-reduced ratio. The full matrix will have 82 entries with 68 being 1.
+differently). This takes 296 encoded bits and selects 272 of them.
+Every 12th bit is being punctured out, leaving 272 bits.
+The full matrix shall have 12 entries with 11 being 1.
 
-The matrices can be represented more concisely by duplicating a
+The matrix :math:`P_1` can be represented more concisely by duplicating a
 smaller matrix with a *flattening*.
 
 .. math::
@@ -250,8 +250,8 @@ The puncturing schemes are defined by their partial puncturing matrices:
    1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & X
    \end{bmatrix} \\
    P_2 = & \begin{bmatrix}
-   1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
-   1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & X
+   1 & 1 & 1 & 1 & 1 & 1 \\
+   1 & 1 & 1 & 1 & 1 & 0
    \end{bmatrix}
    \end{align}
 
@@ -268,10 +268,7 @@ The complete linearized representations are:
    0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1,
    1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1]
 
-   P2 = [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1,
-   0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1,
-   1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1,
-   0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1]
+   P2 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
 
 
 
