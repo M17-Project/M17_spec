@@ -46,7 +46,7 @@ The bit-to-symbol mapping is shown in the table below.
 
 .. todo:: update section
 
-The most significant bits are sent first, meaning that the byte 0xB4
+The most significant bits are sent first, meaning that the byte 0xB4 (= 0b10'11'01'00)
 in type 4 bits (see :ref:`bit_types`) would be sent as the symbols -1 -3 +3
 +1.
 
