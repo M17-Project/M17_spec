@@ -131,9 +131,6 @@ Subsequent frames
    * - PAYLOAD
      - 128 bits
      - Payload/data, can contain arbitrary data
-   * - CRC
-     - 16 bits
-     - This field contains 16-bit value used to check data integrity, see section 2.4 for details
    * - TAIL
      - 4 bits
      - Flushing bits for the convolutional encoder that don't carry any information
