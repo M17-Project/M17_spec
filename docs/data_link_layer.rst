@@ -151,9 +151,7 @@ For mixed voice and data payloads, the voice data is stored first, then the data
      - 40 bits of full LSF
    * - 40..42
      - A modulo 6 counter (LICH_CNT) for LSF re-assembly
-   * - 43..46
-     - 4-bit Channel Access Number (CAN)
-   * - 47
+   * - 43..47
      - Reserved
 
 .. table:: Payload example 1
@@ -196,7 +194,7 @@ LSF message and understand how to receive the in-progress stream.
      p0[label="P_1 puncturer"]
      i0[label="interleaver"]
      w0[label="decorrelator"]
-     s0[label="add LSF_SYNC"]
+     s0[label="prepend LSF_SYNC"]
      l0[label="LICH combiner"]
      chunker_40[label="chunk 40 bits"]
      golay_24_12[label="Golay (24, 12)"]
@@ -205,7 +203,7 @@ LSF message and understand how to receive the in-progress stream.
      p1[label="P_2 puncturer"]
      i1[label="interleaver"]
      w1[label="decorrelator"]
-     s1[label="add FRAME_SYNC"]
+     s1[label="prepend FRAME_SYNC"]
      fn[label="add FN"]
      chunker_128[label="chunk 128 bits"]
 
@@ -213,10 +211,9 @@ LSF message and understand how to receive the in-progress stream.
      supercomb[label="Superframe Combiner"]
 
      counter -> l0
-     "CAN" -> l0
      LSF -> c0 -> p0 -> i0 -> w0 -> s0 -> supercomb
      LSF -> chunker_40 -> l0 -> golay_24_12 -> framecomb
-     data -> chunker_128 -> fn -> CRC -> c1 -> p1 -> framecomb
+     data -> chunker_128 -> fn -> c1 -> p1 -> framecomb
      framecomb -> i1 -> w1 -> s1 -> supercomb
      preamble -> supercomb
    }
@@ -236,8 +233,8 @@ detecting all errors up to hamming distance of 5 with payloads up to
 As M17’s native bit order is most significant bit first, neither the
 input nor the output of the CRC algorithm gets reflected.
 
-The input to the CRC algorithm consists of the 16 bits of FN and 128
-bits of payload, and then depending on whether the CRC is being computed
+The input to the CRC algorithm consists of DST, SRC (each 48 bits), 16 bits of TYPE field and 128
+bits NONCE, and then depending on whether the CRC is being computed
 or verified either 16 zero bits or the received CRC.
 
 The test vectors in Table 6 are calculated by feeding the given
@@ -274,20 +271,22 @@ The packet/stream indicator is set to 0 in the type field.
 
 .. list-table:: Bitfields of type field
    :header-rows: 1
-
+   
    * - Bits
      - Meaning
    * - 0
      - Packet/stream indicator, 0=packet, 1=stream
-   * - 1-2
-     - Data type indicator, :math:`01_2` =raw (D), :math:`10_2` =encapsulated
-       (V), :math:`11_2` =reserved, :math:`00_2` =reserved
-   * - 3-4
+   * - 1..2
+     - Data type indicator, :math:`01_2` =data (D), :math:`10_2` =voice
+       (V), :math:`11_2` =V+D, :math:`00_2` =reserved
+   * - 3..4
      - Encryption type, :math:`00_2` =none, :math:`01_2` =AES,
        :math:`10_2` =scrambling, :math:`11_2` =other/reserved
-   * - 5-6
+   * - 5..6
      - Encryption subtype (meaning of values depends on encryption type)
-   * - 7-15
+   * - 7..10
+     - Channel Access Number (CAN)
+   * - 11..15
      - Reserved (don't care)
 
 Raw packet frames have no packet type metadata associated with them.  Encapsulated packet
