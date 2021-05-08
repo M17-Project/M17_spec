@@ -2,22 +2,28 @@ Data Link Layer
 ===============
 The Data Link layer is split into two modes:
 
-* Packet mode: data are sent in small bursts, on the order of 100s to 1000s of bytes at a time, after
-which the physical layer stops sending data. eg: messages, beacons, etc.
-* Stream mode: data are sent in a continuous stream for an indefinite amount of time, with no
-break in physical layer output, until the stream ends. eg: voice data, bulk data transfers, etc.
+* Packet mode
+   Data are sent in small bursts, on the order of 100s to 1000s of bytes
+   at a time, after which the physical layer stops sending data. e.g. messages, beacons, etc.
+
+* Stream mode
+   Data are sent in a continuous stream for an indefinite amount of time,
+   with no break in physical layer output, until the stream ends. e.g. voice data,
+   bulk data transfers, etc.
 
 When the physical layer is idle (no RF being transmitted or received),
-the data link defaults to packet mode. ~~To switch to stream mode, a
-start stream packet (detailed later) is sent, immediately followed by
-the switch to stream mode; the Stream of data immediately follows the
-Start Stream packet without disabling the Physical layer. To switch
-out of Stream mode, the stream simply ends and returns the Physical
-layer to the idle state, and the Data Link defaults back to Packet
-mode.~~
+the data link defaults to packet mode. 
 
-As is the convention with networking protocols, all quantities
-larger than 8 bits are encoded in bigendian.
+.. ~~To switch to stream mode, a
+.. start stream packet (detailed later) is sent, immediately followed by
+.. the switch to stream mode; the Stream of data immediately follows the
+.. Start Stream packet without disabling the Physical layer. To switch
+.. out of Stream mode, the stream simply ends and returns the Physical
+.. layer to the idle state, and the Data Link defaults back to Packet
+.. mode.~~
+
+As is the convention with other networking protocols, all values are
+encoded in big endian byte order.
 
 Stream Mode
 -----------
@@ -53,7 +59,7 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
 
    * - DST
      - 48 bits
-     -  Destination address - Encoded callsign or a special number (eg. a group)
+     - Destination address - Encoded callsign or a special number (eg. a group)
    * - SRC
      - 48 bits
      - Source address - Encoded callsign of the originator or a
@@ -61,9 +67,9 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
    * - TYPE
      - 16 bits
      - Information about the incoming data stream
-   * - NONCE
+   * - META
      - 112 bits
-     - Nonce for encryption
+     - Metadata field, suitable for cryptographic metadata like IVs or single-use numbers, or non-crypto metadata like the sender's GNSS position.
    * - CRC
      - 16 bits
      - CRC for the link setup data
@@ -95,11 +101,12 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
 The fields in Table 3 (except tail) form initial LSF. It contains all
 information needed to establish M17 link. Later in the transmission,
 the initial LSF is divided into 6 "chunks" and transmitted
-interleaved with data. The purpose of that is to allow late-joiners to
-receive the LICH at any point of the transmission. The process of
-collecting full LSF takes 6 frames or 6*40 ms = 240 ms. Four TAIL
-bits are needed for the convolutional coder to go back to state 0, so
-also the ending trellis position is known.
+beside the payload data. This allows late-joiners to
+reconstruct the LICH after collecting all the pieces, and start decoding
+the stream even though they missed the beginning of the transmission.
+The process of collecting full LSF takes 6 frames or 6*40 ms = 240
+ms. Four TAIL bits are needed for the convolutional coder to go back to
+state 0, so the ending trellis position is also known.
 
 Voice coder rate is inferred from TYPE field, bits 1 and 2.
 
@@ -137,7 +144,7 @@ Subsequent frames
 
 The most significant bit in the FN counter is used for transmission
 end signalling. When transmitting the last frame, it shall be set to 1
-(one). 
+(one), and 0 (zero) in all other frames.
 
 The payload is used so that earlier data in the voice stream is sent first.
 For mixed voice and data payloads, the voice data is stored first, then the data.
@@ -233,8 +240,8 @@ detecting all errors up to hamming distance of 5 with payloads up to
 As M17’s native bit order is most significant bit first, neither the
 input nor the output of the CRC algorithm gets reflected.
 
-The input to the CRC algorithm consists of DST, SRC (each 48 bits), 16 bits of TYPE field and 128
-bits NONCE, and then depending on whether the CRC is being computed
+The input to the CRC algorithm consists of DST, SRC (each 48 bits), 16 bits of TYPE field and 112
+bits META, and then depending on whether the CRC is being computed
 or verified either 16 zero bits or the received CRC.
 
 The test vectors in Table 6 are calculated by feeding the given
@@ -292,6 +299,16 @@ The packet/stream indicator is set to 0 in the type field.
 Raw packet frames have no packet type metadata associated with them.  Encapsulated packet
 format is discussed in :ref:`packet-superframes` in the Application Layer section.  This
 provides data type information and is the preferred format for use on M17.
+
+When encryption type is :math:`00_2`, meaning no encryption, the
+encryption subtype bits are used to indicate the contents of the
+META field in the LSF.  Since that space would otherwise go be unused,
+we can store small bits of data in that field such as free text or the
+sender's GNSS position.
+
+Encryption type and subtype bits, including the plaintext data formats
+when not using encryption, are described in more detail in the Application
+Layer section of this document.
 
 Currently the contents of the source and destination fields are arbitrary as no behavior
 is defined which depends on the content of these fields.  The only requirement is that
