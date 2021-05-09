@@ -12,7 +12,7 @@
    viewBox="0 0 252.30742 120.5"
    version="1.1"
    id="svg8"
-   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="link_setup_frame_encoding.svg"
    inkscape:export-filename="C:\Users\SP5WWP\Desktop\frame_1_encoding.png"
    inkscape:export-xdpi="400"
@@ -26,19 +26,19 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.2"
-     inkscape:cx="501.59347"
-     inkscape:cy="75.127576"
+     inkscape:zoom="0.9899495"
+     inkscape:cx="388.02662"
+     inkscape:cy="335.30996"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
-     showguides="false"
+     showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:bbox-nodes="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
+     inkscape:window-width="1280"
+     inkscape:window-height="962"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -134,6 +134,11 @@
        orientation="1,0"
        id="guide91"
        inkscape:locked="false" />
+    <sodipodi:guide
+       position="133.63476,110.58277"
+       orientation="1,0"
+       id="guide90"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -219,15 +224,15 @@
          style="font-size:6.35px;stroke-width:0.264583">TYPE</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="116.5937"
+       style="font-style:normal;font-weight:normal;font-size:10.58329964px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458299"
+       x="119.2716"
        y="84.397797"
        id="text4565-7"><tspan
          sodipodi:role="line"
          id="tspan4563-4"
-         x="116.5937"
+         x="119.2716"
          y="84.397797"
-         style="font-size:6.35px;stroke-width:0.264583">NONCE</tspan></text>
+         style="font-size:6.3499999px;stroke-width:0.26458299">META</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -405,8 +410,7 @@
            x="913.17792"
            y="740.0545"
            style="font-size:13.33333302px" /></flowRegion><flowPara
-         id="flowPara4856" /></flowRoot>
-    <text
+         id="flowPara4856" /></flowRoot>    <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:3.52778px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
        x="115.46071"

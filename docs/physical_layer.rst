@@ -101,7 +101,7 @@ Link setup frame (LSF)
 
    ECC stages for the link setup frame
 
-240 DST, SRC, TYPE, NONCE and CRC type 1 bits are convolutionally
+240 DST, SRC, TYPE, META and CRC type 1 bits are convolutionally
 coded using rate 1/2 coder with constraint K=5. 4 tail bits are used
 to flush the encoder's state register, giving a total of 244 bits
 being encoded. Resulting 488 type 2 bits are retained for type 3 bits
@@ -241,8 +241,7 @@ The puncturing schemes are defined by their partial puncturing matrices:
 .. math::
    :nowrap:
 
-   .. only:: latex
-      \setcounter{MaxMatrixCols}{32}
+   \setcounter{MaxMatrixCols}{32}
 
    \begin{align}
    P_1 = & \begin{bmatrix}

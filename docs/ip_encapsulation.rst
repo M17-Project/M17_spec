@@ -40,7 +40,7 @@ Later specifications may require this port.
      - Random bits, changed for each PTT or stream, but consistent from frame to frame within a stream
    * - LICH
      - sizeof(LICH)*8 bits
-     - A full LICH frame (dst, src, streamtype, nonce) as defined earlier
+     - A full LICH frame (dst, src, streamtype, META field) as defined earlier
    * - FN
      - 16 bits
      - Frame number (exactly as would be transmitted as an RF stream frame, including the last frame indicator at (FN & 0x8000)
