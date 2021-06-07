@@ -66,6 +66,7 @@ Reflectors use a few different types of control frames, identified by their magi
 
 * *CONN* - Connect to a reflector
 * *ACKN* - acknowledge connection
+* *NACK* - deny connection
 * *PING/PONG* - keepalives for the connection
 * *DISC* - Disconnect (client->reflector or reflector->client)
 
@@ -125,7 +126,7 @@ PONG
   | 4-9   | 6-byte 'From' callsign including module in last character (e.g. "A1BCD   D") encoded as per `Address Encoding` |
   +-------+----------------------------------------------------------------------------------------------------------------+
 
-Upon receing a PING, the client replies with a PONG
+Upon receivng a PING, the client replies with a PONG
 
 DISC
 ~~~~~~~~~~~~~~~~~
