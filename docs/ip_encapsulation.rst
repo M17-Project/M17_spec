@@ -67,7 +67,8 @@ Reflectors use a few different types of control frames, identified by their magi
 * *CONN* - Connect to a reflector
 * *ACKN* - acknowledge connection
 * *NACK* - deny connection
-* *PING/PONG* - keepalives for the connection
+* *PING* - keepalive for the connection from the reflector to the client
+* *PONG* - keepalive response from the client to the reflector
 * *DISC* - Disconnect (client->reflector or reflector->client)
 
 CONN
@@ -99,8 +100,8 @@ ACKN
   +=======+================================================================================================================+
   | 0-3   | Magic - ASCII "ACKN"                                                                                           |
   +-------+----------------------------------------------------------------------------------------------------------------+
-  | 4-9   | 6-byte callsign including module in last character (e.g. "A1BCD   D") encoded as per `Address Encoding`        |
-  +-------+----------------------------------------------------------------------------------------------------------------+
+  
+.. todo:: Originally this was defined as having the callsign including module encodes as per 'Address Encoding' simular to the CONN frame, while current implementations of the client does not accept packets with that, it may be go to eventually re-work this to once again include that field.
 
 NACK
 ~~~~~~~~~~~~~~~~~
@@ -112,6 +113,21 @@ NACK
   +=======+==========================================================================================================================+
   | 0-3   | Magic - ASCII "NACK"                                                                                                     |
   +-------+--------------------------------------------------------------------------------------------------------------------------+
+
+PING
+~~~~~~~~~~~~~~~~~
+
+.. table :: Bytes of PING packet
+
+  +-------+----------------------------------------------------------------------------------------------------------------+
+  | Bytes | Purpose                                                                                                        |
+  +=======+================================================================================================================+
+  | 0-3   | Magic - ASCII "PING"                                                                                           |
+  +-------+----------------------------------------------------------------------------------------------------------------+
+  | 4-9   | 6-byte 'From' callsign including module in last character (e.g. "A1BCD   D") encoded as per `Address Encoding` |
+  +-------+----------------------------------------------------------------------------------------------------------------+
+
+Upon receivng a PING from a reflector, the client replies with a PONG
 
 PONG
 ~~~~~~~~~~~~~~~~~
@@ -126,7 +142,6 @@ PONG
   | 4-9   | 6-byte 'From' callsign including module in last character (e.g. "A1BCD   D") encoded as per `Address Encoding` |
   +-------+----------------------------------------------------------------------------------------------------------------+
 
-Upon receivng a PING, the client replies with a PONG
 
 DISC
 ~~~~~~~~~~~~~~~~~
