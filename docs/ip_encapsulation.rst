@@ -101,7 +101,7 @@ ACKN
   | 0-3   | Magic - ASCII "ACKN"                                                                                           |
   +-------+----------------------------------------------------------------------------------------------------------------+
   
-.. todo:: Originally this was defined as having the callsign including module encodes as per 'Address Encoding' simular to the CONN frame, while current implementations of the client does not accept packets with that, it may be go to eventually re-work this to once again include that field.
+.. todo:: Originally this was defined as having the callsign including module encodes as per 'Address Encoding' simular to the CONN frame, while current implementations of the client do not accept packets with that, it may be go to eventually re-work this to once again include that field.
 
 NACK
 ~~~~~~~~~~~~~~~~~
