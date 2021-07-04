@@ -337,7 +337,7 @@ The packet superframe consists of 798 payload data bytes and a 2-byte CCITT CRC-
 Packet data is split into frames of 368 type 4 bits preceded by a packet-specific 16-bit sync
 word (0xFF5D).  This is the same size frame used by stream mode.
 
-The packet frame starts with a 210 byte frame of type 1 data.  It is noteworthy that it does
+The packet frame starts with a 210 bit frame of type 1 data.  It is noteworthy that it does
 not terminate on a byte boundary.
 
 The frame has 200 bits (25 bytes) of payload data, 6 bits of frame metadata, and 4 bits to
