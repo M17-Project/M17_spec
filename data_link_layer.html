@@ -612,7 +612,7 @@ for 100-byte payloads.  (Net throughput takes into account preamble and link set
 </table>
 <p>Packet data is split into frames of 368 type 4 bits preceded by a packet-specific 16-bit sync
 word (0xFF5D).  This is the same size frame used by stream mode.</p>
-<p>The packet frame starts with a 210 byte frame of type 1 data.  It is noteworthy that it does
+<p>The packet frame starts with a 210 bit frame of type 1 data.  It is noteworthy that it does
 not terminate on a byte boundary.</p>
 <p>The frame has 200 bits (25 bytes) of payload data, 6 bits of frame metadata, and 4 bits to
 flush the convolutional coder.</p>
