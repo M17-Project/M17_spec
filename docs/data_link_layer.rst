@@ -75,7 +75,7 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
      - CRC for the link setup data
    * - TAIL
      - 4 bits
-     - Flushing bits for the convolutional encoder that do not carry any information
+     - Flushing bits for the convolutional encoder that do not carry any information. Only included for RF frames, not included for IP purposes.
 
 
 .. list-table:: Bitfields of type field
@@ -98,7 +98,7 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
    * - 11..15
      - Reserved (don't care)
 
-The fields in Table 3 (except tail) form initial LSF. It contains all
+The fields in Table 3 (except TAIL) form initial LSF. It contains all
 information needed to establish M17 link. Later in the transmission,
 the initial LSF is divided into 6 "chunks" and transmitted
 beside the payload data. This allows late-joiners to
