@@ -81,8 +81,7 @@ CONN
   +=======+================================================================================================================+
   | 0-3   | Magic - ASCII "CONN"                                                                                           |
   +-------+----------------------------------------------------------------------------------------------------------------+
-  | 4-9   | |6-byte 'From' callsign encoded as per `Address Encoding`                                                      |
-  |       | |For mrefd reflectors: pad the callsign with spaces, including module in last character (e.g. "A1BCD   D")     |
+  | 4-9   | 6-byte 'From' callsign including module in last character (e.g. "A1BCD   D") encoded as per `Address Encoding` |
   +-------+----------------------------------------------------------------------------------------------------------------+
   | 10    | Module to connect to - single ASCII byte A-Z                                                                   |
   +-------+----------------------------------------------------------------------------------------------------------------+
