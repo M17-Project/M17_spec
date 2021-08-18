@@ -10,15 +10,9 @@ jobs:
     - uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
-        pre-build-command: "apt-get update -y && apt-get install -y latexmk texlive-latex-recommended texlive-xetex texlive-latex-extra texlive-fonts-recommended fonts-freefont-otf xindy"
-        build-command: "make html && make latexpdf"
+        build-command: "make html"
     # Create an artifact of the html output.
     - uses: actions/upload-artifact@v1
       with:
         name: DocumentationHTML
         path: docs/_build/html/
-    # Create an artifact of the pdf output.
-    - uses: actions/upload-artifact@v1
-      with:
-        name: DocumentationPDFSpecification
-        path: docs/_build/latex/
