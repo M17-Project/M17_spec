@@ -95,7 +95,7 @@ the transmission.
 
 
 Link setup frame (LSF)
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: ../images/link_setup_frame_encoding.*
 
@@ -241,12 +241,12 @@ The puncturing schemes are defined by their partial puncturing matrices:
 .. math::
    :nowrap:
 
-   \setcounter{MaxMatrixCols}{32}
-
    \begin{align}
    P_1 = & \begin{bmatrix}
-   1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 1 \\
-   1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & X
+      1 \\
+      1, 0, 1, 1 \\
+      \vdots \\
+      \scriptstyle\times 15
    \end{bmatrix} \\
    P_2 = & \begin{bmatrix}
    1 & 1 & 1 & 1 & 1 & 1 \\
@@ -260,12 +260,9 @@ The complete linearized representations are:
 .. code-block:: python
    :caption: linearized puncture patterns
 
-   P1 = [1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0,
-   1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0,
-   1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1,
-   0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1,
-   0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1,
-   1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1]
+   P1 = [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1,
+   1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1,
+   1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1]
 
    P2 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
 
