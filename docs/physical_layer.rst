@@ -142,8 +142,9 @@ Golay (24,12)
 ~~~~~~~~~~~~~
 
 The Golay (24,12) encoder uses generating polynomial *g* given below to generate the 11
-check bits.  The check bits and an overall parity bit are appended to
-the 12 bit data, resulting in a 24 bit codeword.
+check bits. The check bits and an overall parity bit are appended to
+the 12 bit data, resulting in a 24 bit codeword. The resulting code is systematic,
+meaning that the input data (message) is embedded in the codeword.
 
 .. math::
   
