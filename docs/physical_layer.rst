@@ -141,22 +141,24 @@ decode just the LICH and check if the full message should be decoded.
 Golay (24,12)
 ~~~~~~~~~~~~~
 
-The Golay (24,12) encoder uses the polynomial 0xC75 to generate the 11
-check bits.  The check bits and an overall parity bit are appended to
-the 12 bit data, resulting in a 24 bit encoded chunk.
+The Golay (24,12) encoder uses generating polynomial *g* given below to generate the 11
+check bits. The check bits and an overall parity bit are appended to
+the 12 bit data, resulting in a 24 bit codeword. The resulting code is systematic,
+meaning that the input data (message) is embedded in the codeword.
 
 .. math::
   
    \begin{align}
-   G =& x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1
+   g =& x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1
    \end{align}
 
+This is equivalent to 0xC75 in hexadecimal notation.
 The output of the Golay encoder is shown in the table below.
 
    +------------+----------+-------------+---------+
    | Field      | Data     | Check bits  | Parity  |
    +------------+----------+-------------+---------+
-   | Position   | 23..12   | 11..1       | 0       |
+   | Position   | 23..12   | 11..1       | 0 (LSB) |
    +------------+----------+-------------+---------+
    | Length     | 12       | 11          | 1       |
    +------------+----------+-------------+---------+
@@ -208,46 +210,38 @@ Two different puncturing schemes are used in M17 stream mode:
 
 Scheme :math:`P_1` is used for the initial LICH link setup info, taking 488
 bits of encoded data and selecting 368 bits. The :math:`gcd(368, 488)`
-is 8 which, when used to divide, leaves 46 and 61. A full puncture
-pattern requires the output be divisible by the number of encoding
-polynomials. For this case the full puncture matrix should have 122
-entries with 92 of them being 1.
+is 8 which, when used to divide, leaves 46 and 61 bits. However, a full puncture
+pattern requires the puncturing matrix entries count to be divisible by the number of encoding
+polynomials. For this case a partial puncture matrix is used. It has 61
+entries with 46 of them being ones and shall be used 8 times, repeatedly.
+The construction of the partial puncturing pattern :math:`P_1` is as follows:
+
+.. math::
+   :nowrap:
+
+   \begin{align}
+     P_1 = & \begin{bmatrix}
+     1 & r & \vdots & r
+     \end{bmatrix}
+   \end{align}
+
+In which :math:`r=[1, 0, 1, 1]` and is used 15 times to form an array of length 61.
+The *r* matrix is actually a 2/3 rate puncturer. It can be used, because after subtracting
+1 bit from 61, multiplying this amount by 3/4 gives 45 bits.
+The first pass of the partial puncturer discards :math:`G_1` bits only, second pass discards
+:math:`G_2`, third - :math:`G_1` again, and so on. This ensures that both bits are punctured out evenly.
 
 Scheme :math:`P_2` is for frames (excluding LICH chunks, which are coded
 differently). This takes 296 encoded bits and selects 272 of them.
 Every 12th bit is being punctured out, leaving 272 bits.
-The full matrix shall have 12 entries with 11 being 1.
+The full matrix shall have 12 entries with 11 being ones.
 
-The matrix :math:`P_1` can be represented more concisely by duplicating a
-smaller matrix with a *flattening*.
-
-.. math::
-   :nowrap:
-
-   \begin{align}
-     S_{} = & \begin{bmatrix}
-     a & \vec{r_1} & c \\
-     b & \vec{r_2} & X
-     \end{bmatrix} \\
-     S_{full} = & \begin{bmatrix}
-     a & \vec{r_1} & c & b & \vec{r_2} \\
-     b & \vec{r_2} & a & \vec{r_1} & c
-     \end{bmatrix}
-   \end{align}
-
-
-The puncturing schemes are defined by their partial puncturing matrices:
+The puncturing scheme :math:`P_2` is defined by its partial puncturing matrix:
 
 .. math::
    :nowrap:
 
    \begin{align}
-   P_1 = & \begin{bmatrix}
-      1 \\
-      1, 0, 1, 1 \\
-      \vdots \\
-      \scriptstyle\times 15
-   \end{bmatrix} \\
    P_2 = & \begin{bmatrix}
    1 & 1 & 1 & 1 & 1 & 1 \\
    1 & 1 & 1 & 1 & 1 & 0
@@ -255,7 +249,7 @@ The puncturing schemes are defined by their partial puncturing matrices:
    \end{align}
 
 
-The complete linearized representations are:
+The linearized representations are:
 
 .. code-block:: python
    :caption: linearized puncture patterns
