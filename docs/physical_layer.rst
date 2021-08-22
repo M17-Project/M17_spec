@@ -229,7 +229,7 @@ In which :math:`r=[1, 0, 1, 1]` and is used 15 times to form an array of length 
 The *r* matrix is actually a 2/3 rate puncturer. It can be used, because after subtracting
 1 bit from 61, multiplying this amount by 3/4 gives 45 bits.
 The first pass of the partial puncturer discards :math:`G_1` bits only, second pass discards
-:math:`G_2`, third - :math:`G_1` and so on. This ensures that both bits are punctured out evenly.
+:math:`G_2`, third - :math:`G_1` again, and so on. This ensures that both bits are punctured out evenly.
 
 Scheme :math:`P_2` is for frames (excluding LICH chunks, which are coded
 differently). This takes 296 encoded bits and selects 272 of them.
