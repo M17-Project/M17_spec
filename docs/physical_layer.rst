@@ -208,7 +208,7 @@ Two different puncturing schemes are used in M17 stream mode:
 #. :math:`P_1` leaving 46 from 61 encoded bits
 #. :math:`P_2` leaving 11 from 12 encoded bits
 
-Scheme :math:`P_1` is used for the initial LICH link setup info, taking 488
+Scheme :math:`P_1` is used for the *link setup frame*, taking 488
 bits of encoded data and selecting 368 bits. The :math:`gcd(368, 488)`
 is 8 which, when used to divide, leaves 46 and 61 bits. However, a full puncture
 pattern requires the puncturing matrix entries count to be divisible by the number of encoding
@@ -220,14 +220,17 @@ The construction of the partial puncturing pattern :math:`P_1` is as follows:
    :nowrap:
 
    \begin{align}
+     \mathbb{M} = & \begin{bmatrix}
+     1 & 0 & 1 & 1
+     \end{bmatrix} \\
      P_1 = & \begin{bmatrix}
-     1 & r & \vdots & r
+     1 & \mathbb{M}_{1} & \cdots & \mathbb{M}_{15}
      \end{bmatrix}
    \end{align}
 
-In which :math:`r=[1, 0, 1, 1]` and is used 15 times to form an array of length 61.
-The *r* matrix is actually a 2/3 rate puncturer. It can be used, because after subtracting
-1 bit from 61, multiplying this amount by 3/4 gives 45 bits.
+In which :math:`\mathbb{M}` is a standard 2/3 rate puncture matrix and is used 15 times,
+along with a leading `1` to form an array of length 61.
+
 The first pass of the partial puncturer discards :math:`G_1` bits only, second pass discards
 :math:`G_2`, third - :math:`G_1` again, and so on. This ensures that both bits are punctured out evenly.
 
