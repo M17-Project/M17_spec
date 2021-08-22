@@ -141,16 +141,17 @@ decode just the LICH and check if the full message should be decoded.
 Golay (24,12)
 ~~~~~~~~~~~~~
 
-The Golay (24,12) encoder uses the polynomial 0xC75 to generate the 11
-check bits.  The check bits and an overall parity bit are appended to
-the 12 bit data, resulting in a 24 bit encoded chunk.
+The Golay (24,12) encoder uses generating polynomial *g* given below to generate the 11
+check bits *c*.  The check bits and an overall parity bit *p* are appended to
+the 12 bit data *m*, resulting in a 24 bit codeword.
 
 .. math::
   
    \begin{align}
-   G =& x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1
+   g =& x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1
    \end{align}
 
+This is equivalent to 0xC75 in hexadecimal notation.
 The output of the Golay encoder is shown in the table below.
 
    +------------+----------+-------------+---------+
@@ -160,6 +161,15 @@ The output of the Golay encoder is shown in the table below.
    +------------+----------+-------------+---------+
    | Length     | 12       | 11          | 1       |
    +------------+----------+-------------+---------+
+
+Or, in matrix notation:
+.. math::
+  
+   \begin{align}
+   c_{} = & \begin{bmatrix}
+     m & | & c & | & p\\
+     \end{bmatrix} \\
+   \end{align}
 
 Four of these 24-bit blocks are used to reconstruct the LSF.
 
@@ -208,18 +218,18 @@ Two different puncturing schemes are used in M17 stream mode:
 
 Scheme :math:`P_1` is used for the initial LICH link setup info, taking 488
 bits of encoded data and selecting 368 bits. The :math:`gcd(368, 488)`
-is 8 which, when used to divide, leaves 46 and 61. A full puncture
-pattern requires the output be divisible by the number of encoding
-polynomials. For this case the full puncture matrix should have 122
-entries with 92 of them being 1.
+is 8 which, when used to divide, leaves 46 and 61 bits. A full puncture
+pattern requires the puncturing matrix entries count to be divisible by the number of encoding
+polynomials. For this case a partial puncture matrix is used. It should have 61
+entries with 46 of them being ones and shall be used 8 times, repeatedly.
+The construction of the puncturing pattern :math:`P_1` is as follows:
+
+TODO
 
 Scheme :math:`P_2` is for frames (excluding LICH chunks, which are coded
 differently). This takes 296 encoded bits and selects 272 of them.
 Every 12th bit is being punctured out, leaving 272 bits.
 The full matrix shall have 12 entries with 11 being 1.
-
-The matrix :math:`P_1` can be represented more concisely by duplicating a
-smaller matrix with a *flattening*.
 
 .. math::
    :nowrap:
