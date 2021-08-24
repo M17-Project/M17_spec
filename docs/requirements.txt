@@ -1,2 +1,3 @@
-sphinx_rtd_theme
-sphinxcontrib-svg2pdfconverter>=1.1.0
+python-markdown-math
+mkdocs-material
+mkdocs-mermaid2-plugin

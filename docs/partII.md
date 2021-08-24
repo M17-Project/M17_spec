@@ -1,0 +1,5 @@
+## [Part II - Codeplug](partII.md)
+* [Recommendation for the codeplug structure](codeplug.md#recommendation-for-the-codeplug-structure)
+    * [Introduction](codeplug.md#introduction)
+    * [Codeplug file structure](codeplug.md#codeplug-file-structure)
+    * [Example Codeplug](codeplug.md#example-codeplug)

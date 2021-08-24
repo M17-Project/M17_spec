@@ -1,0 +1,31 @@
+site_name: M17 Protocol Specification
+plugins:
+    - mermaid2
+markdown_extensions:
+    - extra
+    - tables
+    - mdx_math:
+          enable_dollar_delimiter: True
+    - fenced_code
+    - admonition
+extra_javascript: 
+    - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+theme:
+    name: readthedocs
+    logo: img/m17_logo_shadow.svg
+nav:
+    - Home: 'index.md'
+    - 'Part I: Air and IP Interface':
+        - Summary: 'summary.md'
+        - Glossary: 'glossary.md'
+        - Physical Layer: 'physical_layer.md'
+        - Data Link Layer: 'data_link_layer.md'
+        - Application Layer: 'application_layer.md'
+    - 'Part II: Codeplug':
+        - Recommendation for the Codeplug Structure: 'codeplug.md'
+    - Appendix:
+        - Address Encoding: 'address_encoding.md'
+        - Decorrelator Sequence: 'decorrelator.md'
+        - Interleaving: 'interleaving.md'
+        - M17 IP Networking: 'ip_networking.md'
+        - KISS Protocol: 'kiss_protocol.md'
