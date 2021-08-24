@@ -23,3 +23,4 @@ M17 Protocol Specification
    decorrelator
    interleaving
    ip_encapsulation
+   kiss_protocol

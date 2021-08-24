@@ -2,22 +2,28 @@ Data Link Layer
 ===============
 The Data Link layer is split into two modes:
 
-#. Packet mode: data are sent in small bursts, on the order of 100s to 1000s of bytes at a time, after
-which the physical layer stops sending data. eg: messages, beacons, etc.
-#. Stream mode: data are sent in a continuous stream for an indefinite amount of time, with no
-break in physical layer output, until the stream ends. eg: voice data, bulk data transfers, etc.
+* Packet mode
+   Data are sent in small bursts, on the order of 100s to 1000s of bytes
+   at a time, after which the physical layer stops sending data. e.g. messages, beacons, etc.
+
+* Stream mode
+   Data are sent in a continuous stream for an indefinite amount of time,
+   with no break in physical layer output, until the stream ends. e.g. voice data,
+   bulk data transfers, etc.
 
 When the physical layer is idle (no RF being transmitted or received),
-the data link defaults to packet mode. ~~To switch to stream mode, a
-start stream packet (detailed later) is sent, immediately followed by
-the switch to stream mode; the Stream of data immediately follows the
-Start Stream packet without disabling the Physical layer. To switch
-out of Stream mode, the stream simply ends and returns the Physical
-layer to the idle state, and the Data Link defaults back to Packet
-mode.~~
+the data link defaults to packet mode. 
 
-As is the convention with networking protocols, all quantities
-larger than 8 bits are encoded in bigendian.
+.. ~~To switch to stream mode, a
+.. start stream packet (detailed later) is sent, immediately followed by
+.. the switch to stream mode; the Stream of data immediately follows the
+.. Start Stream packet without disabling the Physical layer. To switch
+.. out of Stream mode, the stream simply ends and returns the Physical
+.. layer to the idle state, and the Data Link defaults back to Packet
+.. mode.~~
+
+As is the convention with other networking protocols, all values are
+encoded in big endian byte order.
 
 Stream Mode
 -----------
@@ -53,7 +59,7 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
 
    * - DST
      - 48 bits
-     -  Destination address - Encoded callsign or a special number (eg. a group)
+     - Destination address - Encoded callsign or a special number (eg. a group)
    * - SRC
      - 48 bits
      - Source address - Encoded callsign of the originator or a
@@ -61,15 +67,15 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
    * - TYPE
      - 16 bits
      - Information about the incoming data stream
-   * - NONCE
+   * - META
      - 112 bits
-     - Nonce for encryption
+     - Metadata field, suitable for cryptographic metadata like IVs or single-use numbers, or non-crypto metadata like the sender's GNSS position.
    * - CRC
      - 16 bits
      - CRC for the link setup data
    * - TAIL
      - 4 bits
-     - Flushing bits for the convolutional encoder that do not carry any information
+     - Flushing bits for the convolutional encoder that do not carry any information. Only included for RF frames, not included for IP purposes.
 
 
 .. list-table:: Bitfields of type field
@@ -79,25 +85,28 @@ the **Link Setup Frame (LSF)**, and is not part of any superframes.
      - Meaning
    * - 0
      - Packet/stream indicator, 0=packet, 1=stream
-   * - 1-2
+   * - 1..2
      - Data type indicator, :math:`01_2` =data (D), :math:`10_2` =voice
        (V), :math:`11_2` =V+D, :math:`00_2` =reserved
-   * - 3-4
+   * - 3..4
      - Encryption type, :math:`00_2` =none, :math:`01_2` =AES,
        :math:`10_2` =scrambling, :math:`11_2` =other/reserved
-   * - 5-6
+   * - 5..6
      - Encryption subtype (meaning of values depends on encryption type)
-   * - 7-15
+   * - 7..10
+     - Channel Access Number (CAN)
+   * - 11..15
      - Reserved (don't care)
 
-The fields in Table 3 (except tail) form initial LSF. It contains all
+The fields in Table 3 (except TAIL) form initial LSF. It contains all
 information needed to establish M17 link. Later in the transmission,
 the initial LSF is divided into 6 "chunks" and transmitted
-interleaved with data. The purpose of that is to allow late-joiners to
-receive the LICH at any point of the transmission. The process of
-collecting full LSF takes 6 frames or 6*40 ms = 240 ms. Four TAIL
-bits are needed for the convolutional coder to go back to state 0, so
-also the ending trellis position is known.
+beside the payload data. This allows late-joiners to
+reconstruct the LICH after collecting all the pieces, and start decoding
+the stream even though they missed the beginning of the transmission.
+The process of collecting full LSF takes 6 frames or 6*40 ms = 240
+ms. Four TAIL bits are needed for the convolutional coder to go back to
+state 0, so the ending trellis position is also known.
 
 Voice coder rate is inferred from TYPE field, bits 1 and 2.
 
@@ -129,16 +138,13 @@ Subsequent frames
    * - PAYLOAD
      - 128 bits
      - Payload/data, can contain arbitrary data
-   * - CRC
-     - 16 bits
-     - This field contains 16-bit value used to check data integrity, see section 2.4 for details
    * - TAIL
      - 4 bits
      - Flushing bits for the convolutional encoder that don't carry any information
 
 The most significant bit in the FN counter is used for transmission
 end signalling. When transmitting the last frame, it shall be set to 1
-(one). 
+(one), and 0 (zero) in all other frames.
 
 The payload is used so that earlier data in the voice stream is sent first.
 For mixed voice and data payloads, the voice data is stored first, then the data.
@@ -151,9 +157,9 @@ For mixed voice and data payloads, the voice data is stored first, then the data
    * - 0..39
      - 40 bits of full LSF
    * - 40..42
-     - A modulo 6 counter (LICH_CNT) for LICH re-assembly
+     - A modulo 6 counter (LICH_CNT) for LSF re-assembly
    * - 43..47
-     - 5-bit Color Code (CC)
+     - Reserved
 
 .. table:: Payload example 1
 
@@ -191,30 +197,32 @@ LSF message and understand how to receive the in-progress stream.
      {rank=same p0 p1}
      {rank=same i0 i1}
 
-     c0[label="conv coder"]
-     p0[label="Puncture P1"]
-     i0[label="interleave"]
+     c0[label="conv. coder"]
+     p0[label="P_1 puncturer"]
+     i0[label="interleaver"]
      w0[label="decorrelator"]
-     s0[label="add sync"]
-     chunker_48[label="chunk 48 bits"]
-     golay_24_12[label="golay(24, 12)"]
+     s0[label="prepend LSF_SYNC"]
+     l0[label="LICH combiner"]
+     chunker_40[label="chunk 40 bits"]
+     golay_24_12[label="Golay (24, 12)"]
 
-     c1[label="conv coder"]
-     p1[label="Puncture P2"]
-     i1[label="interleave"]
+     c1[label="conv. coder"]
+     p1[label="P_2 puncturer"]
+     i1[label="interleaver"]
      w1[label="decorrelator"]
-     s1[label="add sync"]
-     fn[label="Add FN"]
+     s1[label="prepend FRAME_SYNC"]
+     fn[label="add FN"]
      chunker_128[label="chunk 128 bits"]
 
      framecomb[label="Frame Combiner"]
      supercomb[label="Superframe Combiner"]
 
+     counter -> l0
      LSF -> c0 -> p0 -> i0 -> w0 -> s0 -> supercomb
-     LSF -> chunker_48 -> golay_24_12 -> framecomb
-     data -> chunker_128 -> fn -> CRC -> c1 -> p1 -> framecomb
+     LSF -> chunker_40 -> l0 -> golay_24_12 -> framecomb
+     data -> chunker_128 -> fn -> c1 -> p1 -> framecomb
      framecomb -> i1 -> w1 -> s1 -> supercomb
-     Preamble -> supercomb
+     preamble -> supercomb
    }
 
 CRC
@@ -232,8 +240,8 @@ detecting all errors up to hamming distance of 5 with payloads up to
 As M17’s native bit order is most significant bit first, neither the
 input nor the output of the CRC algorithm gets reflected.
 
-The input to the CRC algorithm consists of the 16 bits of FN and 128
-bits of payload, and then depending on whether the CRC is being computed
+The input to the CRC algorithm consists of DST, SRC (each 48 bits), 16 bits of TYPE field and 112
+bits META, and then depending on whether the CRC is being computed
 or verified either 16 zero bits or the received CRC.
 
 The test vectors in Table 6 are calculated by feeding the given
@@ -270,25 +278,37 @@ The packet/stream indicator is set to 0 in the type field.
 
 .. list-table:: Bitfields of type field
    :header-rows: 1
-
+   
    * - Bits
      - Meaning
    * - 0
      - Packet/stream indicator, 0=packet, 1=stream
-   * - 1-2
-     - Data type indicator, :math:`01_2` =raw (D), :math:`10_2` =encapsulated
-       (V), :math:`11_2` =reserved, :math:`00_2` =reserved
-   * - 3-4
+   * - 1..2
+     - Data type indicator, :math:`01_2` =data (D), :math:`10_2` =voice
+       (V), :math:`11_2` =V+D, :math:`00_2` =reserved
+   * - 3..4
      - Encryption type, :math:`00_2` =none, :math:`01_2` =AES,
        :math:`10_2` =scrambling, :math:`11_2` =other/reserved
-   * - 5-6
+   * - 5..6
      - Encryption subtype (meaning of values depends on encryption type)
-   * - 7-15
+   * - 7..10
+     - Channel Access Number (CAN)
+   * - 11..15
      - Reserved (don't care)
 
 Raw packet frames have no packet type metadata associated with them.  Encapsulated packet
 format is discussed in :ref:`packet-superframes` in the Application Layer section.  This
 provides data type information and is the preferred format for use on M17.
+
+When encryption type is :math:`00_2`, meaning no encryption, the
+encryption subtype bits are used to indicate the contents of the
+META field in the LSF.  Since that space would otherwise go be unused,
+we can store small bits of data in that field such as free text or the
+sender's GNSS position.
+
+Encryption type and subtype bits, including the plaintext data formats
+when not using encryption, are described in more detail in the Application
+Layer section of this document.
 
 Currently the contents of the source and destination fields are arbitrary as no behavior
 is defined which depends on the content of these fields.  The only requirement is that
@@ -317,7 +337,7 @@ The packet superframe consists of 798 payload data bytes and a 2-byte CCITT CRC-
 Packet data is split into frames of 368 type 4 bits preceded by a packet-specific 16-bit sync
 word (0xFF5D).  This is the same size frame used by stream mode.
 
-The packet frame starts with a 210 byte frame of type 1 data.  It is noteworthy that it does
+The packet frame starts with a 210 bit frame of type 1 data.  It is noteworthy that it does
 not terminate on a byte boundary.
 
 The frame has 200 bits (25 bytes) of payload data, 6 bits of frame metadata, and 4 bits to

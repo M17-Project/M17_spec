@@ -39,8 +39,8 @@ Later specifications may require this port.
      - 16 bits
      - Random bits, changed for each PTT or stream, but consistent from frame to frame within a stream
    * - LICH
-     - sizeof(LICH)*8 bits
-     - A full LICH frame (dst, src, streamtype, nonce) as defined earlier
+     - 240 bits
+     - The meaningful contents of a LICH frame (dst, src, streamtype, META field, CRC16) as defined earlier. 
    * - FN
      - 16 bits
      - Frame number (exactly as would be transmitted as an RF stream frame, including the last frame indicator at (FN & 0x8000)
@@ -66,7 +66,9 @@ Reflectors use a few different types of control frames, identified by their magi
 
 * *CONN* - Connect to a reflector
 * *ACKN* - acknowledge connection
-* *PING/PONG* - keepalives for the connection
+* *NACK* - deny connection
+* *PING* - keepalive for the connection from the reflector to the client
+* *PONG* - keepalive response from the client to the reflector
 * *DISC* - Disconnect (client->reflector or reflector->client)
 
 CONN
@@ -98,8 +100,8 @@ ACKN
   +=======+================================================================================================================+
   | 0-3   | Magic - ASCII "ACKN"                                                                                           |
   +-------+----------------------------------------------------------------------------------------------------------------+
-  | 4-9   | 6-byte callsign including module in last character (e.g. "A1BCD   D") encoded as per `Address Encoding`        |
-  +-------+----------------------------------------------------------------------------------------------------------------+
+  
+.. todo:: Originally this was defined as having the callsign including module encodes as per 'Address Encoding' simular to the CONN frame, while current implementations of the client do not accept packets with that, it may be go to eventually re-work this to once again include that field.
 
 NACK
 ~~~~~~~~~~~~~~~~~
@@ -111,6 +113,21 @@ NACK
   +=======+==========================================================================================================================+
   | 0-3   | Magic - ASCII "NACK"                                                                                                     |
   +-------+--------------------------------------------------------------------------------------------------------------------------+
+
+PING
+~~~~~~~~~~~~~~~~~
+
+.. table :: Bytes of PING packet
+
+  +-------+----------------------------------------------------------------------------------------------------------------+
+  | Bytes | Purpose                                                                                                        |
+  +=======+================================================================================================================+
+  | 0-3   | Magic - ASCII "PING"                                                                                           |
+  +-------+----------------------------------------------------------------------------------------------------------------+
+  | 4-9   | 6-byte 'From' callsign including module in last character (e.g. "A1BCD   D") encoded as per `Address Encoding` |
+  +-------+----------------------------------------------------------------------------------------------------------------+
+
+Upon receivng a PING from a reflector, the client replies with a PONG
 
 PONG
 ~~~~~~~~~~~~~~~~~
@@ -125,7 +142,6 @@ PONG
   | 4-9   | 6-byte 'From' callsign including module in last character (e.g. "A1BCD   D") encoded as per `Address Encoding` |
   +-------+----------------------------------------------------------------------------------------------------------------+
 
-Upon receing a PING, the client replies with a PONG
 
 DISC
 ~~~~~~~~~~~~~~~~~

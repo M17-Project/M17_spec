@@ -42,8 +42,8 @@ The data type specifier is used to compute the CRC, along with the payload.
 Encryption Types
 ----------------
 
-Encryption is optional and disabled by default. The use of it is only
-allowed if local laws allow to doso.
+Encryption is optional. The use of it may be restricted within some radio
+services and countries, and should only be used if legally permissible.
 
 Null Encryption
 ~~~~~~~~~~~~~~~
@@ -51,6 +51,54 @@ Null Encryption
 Encryption type = :math:`00_2`
 
 No encryption is performed, payload is sent in clear text.
+
+The "Encryption SubType" bits in the Stream Type field then indicate
+what data is stored in the 112 bits of the LSF META field.
+
+.. list-table::  
+   :header-rows: 1
+
+   * - Encryption SubType bits
+     - LSF META data contents
+   * - :math:`00_2`
+     - UTF-8 Text
+   * - :math:`01_2`
+     - GNSS Position Data
+   * - :math:`10_2`
+     - Reserved
+   * - :math:`11_2`
+     - Reserved
+
+All LSF META data must be stored in big endian byte order, as throughout
+the rest of this specification.
+
+GNSS Position Data stores the 112 bit META field as follows:
+
+.. list-table::  
+   :header-rows: 1
+
+   * - Size, in bits
+     - Format
+     - Contents
+   * - 32
+     - 32-bit fixed point degrees and decimal minutes (TBD)
+     - Latitude
+   * - 32
+     - 32-bit fixed point degrees and decimal minutes (TBD)
+     - Longitude
+   * - 16
+     - unsigned integer
+     - Altitude, in feet MSL. Stored +1500, so a stored value of 0 represents -1500 MSL. Subtract 1500 feet when parsing.
+   * - 10
+     - unsigned integer
+     - Course in degrees true North
+   * - 10
+     - unsigned integer
+     - Speed in miles per hour.
+   * - 12
+     - Reserved values
+     - Transmitter/Object description field
+
 
 Scrambler
 ~~~~~~~~~
@@ -89,17 +137,17 @@ algorithm.  Figures 5 to 8 show block diagrams of the algorithm
      - 24 bits
      - 16,777,215
 
-.. figure:: ../images/LFSR_8.svg
+.. figure:: ../images/LFSR_8.*
    :scale: 22%
 
    8-bit LFSR taps
 
-.. figure:: ../images/LFSR_16.svg
+.. figure:: ../images/LFSR_16.*
    :scale: 22%
 
    16-bit LFSR taps
 
-.. figure:: ../images/LFSR_24.svg
+.. figure:: ../images/LFSR_24.*
    :scale: 22%
 
    24-bit LFSR taps
@@ -110,36 +158,39 @@ Advanced Encryption Standard (AES)
 
 Encryption type = :math:`10_2`
 
-This method uses AES block cipher in counter (CTR) mode. 96-bit nonce
-value is extracted from the NONCE field, as the 96 most significant
-bits of it. The highest 16 bits of the counter are the remaining 16
-bits of the NONCE field. FN field value is then used as the
-counter. The 16 bit frame counter and 40 ms frames can provide for
-over 20 minutes of streaming without rolling over the counter [#fn_roll]_. This
-method adapts 16-bit counter to the standard 32-bit CTR for the
-encryption. FN counter always start from 0 (zero).
+This method uses AES block cipher in counter (CTR) mode, with a 96-bit
+nonce that should never be used for more than one separate stream and a 32 bit CTR.
+
+The 96-bit AES nonce value is extracted from the 96 most significant
+bits of the META field, and the remaining 16 bits of the META field
+form the highest 16 bits of the 32 bit counter.  The FN (Frame Number)
+field value is then used to fill out the lower 16 bits of the counter,
+and always starts from 0 (zero) in a new voice stream.
+
+The 16 bit frame number and 40 ms frames can provide for over 20 minutes
+of streaming without rolling over the counter [#fn_roll]_.
 
 .. [#fn_roll] The effective capacity of the counter is 15 bits, as the
-              MSB is used for transmission end signalling
+              MSB is used for transmission end signalling. At 40ms per
+              frame, or 25 frames per second, and 2**15 frames, we get
+              2**15 frames / 25 frames per second = 1310 seconds, or 21
+              minutes and some change.
 
-The nonce value should be generated with a hardware random number
-generator or any other method of generating non-repeating
-values. Nonce values must be used only once. It is obvious that with a
-finite number of nonce bits, the probability of nonce collision
-approaches 1. We assume that the transmission is secure for 237 frames
-using a single key. It is recommended to change keys after that
-period.
+The random part of the nonce value should be generated with a hardware
+random number generator or any other method of generating non-repeating
+values. 
 
-To combat replay attacks, a 32-bit timestamp shall be embedded into
-the NONCE field. The field structure is shown in Table 9. Timestamp is 32 LSB portion of
-the number of seconds that elapsed since the beginning of 1970-01-01,
-00:00:00 UTC, minus leap seconds (a.k.a. “unix time”).
+To combat replay attacks, a 32-bit timestamp shall be embedded into the
+cryptographic nonce field. The field structure of the 96 bit nonce is
+shown in Table 9. Timestamp is 32 LSB portion of the number of seconds
+that elapsed since the beginning of 1970-01-01, 00:00:00 UTC, minus leap
+seconds (a.k.a. “unix time”).
 
-.. list-table:: NONCE field structure
+.. list-table:: 96 bit nonce field structure
    :header-rows: 1
 
    * - TIMESTAMP
-     - NONCE
+     - RANDOM DATA
      - CTR_HIGH
    * - 32
      - 64
@@ -147,3 +198,17 @@ the number of seconds that elapsed since the beginning of 1970-01-01,
 
 **CTR_HIGH** field initializes the highest 16 bits of the CTR, with
 the rest of the counter being equal to the FN counter.
+
+.. warning::
+    In CTR mode, AES encryption is malleable [CTR]_ [CRYPTO]_.
+    That is, an attacker can change the contents of the encrypted message
+    without decrypting it. This means that recipients of AES-encrypted data
+    must not trust that the data is authentic.
+    Users who require that received messages are proven to be exactly as-sent by
+    the sender should add application-layer authentication, such as HMAC.
+    In the future, use of a different mode, such as Galois/Counter Mode, could
+    alleviate this issue [CRYPTO]_.
+
+.. [CTR] McGrew, David A. "Counter mode security: Analysis and recommendations." Cisco Systems, November 2, no. 4 (2002).
+
+.. [CRYPTO] Rogaway, Phillip. "Evaluation of some blockcipher modes of operation." Cryptography Research and Evaluation Committees (CRYPTREC) for the Government of Japan (2011).

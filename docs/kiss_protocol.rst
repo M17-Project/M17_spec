@@ -241,7 +241,7 @@ Stream Format
    * - 26
      - LICH + Payload
    * - 26
-     - LICH + Pyaload
+     - LICH + Payload
    * - ...
      - ...
    * - 26
