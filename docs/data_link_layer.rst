@@ -460,7 +460,7 @@ generated bit as the output bit rather than the high-bit before the shift.
 
 This will result in the same sequence, just shifted by nine bits.
 
-.. math:: {M17\_PRBS}_{n} = {PRBS9}_{n + 9}
+.. math:: {M17\_PRBS}_{n} = {PRBS9}_{n + 8}
 
 The reason for this is that it allows for easier synchronization.  This is
 equivalent to a multiplicative scrambler (a self-synchronizing scrambler)
