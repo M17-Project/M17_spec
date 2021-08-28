@@ -220,19 +220,21 @@ The construction of the partial puncturing pattern :math:`P_1` is as follows:
    :nowrap:
 
    \begin{align}
-     \mathbb{M} = & \begin{bmatrix}
+     M = & \begin{bmatrix}
      1 & 0 & 1 & 1
      \end{bmatrix} \\
-     P_1 = & \begin{bmatrix}
-     1 & \mathbb{M}_{1} & \cdots & \mathbb{M}_{15}
+
+     P_{1} = & \begin{bmatrix}
+     1 & M_{1} & \cdots & M_{15}
      \end{bmatrix}
    \end{align}
 
-In which :math:`\mathbb{M}` is a standard 2/3 rate puncture matrix and is used 15 times,
-along with a leading `1` to form an array of length 61.
+In which :math:`M` is a standard 2/3 rate puncture matrix and is used 15 times,
+along with a leading `1` to form :math:`P_1`, an array of length 61.
 
 The first pass of the partial puncturer discards :math:`G_1` bits only, second pass discards
-:math:`G_2`, third - :math:`G_1` again, and so on. This ensures that both bits are punctured out evenly.
+:math:`G_2`, third - :math:`G_1` again, and so on. This ensures that both bits are punctured
+out evenly.
 
 Scheme :math:`P_2` is for frames (excluding LICH chunks, which are coded
 differently). This takes 296 encoded bits and selects 272 of them.
