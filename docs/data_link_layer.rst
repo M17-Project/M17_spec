@@ -1,5 +1,6 @@
+###############
 Data Link Layer
-===============
+###############
 The Data Link layer is split into three modes:
 
 * Packet mode
@@ -30,7 +31,7 @@ As is the convention with other networking protocols, all values are
 encoded in big endian byte order.
 
 Stream Mode
------------
+===========
 
 In Stream Mode, an *indefinite* amount of payload data is sent continuously without breaks in the
 physical layer. The *stream* is broken up into parts, called *frames* to not confuse them with *packets* sent
@@ -267,7 +268,7 @@ message and then 16 zero bits to the CRC algorithm.
      - 0x1C31
 
 Packet Mode
------------
+===========
 
 In *packet mode*, a finite amount of payload data (for example – text
 messages or application layer data) is wrapped with a packet, sent
@@ -428,14 +429,14 @@ sent, followed by an indefinite sequence of BERT frames.  Notably, a link setup 
 be sent in BERT mode.
 
 Purpose
--------
+~~~~~~~
 
 The primary purpose of defining a bit error rate testing standard for M17 is to enhance
 interoperability testing across M17 hardware and software implementations, and to aid in the
 configuration and tuning of ad hoc communications equipment common in amateur radio.
 
 BERT Frame
-----------
+~~~~~~~~~~
 
 Each BERT frame is preceeded by the BERT sync word, 0xDF55.
 
@@ -447,7 +448,25 @@ frames even with a PRBS generator with a relatively short period.
 
 The PRBS uses the ITU standard PRBS9 polynomial :math:`x^{9}+x^{5}+1`
 
-.. figure:: ../images/prbs9.png
+This is the traditional form for a linear feedback shift register (LFSR) used
+to generate a psuedorandom binary sequence.
+
+.. figure:: ../images/m17-traditional-lfsr.png
+
+However, the M17 LFSR is a slightly different.  The M17 PRBS9 uses the
+generated bit as the output bit rather than the high-bit before the shift.
+
+.. figure:: ../images/m17-prbs9.png
+
+This will result in the same sequence, just shifted by nine bits.
+
+.. math:: {M17\_PRBS}_{n} = {PRBS9}_{n + 9}
+
+The reason for this is that it allows for easier synchronization.  This is
+equivalent to a multiplicative scrambler (a self-synchronizing scrambler)
+fed with a stream of 0s.
+
+.. figure:: ../images/m17-equivalent-scrambler.png
 
 .. code-block:: c++
 
@@ -501,7 +520,7 @@ This provides the same error correction coding used for the stream payload.
      - Payload
 
 BERT Receiver
--------------
+~~~~~~~~~~~~~
 
 The receiver detects the frame is a BERT frame based on the sync word
 received.  If the PRBS9 generator is reset at this point, the sender and
@@ -509,15 +528,19 @@ receiver should be synchonized at the start.  This, however, is not common
 nor is it required. PRBS generators can be self-synchronizing.
 
 Synchronization
-~~~~~~~~~~~~~~~
+---------------
 
 The receiver will synchronize the PRBS by first XORing the received bit
 with the LFSR taps.  If the result of the XOR is a 1, it is an error (the
 expected feedback bit and the input do not match) and the sync count is
-reset.  The received bit is then shifted into the LFSR state register in
-place of the feedback bit.  Once a sequence of eighteen (18) consecutive
-good bits are recovered (18 is twice the length of the LFSR), the stream
-is considered syncronized.
+reset.  The received bit is then also shifted into the LFSR state register.
+Once a sequence of eighteen (18) consecutive good bits are recovered (twice
+the length of the LFSR), the stream is considered syncronized.
+
+.. figure:: ../images/m17-prbs9-sync.png
+
+During synchronization, bits received and bit errors are not counted towards
+the overall bit error rate.
 
 .. code-block:: c++
 
@@ -546,10 +569,13 @@ is considered syncronized.
   };
 
 Counting Bit Errors
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
-After synchronization, each bit that does not match the output of the
-free-running LFSR is counted as a bit error.
+After synchronization, BERT mode switchs to error-counting mode, where the
+received bits are compared to a free-running PRBS9 generator.  Each bit that
+does not match the output of the free-running LFSR is counted as a bit error.
+
+.. figure:: ../images/m17-prbs9-validation.png
 
 .. code-block:: c++
 
@@ -573,7 +599,7 @@ free-running LFSR is counted as a bit error.
   };
 
 Resynchronization
-~~~~~~~~~~~~~~~~~
+-----------------
 
 The receiver must keep track of the number of bit errors over a period of
 128 bits.  If more than 18 bit errors occur, the synchronization process
@@ -584,7 +610,7 @@ Bits received and errors which occur during resynchronization are not counted
 towards the bit error rate.
 
 References
-----------
+~~~~~~~~~~
 
  - http://www.itu.int/rec/T-REC-O.150-199210-S
  - http://www.pldworld.com/_hdl/5/-thorsten-gaertner.de/vhdl/PRBS.pdf
