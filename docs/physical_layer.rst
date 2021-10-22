@@ -138,11 +138,11 @@ The LICH chunks allow for late listening and indepedent decoding to
 check destination address. The goal is to require less complexity to
 decode just the LICH and check if the full message should be decoded.
 
-Golay (24,12)
+Extended Golay(24,12) code
 ~~~~~~~~~~~~~
 
-The Golay (24,12) encoder uses generating polynomial *g* given below to generate the 11
-check bits. The check bits and an overall parity bit are appended to
+The extended Golay(24,12) encoder uses generating polynomial *g* given below to generate the 11
+check bits. The check bits and an additional parity bit are appended to
 the 12 bit data, resulting in a 24 bit codeword. The resulting code is systematic,
 meaning that the input data (message) is embedded in the codeword.
 
@@ -152,7 +152,28 @@ meaning that the input data (message) is embedded in the codeword.
    g =& x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1
    \end{align}
 
-This is equivalent to 0xC75 in hexadecimal notation.
+This is equivalent to 0xC75 in hexadecimal notation. The generating matrix *G* is described below.
+
+.. math::
+   :nowrap:
+
+   \begin{align}
+     G = \begin{bmatrix} I_k | P \end{bmatrix} = & \begin{bmatrix}
+      1&0&0&0&0&0&0&0&0&0&0&0&1&0&1&0&1&1&1&0&0&0&1&1\\
+      0&1&0&0&0&0&0&0&0&0&0&0&1&1&1&1&1&0&0&1&0&0&1&1\\
+      0&0&1&0&0&0&0&0&0&0&0&0&1&1&0&1&0&0&1&0&1&0&1&0\\
+      0&0&0&1&0&0&0&0&0&0&0&0&1&1&0&0&0&1&1&1&0&1&1&0\\
+      0&0&0&0&1&0&0&0&0&0&0&0&1&1&0&0&1&1&0&1&1&0&0&0\\
+      0&0&0&0&0&1&0&0&0&0&0&0&0&1&1&0&0&1&1&0&1&1&0&1\\
+      0&0&0&0&0&0&1&0&0&0&0&0&0&0&1&1&0&0&1&1&0&1&1&1\\
+      0&0&0&0&0&0&0&1&0&0&0&0&1&0&1&1&0&1&1&1&1&0&0&1\\
+      0&0&0&0&0&0&0&0&1&0&0&0&0&1&0&1&1&0&1&1&1&1&0&0\\
+      0&0&0&0&0&0&0&0&0&1&0&0&0&0&1&0&1&1&0&1&1&1&1&1\\
+      0&0&0&0&0&0&0&0&0&0&1&0&1&0&1&1&1&0&0&0&1&1&0&0\\
+      0&0&0&0&0&0&0&0&0&0&0&1&0&1&0&1&1&1&0&0&0&1&1&1\\
+     \end{bmatrix}
+   \end{align}
+
 The output of the Golay encoder is shown in the table below.
 
    +------------+----------+-------------+---------+
