@@ -149,7 +149,7 @@ meaning that the input data (message) is embedded in the codeword.
 .. math::
   
    \begin{align}
-   g =& x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1
+   g(x) = x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1
    \end{align}
 
 This is equivalent to 0xC75 in hexadecimal notation. Both the generating matrix *G*
