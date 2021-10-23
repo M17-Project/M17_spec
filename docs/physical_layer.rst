@@ -152,7 +152,8 @@ meaning that the input data (message) is embedded in the codeword.
    g =& x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1
    \end{align}
 
-This is equivalent to 0xC75 in hexadecimal notation. The generating matrix *G* is described below.
+This is equivalent to 0xC75 in hexadecimal notation. Both the generating matrix *G*
+and parity check matrix *H* are shown below.
 
 .. math::
    :nowrap:
@@ -171,6 +172,21 @@ This is equivalent to 0xC75 in hexadecimal notation. The generating matrix *G* i
       0&0&0&0&0&0&0&0&0&1&0&0&1&0&1&0&1&0&0&1&0&1&1&1\\
       0&0&0&0&0&0&0&0&0&0&1&0&1&0&0&1&0&0&1&1&1&1&1&0\\
       0&0&0&0&0&0&0&0&0&0&0&1&1&0&0&0&1&1&1&0&1&0&1&1\\
+     \end{bmatrix}
+         \newline\newline
+     H = \begin{bmatrix} P^T | I_k \end{bmatrix} = & \begin{bmatrix}
+      1&0&1&0&0&1&0&0&1&1&1&1&1&0&0&0&0&0&0&0&0&0&0&0\\
+      1&1&1&1&0&1&1&0&1&0&0&0&0&1&0&0&0&0&0&0&0&0&0&0\\
+      0&1&1&1&1&0&1&1&0&1&0&0&0&0&1&0&0&0&0&0&0&0&0&0\\
+      0&0&1&1&1&1&0&1&1&0&1&0&0&0&0&1&0&0&0&0&0&0&0&0\\
+      0&0&0&1&1&1&1&0&1&1&0&1&0&0&0&0&1&0&0&0&0&0&0&0\\
+      1&0&1&0&1&0&1&1&1&0&0&1&0&0&0&0&0&1&0&0&0&0&0&0\\
+      1&1&1&1&0&0&0&1&0&0&1&1&0&0&0&0&0&0&1&0&0&0&0&0\\
+      1&1&0&1&1&1&0&0&0&1&1&0&0&0&0&0&0&0&0&1&0&0&0&0\\
+      0&1&1&0&1&1&1&0&0&0&1&1&0&0&0&0&0&0&0&0&1&0&0&0\\
+      1&0&0&1&0&0&1&1&1&1&1&0&0&0&0&0&0&0&0&0&0&1&0&0\\
+      0&1&0&0&1&0&0&1&1&1&1&1&0&0&0&0&0&0&0&0&0&0&1&0\\
+      1&1&0&0&0&1&1&1&0&1&0&1&0&0&0&0&0&0&0&0&0&0&0&1\\
      \end{bmatrix}
    \end{align}
 
