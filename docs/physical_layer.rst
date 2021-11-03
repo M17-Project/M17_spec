@@ -121,7 +121,8 @@ Subsequent frames
 
    ECC stages of subsequent frames
 
-A 48-bit (type 1) chunk of the LSF is partitioned into 4 12-bit parts and
+A 40-bit (type 1) chunk of the LSF along with a 3-bit modulo 6 counter
+(LICH_CNT) and 5 reserved bits (see Table 7) is partitioned into 4 12-bit parts and
 encoded using Golay (24, 12) code. This produces 96 encoded bits
 of type 2. These bits are used in the Link Information Channel (LICH).
 
