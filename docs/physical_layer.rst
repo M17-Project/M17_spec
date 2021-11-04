@@ -48,7 +48,7 @@ The bit-to-symbol mapping is shown in the table below.
 
 The most significant bits are sent first, meaning that the byte 0xB4 (= 0b10'11'01'00)
 in type 4 bits (see :ref:`bit_types`) would be sent as the symbols -1 -3 +3
-+1.
++1. All data fields utilize big-endian order of bytes unless specified otherwise.
 
 Preamble
 --------
