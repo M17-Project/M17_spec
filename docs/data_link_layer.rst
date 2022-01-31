@@ -1,6 +1,7 @@
+###############
 Data Link Layer
-===============
-The Data Link layer is split into two modes:
+###############
+The Data Link layer is split into three modes:
 
 * Packet mode
    Data are sent in small bursts, on the order of 100s to 1000s of bytes
@@ -10,6 +11,10 @@ The Data Link layer is split into two modes:
    Data are sent in a continuous stream for an indefinite amount of time,
    with no break in physical layer output, until the stream ends. e.g. voice data,
    bulk data transfers, etc.
+
+* BERT mode
+   PRBS9 is used to fill frames with a deterministic bit sequence.  Frames are sent
+   in a continuous sequence.
 
 When the physical layer is idle (no RF being transmitted or received),
 the data link defaults to packet mode. 
@@ -26,7 +31,7 @@ As is the convention with other networking protocols, all values are
 encoded in big endian byte order.
 
 Stream Mode
------------
+===========
 
 In Stream Mode, an *indefinite* amount of payload data is sent continuously without breaks in the
 physical layer. The *stream* is broken up into parts, called *frames* to not confuse them with *packets* sent
@@ -41,10 +46,11 @@ All frames are preceded by a 16-bit *synchronization burst*.
     * Link setup frames shall be preceded with 0x55F7.
     * Stream frames shall be preceeded with 0xFF5D.
     * Packet frames shall be preceeded with 0x75FF.
+    * BERT frames shall be preceeded with 0xDF55.
 
 All syncwords are type 4 bits.
 
-These sync words are based on `Barker codes`_.  The sequence 0xDF55 (symbols -3 +3 -3 -3 +3 +3 +3 +3) is reserved.
+These sync words are based on `Barker codes`_.
 
 .. _`Barker codes`: https://en.wikipedia.org/wiki/Barker_code
 
@@ -262,7 +268,7 @@ message and then 16 zero bits to the CRC algorithm.
      - 0x1C31
 
 Packet Mode
------------
+===========
 
 In *packet mode*, a finite amount of payload data (for example – text
 messages or application layer data) is wrapped with a packet, sent
@@ -415,3 +421,196 @@ equate to a slot time of 4 and a P-persistence value of 63.
 
 The benefit of this method is that it imposes no penalty on uncontested networks.
 
+BERT Mode
+=========
+
+BERT mode is a standardized, interoperable mode for bit error rate testing.  The preamble is 
+sent, followed by an indefinite sequence of BERT frames.  Notably, a link setup frame must not
+be sent in BERT mode.
+
+Purpose
+~~~~~~~
+
+The primary purpose of defining a bit error rate testing standard for M17 is to enhance
+interoperability testing across M17 hardware and software implementations, and to aid in the
+configuration and tuning of ad hoc communications equipment common in amateur radio.
+
+BERT Frame
+~~~~~~~~~~
+
+Each BERT frame is preceeded by the BERT sync word, 0xDF55.
+
+The BERT frame consists of 197 bits from a `PRBS9 <https://en.wikipedia.org/wiki/Pseudorandom_binary_sequence>`_ 
+generator.  This is 24 bytes and 5 bits of data.  The next frame starts with the 198th bit from the PRBS9
+generator.  The same generator is used for each subsequent frame without being reset.  The number of bits
+pulled from the generator, 197, is a prime number.  This will produce a reasonably large number of unique
+frames even with a PRBS generator with a relatively short period.
+
+The PRBS uses the ITU standard PRBS9 polynomial :math:`x^{9}+x^{5}+1`
+
+This is the traditional form for a linear feedback shift register (LFSR) used
+to generate a psuedorandom binary sequence.
+
+.. figure:: ../images/m17-traditional-lfsr.png
+
+However, the M17 LFSR is a slightly different.  The M17 PRBS9 uses the
+generated bit as the output bit rather than the high-bit before the shift.
+
+.. figure:: ../images/m17-prbs9.png
+
+This will result in the same sequence, just shifted by nine bits.
+
+.. math:: {M17\_PRBS}_{n} = {PRBS9}_{n + 8}
+
+The reason for this is that it allows for easier synchronization.  This is
+equivalent to a multiplicative scrambler (a self-synchronizing scrambler)
+fed with a stream of 0s.
+
+.. figure:: ../images/m17-equivalent-scrambler.png
+
+.. code-block:: c++
+
+  class PRBS9 {
+    static constexpr uint16_t MASK = 0x1FF;
+    static constexpr uint8_t TAP_1 = 8;		    // Bit 9
+    static constexpr uint8_t TAP_2 = 4;		    // Bit 5
+
+    uint16_t state = 1;
+
+  public:
+    bool generate()
+    {
+        bool result = ((state >> TAP_1) ^ (state >> TAP_2)) & 1;
+        state = ((state << 1) | result) & MASK;
+        return result;
+    }
+    ...
+  };
+
+The PRBS9 SHOULD be initialized with a state of 1.
+
+.. list-table:: Bit fields of BERT frame
+   :header-rows: 1
+
+   * - Bits
+     - Meaning
+   * - 0-196
+     - BERT PRBS9 payload
+   * - 4
+     - Flush bits for convolutional coder
+
+
+The 201 bits are convolutionally encoded to 402 type 2 bits.
+
+The 402 bits are punctured using the P2 puncture matrix to get 368 type 3 bits.
+
+The 368 punctured bits are interleaved and decorrelated to get the type 4 bits
+to be transmitted.
+
+This provides the same error correction coding used for the stream payload.
+
+.. list-table:: BERT frame
+   :header-rows: 1
+
+   * - Bits
+     - Meaning
+   * - 16 bits
+     - Sync word 0xDF55
+   * - 368 bits
+     - Payload
+
+BERT Receiver
+~~~~~~~~~~~~~
+
+The receiver detects the frame is a BERT frame based on the sync word
+received.  If the PRBS9 generator is reset at this point, the sender and
+receiver should be synchonized at the start.  This, however, is not common
+nor is it required. PRBS generators can be self-synchronizing.
+
+Synchronization
+---------------
+
+The receiver will synchronize the PRBS by first XORing the received bit
+with the LFSR taps.  If the result of the XOR is a 1, it is an error (the
+expected feedback bit and the input do not match) and the sync count is
+reset.  The received bit is then also shifted into the LFSR state register.
+Once a sequence of eighteen (18) consecutive good bits are recovered (twice
+the length of the LFSR), the stream is considered syncronized.
+
+.. figure:: ../images/m17-prbs9-sync.png
+
+During synchronization, bits received and bit errors are not counted towards
+the overall bit error rate.
+
+.. code-block:: c++
+
+  class PRBS9 {
+    ...
+    static constexpr uint8_t LOCK_COUNT = 18;   // 18 consecutive good bits.
+    ...
+    // PRBS Syncronizer. Returns 0 if the bit matches the PRBS, otherwise 1.
+    // When synchronizing the LFSR used in the PRBS, a single bad input bit
+    // will result in 3 error bits being emitted, one for each tap in the LFSR.
+    bool syncronize(bool bit)
+    {
+        bool result = (bit ^ (state >> TAP_1) ^ (state >> TAP_2)) & 1;
+        state = ((state << 1) | bit) & MASK;
+        if (result) {
+            sync_count = 0; // error
+        } else {
+            if (++sync_count == LOCK_COUNT) {
+                synced = true;
+                ...
+            }
+        }
+        return result;
+    }
+    ...
+  };
+
+Counting Bit Errors
+-------------------
+
+After synchronization, BERT mode switchs to error-counting mode, where the
+received bits are compared to a free-running PRBS9 generator.  Each bit that
+does not match the output of the free-running LFSR is counted as a bit error.
+
+.. figure:: ../images/m17-prbs9-validation.png
+
+.. code-block:: c++
+
+  class PRBS9 {
+    ...
+    // PRBS validator.  Returns 0 if the bit matches the PRBS, otherwise 1.
+    // The results are only valid when sync() returns true;
+    bool validate(bool bit)
+    {
+        bool result;
+        if (!synced) {
+            result = synchronize(bit);
+        } else {
+            // PRBS is now free-running.
+            result = bit ^ generate();
+            count_errors(result);
+        }
+        return result;
+    }
+    ...
+  };
+
+Resynchronization
+-----------------
+
+The receiver must keep track of the number of bit errors over a period of
+128 bits.  If more than 18 bit errors occur, the synchronization process
+starts anew.  This is necessary in the case of missed frames or other serious
+synchronization issues.
+
+Bits received and errors which occur during resynchronization are not counted
+towards the bit error rate.
+
+References
+~~~~~~~~~~
+
+ - http://www.itu.int/rec/T-REC-O.150-199210-S
+ - http://www.pldworld.com/_hdl/5/-thorsten-gaertner.de/vhdl/PRBS.pdf
