@@ -1,8 +1,6 @@
 Application Layer
 =================
 
-PARTS 1 AND 2 REMOVED – will add this later.
-
 .. _packet-superframes:
 
 Packet Superframes
