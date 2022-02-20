@@ -78,12 +78,18 @@ GNSS Position Data stores the 112 bit META field as follows:
    * - Size, in bits
      - Format
      - Contents
-   * - 32
-     - 32-bit fixed point degrees and decimal minutes (TBD)
-     - Latitude
-   * - 32
-     - 32-bit fixed point degrees and decimal minutes (TBD)
-     - Longitude
+   * - 8
+     - 8-bit signed integer
+     - Latitude - degrees, integer part (-90..+90, positive values for northern hemisphere)
+   * - 16
+     - 16-bit unsigned integer
+     - Latitude - degrees, fractional part (eg. 0.5 -> 32,768)
+   * - 16
+     - 16-bit signed integer
+     - Longitude - degrees, integer part (-180..+180, positive values for eastern hemisphere)
+   * - 16
+     - 16-bit unsigned integer
+     - Longitude - degrees, fractional part (eg. 0.5 -> 32,768)
    * - 16
      - unsigned integer
      - Altitude, in feet MSL. Stored +1500, so a stored value of 0 represents -1500 MSL. Subtract 1500 feet when parsing.
@@ -92,8 +98,8 @@ GNSS Position Data stores the 112 bit META field as follows:
      - Course in degrees true North
    * - 10
      - unsigned integer
-     - Speed in miles per hour.
-   * - 12
+     - Speed in knots
+   * - 20
      - Reserved values
      - Transmitter/Object description field
 
