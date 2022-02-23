@@ -216,6 +216,8 @@ Sample MATLAB/Octave code snippet for generating *G* and *H* matrices is shown b
    G = [I_K G_P P.'];
    H = [transpose([G_P P.']) I_K];
 
+
+
 Convolutional encoder
 ~~~~~~~~~~~~~~~~~~~~~
 
