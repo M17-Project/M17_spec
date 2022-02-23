@@ -203,6 +203,21 @@ The output of the Golay encoder is shown in the table below.
 
 Four of these 24-bit blocks are used to reconstruct the LSF.
 
+Sample MATLAB/Octave code snippet for generating *G* and *H* matrices is shown below.
+
+.. code-block:: matlab
+   :caption: Golay(24,12) matrices generator
+
+   P = hex2poly('0xC75');
+   [H,G] = cyclgen(23, P);
+
+   G_P = G(1:12, 1:11);
+   I_K = eye(12);
+   G = [I_K G_P P.'];
+   H = [transpose([G_P P.']) I_K];
+
+
+
 Convolutional encoder
 ~~~~~~~~~~~~~~~~~~~~~
 
