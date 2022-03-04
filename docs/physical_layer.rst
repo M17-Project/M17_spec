@@ -139,6 +139,16 @@ The LICH chunks allow for late listening and indepedent decoding to
 check destination address. The goal is to require less complexity to
 decode just the LICH and check if the full message should be decoded.
 
+Packet Frames
+~~~~~~~~~~~~~
+
+.. figure:: ../images/packet_frame_encoding.*
+
+   Packet frame encoding
+
+
+
+
 Extended Golay(24,12) code
 ~~~~~~~~~~~~~
 
