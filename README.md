@@ -1,6 +1,9 @@
 # M17_spec
-[M17 Project](http://m17project.org/) standard specification.
+M17 standard specification.
 
-This is an archive of the first version. The latest spec can be found here:
+M17 is a modern digital radio protocol built by hams, for hams. 
+It is still a work in progress, and this is the living specification of the protocol.
 
-[https://github.com/M17-Project/protocol](https://github.com/M17-Project/protocol)
+M17 Protocol Specification for [M17 Project](http://m17project.org/)
+
+The specifications can be viewed [HERE](https://github.com/M17-Project/protocol)
