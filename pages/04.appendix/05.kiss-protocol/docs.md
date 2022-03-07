@@ -73,7 +73,7 @@ Only a single 40ms preamble frame is ever sent.
 
 ### Packet Protocols
 
-In order to provide backward compatibility with the widest range of existing ham radio software, and to make use of features in the the M17 protocol itself, we will define two distint packet interfaces BASIC and FULL.
+In order to provide backward compatibility with the widest range of existing ham radio software, and to make use of features in the the M17 protocol itself, we will define two distinct packet interfaces BASIC and FULL.
 
 The KISS protocol allows us to target specific modems using the port identifier in the control byte.
 
