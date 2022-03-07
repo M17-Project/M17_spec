@@ -117,7 +117,7 @@ The LICH chunks allow for late listening and indepedent decoding to check destin
 
 ![packet_frame_encoding](packet_frame_encoding.svg?classes=caption "Packet Frame Encoding")
 
-### End of Transmission marker (EoT)
+#### End of Transmission marker (EoT)
 
 Every transmission ends with a distinct symbol stream, which shall consist of at least 40 ms of repeating +3, +3, +3, +3, +3, +3, -3, +3 pattern, or 0x555D in hexadecimal notation.
 
