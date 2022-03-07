@@ -5,6 +5,7 @@ taxonomy:
         - docs
 simple-responsive-tables:
     active: true
+media_order: 'convolutional.svg,frame_encoding.svg,link_setup_frame_encoding.svg,packet_frame_encoding.svg'
 ---
 
 ### 4FSK generation
@@ -111,6 +112,10 @@ A 40-bit (type 1) chunk of the LSF along with a 3-bit modulo 6 counter (LICH_CNT
 96 type 2 bits of LICH are concatenated with 272 type 3 bits and re-ordered to form type 4 bits for transmission. This, along with 16-bit sync in the beginning of frame, gives a total of 384 bits
 
 The LICH chunks allow for late listening and indepedent decoding to check destination address. The goal is to require less complexity to decode just the LICH and check if the full message should be decoded.
+
+#### Packet Frame Encoding
+
+![packet_frame_encoding](packet_frame_encoding.svg?classes=caption "Packet Frame Encoding")
 
 #### Extended Golay(24,12) code
 
