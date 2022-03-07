@@ -6,4 +6,4 @@ It is still a work in progress, and this is the living specification of the prot
 
 M17 Protocol Specification for [M17 Project](http://m17project.org/)
 
-The specifications can be viewed [HERE](https://github.com/M17-Project/protocol)
+The specifications can be viewed [HERE](https://spec.m17project.org/)
