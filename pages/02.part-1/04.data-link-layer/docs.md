@@ -190,7 +190,8 @@ Currently the contents of the source and destination fields are arbitrary as no 
 
 #### Packet Format
 
-M17 packet mode can transmit up to 798 bytes of payload data. It acheives a base throughput of 5kbps, and a net throughput of about 4.7kbps for the largest data payload, and over 3kbps for 100-byte payloads. (Net throughput takes into account preamble and link setup overhead.)
+M17 packet mode can transmit up to 798 bytes of payload data within one transmission. It acheives a base throughput of 5 kbps, and a net throughput of about 4.7 kbps for the largest data payload, and over 3 kbps for 100-byte payloads. [^1]
+[^1]: Net throughput takes into account preamble and link setup overhead.
 
 The packet superframe consists of 798 payload data bytes and a 2-byte CCITT CRC-16 checksum.
 
@@ -199,7 +200,9 @@ The packet superframe consists of 798 payload data bytes and a 2-byte CCITT CRC-
 Bytes  | Meaning
 -----  | -------
 1..798 | Packet payload
-2      | CCITT CRC-16
+2      | CRC-16
+
+The CRC used here is the same as described in [Chapter 2.4](https://spec.m17project.org/part-1/data-link-layer#crc).
 
 Packet data is split into frames of 368 type 4 bits preceded by a packet-specific 16-bit sync word (0xFF5D). This is the same size frame used by stream mode.
 
@@ -234,7 +237,7 @@ Bits | Meaning
 0    | Set to 1, End of frame
 1..5 | Number of bytes in frame, 1..25
 
-Note that it is non-conforming to send a last frame with a length of 0 bytes.
+Note that it is non-conforming to send a last frame with a length of 0 bytes. The number of bytes **includes** 2-byte CRC.
 
 #### Convolutional Coding
 
