@@ -28,7 +28,7 @@ StreamID (SID) | 16 bits  | Random bits, changed for each PTT or stream, but con
 LICH           | 240 bits | The meaningful contents of a LICH frame (dst, src, streamtype, META field, CRC16) as defined earlier.
 FN             | 16 bits  | Frame number (exactly as would be transmitted as an RF stream frame, including the last frame indicator at (FN & 0x8000)
 Payload        | 128 bits | Payload (exactly as would be transmitted in an RF stream frame)
-CRC16          | 16 bits  | CRC for the entire packet, as defined earlier (TODO: specific link)
+CRC16          | 16 bits  | CRC for the entire packet, as defined earlier [CRC definition](https://spec.m17project.org/part-1/data-link-layer#crc)
 
 The CRC checksum must be recomputed after modification or re-assembly of the packet, such as when translating from RF to IP framing.
 
