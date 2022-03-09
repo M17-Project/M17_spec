@@ -242,13 +242,31 @@ The puncturing scheme \(P_2\) is defined by its partial puncturing matrix:
 The linearized representations are:
 
 ```
-
 P1 = [1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1,
       1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1,
       0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1]
 
 P2 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
 ```
+
+One additional puncturing scheme \(P_3\) is used in the packet mode. The puncturing scheme is defined by its puncturing matrix:
+
+\(
+\begin{align}
+  P_3 = & \begin{bmatrix}
+  1 & 1 & 1 & 1 \\
+  1 & 1 & 1 & 0
+  \end{bmatrix}
+\end{align}
+\)
+
+The linearized representation is:
+
+```
+P3 = [1, 1, 1, 1, 1, 1, 1, 0]
+```
+
+### Interleaving
 
 For interleaving a Quadratic Permutation Polynomial (QPP) is used. The polynomial \(\pi(x)=(45x+92x^2)\mod 368\) is used for a 368 bit interleaving pattern QPP. See appendix sec-interleaver for pattern.
 
