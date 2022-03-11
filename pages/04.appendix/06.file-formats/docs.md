@@ -47,7 +47,7 @@ Extension | Description | Data Format | Data Rate
 --------- | ----------- | ----------- | ---------
 aud       | mono audio  | Signed 16-bit LE | 8000 samples per second
 sym       | M17 symbols | Signed 8-bit | 4800 symbols per second
-bin       | Packed M17 symbols | MSB first, Unsigned 8-bit | 4800 symbols per second (1200 bytes per second)
+bin       | Packed M17 Dibits | MSB first, Unsigned 8-bit | 4800 symbols per second (1200 bytes per second)
 rrc       | RRC filtered and Scaled M17 symbols | Signed 16-bit LE | 48000 samples per second
 rf        | RF deviation values | Varies | Varies   
 
@@ -58,7 +58,7 @@ Mono audio of signed 16-bit LE at a rate of 8000 samples per second.  This is of
 M17 symbols (+3, +1, -1, -3) encoded as signed 8-bit values at rate of 4800 symbols per second.
 
 #### bin
-M17 symbols packed 2 bits per symbol, 4 symbols per byte (+3 = 01, +1 = 00, -1 = 10, -3 = 11) with the MSB first.  These are unsigned 8-bit values at 4800 symbols per second, which is 4 symbols per byte at 1200 bytes per second.
+M17 symbols packed 2 bits per symbol (dibits), 4 symbols per byte (+3 = 01, +1 = 00, -1 = 10, -3 = 11) with the MSB first.  These are unsigned 8-bit values at 4800 symbols per second, which is 4 symbols per byte at 1200 bytes per second.
 
 #### rrc
 RRC filtered and scaled M17 symbols.  In order to generate a reasonable RRC waveform, the symbol rate (4800 symbols per second) is upsampled by a factor of 10 to an RRC sample rate of 48000 samples per second.  Then the upsampled symbols are passed through the RRC filter.  The output samples of the RRC filter are multiplied by 7168 to fit within a signed 16-bit LE representation (e.g. a +3 value would be +21504).
