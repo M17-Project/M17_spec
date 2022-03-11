@@ -81,5 +81,15 @@ rf -> rrc -> sym -> aud
 
 rf -> rrc -> bin -> aud
 
-### To-DO
+### To-Do
 File formats for packet and voice + data streams.
+
+### References
+
+Bit numbering https://en.wikipedia.org/wiki/Bit_numbering
+
+Endianness https://en.wikipedia.org/wiki/Endianness
+
+M17 Physical Layer https://spec.m17project.org/part-1/physical-layer
+
+Root Raised Cosine https://en.wikipedia.org/wiki/Root-raised-cosine_filter
