@@ -65,3 +65,21 @@ RRC filtered and scaled M17 symbols.  In order to generate a reasonable RRC wave
 
 #### rf
 RF hardware specific deviation values.  These would be obtained by passing RRC filtered values through a deviation function.  Since these are device specific, it is recommended to use an underscore plus device type as part of the filename.  For example, the Semtech SX1276 uses a deviation step size of 61 Hz per bit.  An M17 1600 Hz frequency step is equivalent to an SX1276 deviation value change of 26.  Since the SX1276 only accepts positive deviation steps, the deviation function for the SX1276 would be (rrc value + 3.0) x 13.  The .rf file specific for the SX1276 would contain those values, and could have a name such as m17test_sx1276.rf       
+
+### Example file flows
+These show the file types in order of processing for transmit and receive flows.  Each "->" symbolizes processing required to move from one file type to the next.
+
+#### Transmit
+
+aud -> sym -> rrc -> rf
+
+aud -> bin -> rrc -> rf
+
+#### Receive
+
+rf -> rrc -> sym -> aud
+
+rf -> rrc -> bin -> aud
+
+### To-DO
+File formats for packet and voice + data streams.
