@@ -13,7 +13,7 @@ This appendix documents the file formats used for testing various M17 layers.
 [Bit numbering](https://en.wikipedia.org/wiki/Bit_numbering) is how bit positions are identified in a binary number.  The least significant bit (LSB) is the bit position respresenting a value of 1.  The most significant bit (MSB) is the bit position representing the highest value position.  Bit order refers to the order in which bits are extracted from a binary number.  This is important especially when sending binary values one bit at a time, or when constructing multiple-bit symbols.  LSB first means the extraction happens from the least significant position first.  MSB first means extraction happens from the most significant position first.
 
 #### Deviation, Frequency Deviation
-In this context, how far from the center frequency a carrier is shifted.  This can be positive or negative.  For M17, the frequency deviation of the four symbols are shown in [Physical Layer](https://spec.m17project.org/part-1/physical-layer) Table 1.
+In this context, deviation how far from the center frequency a carrier is shifted.  This can be positive or negative.  For M17, the frequency deviation of the four symbols are shown in [Physical Layer](https://spec.m17project.org/part-1/physical-layer) Table 1.
 
 #### Deviation Function (Transmit)
 A function used to convert symbol values to frequency deviation in RF hardware.  This can be used to set hardware registers, create voltages, etc. depending on the hardware used.
@@ -45,7 +45,7 @@ Multiple files are used when testing the different elements of the M17 protocol.
 
 Extension | Description | Data Format | Data Rate
 --------- | ----------- | ----------- | ---------
-aud       | mono audio  | Signed 16-bit LE | 8000 samples per second
+aud       | Mono audio  | Signed 16-bit LE | 8000 samples per second
 sym       | M17 symbols | Signed 8-bit | 4800 symbols per second
 bin       | Packed M17 Dibits | MSB first, Unsigned 8-bit | 4800 symbols per second (1200 bytes per second)
 rrc       | RRC filtered and Scaled M17 symbols | Signed 16-bit LE | 48000 samples per second
