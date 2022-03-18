@@ -49,7 +49,7 @@ aud       | Mono audio  | Signed 16-bit LE | 8000 samples per second
 sym       | M17 symbols | Signed 8-bit | 4800 symbols per second
 bin       | Packed M17 Dibits | MSB first, Unsigned 8-bit | 4800 symbols per second (1200 bytes per second)
 rrc       | RRC filtered and Scaled M17 symbols | Signed 16-bit LE | 48000 samples per second
-rf        | RF deviation values | Varies | Varies   
+dev       | Deviation values | Varies | Varies   
 
 #### aud
 Mono audio of signed 16-bit LE at a rate of 8000 samples per second.  This is often referred to as a "raw" audio file and contains no embedded header information.
@@ -63,23 +63,23 @@ M17 symbols packed 2 bits per symbol (dibits), 4 symbols per byte (+3 = 01, +1 =
 #### rrc
 RRC filtered and scaled M17 symbols.  In order to generate a reasonable RRC waveform, the symbol rate (4800 symbols per second) is upsampled by a factor of 10 to an RRC sample rate of 48000 samples per second.  Then the upsampled symbols are passed through the RRC filter.  The output samples of the RRC filter are multiplied by 7168 to fit within a signed 16-bit LE representation (e.g. a +3 value would be +21504).
 
-#### rf
-RF hardware specific deviation values.  These would be obtained by passing RRC filtered values through a deviation function.  Since these are device specific, it is recommended to use an underscore plus device type as part of the filename.  For example, the Semtech SX1276 uses a deviation step size of 61 Hz per bit.  An M17 1600 Hz frequency step is equivalent to an SX1276 deviation value change of 26.  Since the SX1276 only accepts positive deviation steps, the deviation function for the SX1276 would be (rrc value + 3.0) x 13.  The .rf file specific for the SX1276 would contain those values, and could have a name such as m17test_sx1276.rf       
+#### dev
+Hardware specific deviation values.  These would be obtained by passing RRC filtered values through a deviation function.  Since these are device specific, it is recommended to use an underscore plus device type as part of the filename.  For example, the Semtech SX1276 uses a deviation step size of 61 Hz per bit.  An M17 1600 Hz frequency step is equivalent to an SX1276 deviation value change of 26.  Since the SX1276 only accepts positive deviation steps, the deviation function for the SX1276 would be (rrc value + 3.0) x 13.  The .dev file specific for the SX1276 would contain those values, and could have a name such as m17test_sx1276.dev       
 
 ### Example file flows
 These show the file types in order of processing for transmit and receive flows.  Each "->" symbolizes processing required to move from one file type to the next.
 
 #### Transmit
 
-aud -> sym -> rrc -> rf
+aud -> sym -> rrc -> dev
 
-aud -> bin -> rrc -> rf
+aud -> bin -> rrc -> dev
 
 #### Receive
 
-rf -> rrc -> sym -> aud
+dev -> rrc -> sym -> aud
 
-rf -> rrc -> bin -> aud
+dev -> rrc -> bin -> aud
 
 ### To-Do
 File formats for packet and voice + data streams.
