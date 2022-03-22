@@ -20,7 +20,7 @@ receiver.
 
 [mermaid]
 graph LR
-  id1[Dibits Input] ---> id2[Upsampler] --> id3[RRC Filter] --> id4[Frequency Modulation] --> id5[4FSK Output]
+  id1[Dibits Input] --> id2[Upsampler] --> id3[RRC Filter] --> id4[Frequency Modulation] --> id5[4FSK Output]
   style id1 fill:#ffffffff,stroke:#ffffffff,stroke-width:0px
   style id2 fill:#fff,stroke:#000,stroke-width:2px
   style id3 fill:#fff,stroke:#000,stroke-width:2px
