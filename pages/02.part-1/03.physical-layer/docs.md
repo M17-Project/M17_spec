@@ -13,18 +13,19 @@ media_order: 'convolutional.svg,frame_encoding.svg,link_setup_frame_encoding.svg
 M17 standard uses 4FSK modulation running at 4800 symbols/s (9600
 bits/s) with a deviation index h=0.33 for transmission in 9 kHz
 channel bandwidth. Channel spacing is 12.5 kHz. The symbol stream is
-converted to a series of impulses which pass through a
+converted (upsampled) to a series of impulses which pass through a
 root-raised-cosine (alpha=0.5) shaping filter before frequency modulation
 at the transmitter and again after frequency demodulation at the
 receiver.
 
 [mermaid]
 graph LR
-  id1[Dibits Input] --> id2[RRC Filter] --> id3[Frequency Modulation] --> id4[4FSK Output]
-  style id1 fill:#fff,stroke:#fff,stroke-width:0px
+  id1[Dibits Input] ---> id2[Upsampler] --> id3[RRC Filter] --> id4[Frequency Modulation] --> id5[4FSK Output]
+  style id1 fill:#ffffffff,stroke:#ffffffff,stroke-width:0px
   style id2 fill:#fff,stroke:#000,stroke-width:2px
   style id3 fill:#fff,stroke:#000,stroke-width:2px
-  style id4 fill:#fff,stroke:#fff,stroke-width:0px
+  style id4 fill:#fff,stroke:#000,stroke-width:2px
+  style id5 fill:#ffffffff,stroke:#ffffffff,stroke-width:0px
 [/mermaid]
 
 The bit-to-symbol mapping is shown in the table below.
@@ -74,7 +75,7 @@ The most significant bits are sent first, meaning that the byte 0xB4 (= 0b10'11'
 
 ### Preamble
 
-Every transmission starts with a preamble, which shall consist of at least 40 ms of alternating -3, +3... symbols. This is equivalent to 40 milliseconds of a 2400 Hz tone.
+Every transmission starts with a preamble, which shall consist of at least 40 ms of alternating outer symbols. This is equivalent to 40 milliseconds of a 2400 Hz tone. The last symbol transmitted within the preamble shall be -3 for all modes except BERT. This is to avoid unnecessary long constant symbol runs and increase zero-crossing rate.
 
 ### Bit types
 
