@@ -12,13 +12,16 @@ media_order:
 
 M17 standard uses 4FSK running at 4800 symbols/s (9600
 bits/s) with a deviation index h=0.33 for transmission in 9 kHz
-channel bandwidth. Channel spacing is 12.5 kHz. The symbol stream is
-converted (upsampled) to a series of impulses which pass through a
+channel bandwidth. Channel spacing is 12.5 kHz. 
+
+The symbol stream is converted (upsampled) to a series of impulses which pass through a
 root-raised-cosine (alpha=0.5) shaping filter before frequency modulation
 at the transmitter and again after frequency demodulation at the
 receiver.
 
-!!! Do we need to specify minimal/recommended upsampling rates and minimal/recommended number of RRC taps? !!!
+Upsampling by a factor of 10 is recommended (48000 samples/s).
+
+The root-raised-cosine filter should span at least 8 symbols (80 samples, 81 taps).
 
 [mermaid]
 graph LR
@@ -80,6 +83,8 @@ In the case of dibits, the most significant bit is sent first. When four dibits 
 ### Transmission
 
 A complete transmission shall consist of a preamble, a synchronization burst, data, and an end of transmission marker.
+
+![physical_layer_transmission](phy_layer.svg?classes=caption "Physical Layer Transmission")
 
 ### Preamble
 

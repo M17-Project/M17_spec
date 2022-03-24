@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1"
+	 id="svg8" inkscape:export-filename="C:\Users\SP5WWP\Desktop\frame_1_encoding.png" inkscape:export-xdpi="400" inkscape:export-ydpi="400" inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 508.3 84.4"
+	 style="enable-background:new 0 0 508.3 84.4;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:1.4173;stroke-miterlimit:11.3386;}
+	.st1{font-family:'ArialMT';}
+	.st2{font-size:18px;}
+	.st3{font-family:'MyriadPro-Regular';}
+	.st4{font-size:12px;}
+</style>
+<rect id="rect3719" x="15.2" y="13.1" class="st0" width="480.6" height="28.3"/>
+<text transform="matrix(1 0 0 1 21.7073 34.13)" class="st1 st2">PREAMBLE</text>
+<path id="path3733" inkscape:connector-curvature="0" sodipodi:nodetypes="cc" class="st0" d="M126.9,13.1v28.3"/>
+<text transform="matrix(1 0 0 1 134.6441 34.13)" class="st1 st2">SYNC BURST</text>
+<text transform="matrix(1 0 0 1 311.727 34.3458)" class="st1 st2">DATA</text>
+<path id="path3733-4-5" inkscape:connector-curvature="0" sodipodi:nodetypes="cc" class="st0" d="M257.8,13.1v28.3"/>
+<text transform="matrix(1 0 0 1 435.4617 34.13)" class="st1 st2">EOT</text>
+<path id="path3733-4-5-1-3" inkscape:connector-curvature="0" sodipodi:nodetypes="cc" class="st0" d="M410.5,13.1v28.3"/>
+<text transform="matrix(1 0 0 1 57.1884 59.7264)"><tspan x="0" y="0" class="st3 st4">40ms</tspan><tspan x="-21.7" y="14.4" class="st3 st4">(192 Symbols)</tspan></text>
+<text transform="matrix(1 0 0 1 175.8817 59.7268)"><tspan x="0" y="0" class="st3 st4">16 bits</tspan><tspan x="-11.9" y="14.4" class="st3 st4">(8 symbols)</tspan></text>
+<text transform="matrix(1 0 0 1 290.1436 59.7268)"><tspan x="0" y="0" class="st3 st4">Multiples of 8 bits</tspan><tspan x="-14.9" y="14.4" class="st3 st4">(Multiples of 4 symbols)</tspan></text>
+<text transform="matrix(1 0 0 1 440.2642 59.7267)"><tspan x="0" y="0" class="st3 st4">40ms</tspan><tspan x="-21.7" y="14.4" class="st3 st4">(192 Symbols)</tspan></text>
+</svg>
