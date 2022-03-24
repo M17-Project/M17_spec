@@ -441,3 +441,61 @@ P3 = [1, 1, 1, 1, 1, 1, 1, 0]
 
 For interleaving a Quadratic Permutation Polynomial (QPP) is used. The polynomial \(\pi(x)=(45x+92x^2)\mod 368\) is used for a 368 bit interleaving pattern QPP. See appendix sec-interleaver for pattern.
 
+
+
+
+
+### Frame
+
+A frame shall be composed of a frame type specific Synchronization Burst followed by a Payload.  There are four frame types: Link Setup Frames (LSF), Bit Error Rate Test (BERT) frames, Stream Frames, and Packet Frames.
+
+Only LSF and BERT frames may immediately follow the preamble.
+
+### Synchronization Burst (Sync Burst)
+
+All frames shall be preceded by 16 bits (8 symbols) of *synchronization burst*.
+
+The Sync Burst codings are based on [Barker codes](https://en.wikipedia.org/wiki/Barker_code).
+
+<table>
+    <caption><span>Table 2</span><span>Sync Burst</span></caption>
+    <thead>
+        <tr>
+            <th>Frame Type</th>
+            <th>Preamble</th>
+            <th>Sync Burst Bytes</th>
+            <th>Sync Burst Symbols</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>LSF</td>
+            <td>+3, -3</td>
+            <td>0x55 0xF7</td>
+            <td>+3, +3, +3, +3, -3, -3, +3, -3</td>
+        </tr>
+        <tr>
+            <td>BERT</td>
+            <td>-3, +3</td>
+            <td>0xDF 0x55</td>
+            <td>-3, +3, -3, -3, +3, +3, +3, +3</td>
+        </tr>
+        <tr>
+            <td>Stream</td>
+            <td>None</td>
+            <td>0xFF 0x5D</td>
+            <td>-3, -3, -3, -3, +3, +3, -3, +3</td>
+        </tr>
+        <tr>
+            <td>Packet</td>
+            <td>None</td>
+            <td>0x75 0xFF</td>
+            <td>+3, -3, +3, +3, -3, -3, -3, -3</td>
+        </tr>
+    </tbody>
+</table>
+
+
+### Payload
+
+The Payload consists of 368 bits (192 symbols).
