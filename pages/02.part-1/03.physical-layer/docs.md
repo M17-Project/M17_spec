@@ -21,7 +21,7 @@ receiver.
 
 Upsampling by a factor of 10 is recommended (48000 samples/s).
 
-The root-raised-cosine filter should span at least 8 symbols (80 samples, 81 taps).
+The root-raised-cosine filter should span at least 8 symbols (81 taps at the recommended upsample rate).
 
 [mermaid]
 graph LR
@@ -102,10 +102,14 @@ Data shall be transmitted in multiples of 8 bits (4 symbols).
 
 #### Randomizer
 
-To avoid transmitting long sequences of constant symbols (e.g. +3, +3, +3, ...), a simple randomizing algorithm is used. At the transmitter, all data bits shall be XORed with a pseudorandom predefined stream before being converted to symbols.  At the receiver, the randomized data symbols are converted to bits and are
+To avoid transmitting long sequences of constant symbols (e.g. +3, +3, +3, ...), a simple randomizing algorithm is used. At the transmitter, all data bits shall be XORed with a pseudorandom predefined sequence before being converted to symbols.  At the receiver, the randomized data symbols are converted to bits and are
 again passed through the same XOR algorithm to obtain the original data bits.   
 
-!!! algorithm should be here !!!
+The pseudorandom sequence is composed of the 46 bytes found in the appendix ([Decorrelator Sequence](https://spec.m17project.org/appendix/decorrelator-sequence)).
+
+Before each byte (8 bits) of data is converted to symbols for transmission, it is XORed with a byte from the pseudorandom sequence.  The first data byte is XORed with sequence byte 0 (0xD6), second with sequence byte 1 (0xB5), continuing through the 46th data byte XORed with sequence byte 45 (0xC3).  At data byte 47 (and repeating intervals of 46 data bytes), the sequence is restarted with sequence byte 0 (0xD6).
+
+On the receive side, symbols are converted to randomized data bytes.  Each randomized data byte is converted back to data bytes by once again XORing each randomized byte with the corresponding pseudorandom sequence byte. 
 
 ### End of Transmission marker (EoT)
 
