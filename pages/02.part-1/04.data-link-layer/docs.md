@@ -238,12 +238,6 @@ Bits     | Meaning
 16 bits  | Sync word 0xFF5D
 368 bits | Payload
 
-#### Carrier-sense Multiple Access
-
-When sending packets, the sender is reponsible for ensuring the channel is clear before transmitting. CSMA is used to minimize collisions on a shared network. Specifically, P-persistent access is used. Each time slot is 40ms (one packet length) and the probability SHOULD default to 25%. In terms of the values used by the KISS protocol, these equate to a slot time of 4 and a P-persistence value of 63.
-
-The benefit of this method is that it imposes no penalty on uncontested networks.
-
 
 
 
