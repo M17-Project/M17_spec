@@ -109,7 +109,7 @@ Bits   | Meaning
 
 The LSF META field is defined by the specific application.
 
-##### LSF CRC
+##### <span id="lsf-crc">LSF CRC</span>
 
 M17 uses a non-standard version of 16-bit CRC with polynomial $x^{16} + x^{14} + x^{12} + x^{11} + x^8 + x^5 + x^4 + x^2 + 1$ or 0x5935 and initial value of 0xFFFF. This polynomial allows for detecting all errors up to hamming distance of 5 with payloads up to 241 bits, which is less than the amount of data in each frame.
 

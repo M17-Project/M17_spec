@@ -2,7 +2,7 @@
 title: Welcome
 ---
 
-## Part I - Air and IP Interface
+## Part I - Air Interface
 * [M17 RF Protocol: Summary](/part-1/m17-rf-protocol-summary)
 * [Glossary](/part-1/glossary)
 * [Physical Layer](/part-1/physical-layer)
@@ -17,21 +17,22 @@ title: Welcome
     * [Packet Superframes](/part-1/application-layer#packet-superframes)
     * [Encryption Types](/part-1/application-layer#encryption-types)
 
-## Part II - Codeplug
-* [Recommendation for the codeplug structure](/part-2/codeplug#recommendation-for-the-codeplug-structure)
-    * [Introduction](/part-2/codeplug#introduction)
-    * [Codeplug file structure](/part-2/codeplug#codeplug-file-structure)
-    * [Example Codeplug](/part-2/codeplug#example-codeplug)
+## Part II - Internet Interface
+* [M17 Internet Protocol (IP) Networking](/part-2/ip-networking)
+    * [Standard IP Framing](/part-2/ip-networking#standard-ip-framing)
+    * [Control Packets](/part-2/ip-networking#control-packets)
 
 ## Appendix
 * [Address Encoding](/appendix/address-encoding)
     * [Callsign Encoding: base40](/appendix/address-encoding#callsign-encoding-base40)
     * [Callsign Formats](/appendix/address-encoding#callsign-formats)
+* [Codeplug](/appendix/codeplug)
+    * [Recommendation for the codeplug structure](/appendix/codeplug#recommendation-for-the-codeplug-structure)
+    * [Introduction](/appendix/codeplug#introduction)
+    * [Codeplug file structure](/appendix/codeplug#codeplug-file-structure)
+    * [Example Codeplug](/appendix/codeplug#example-codeplug)
 * [Decorrelator sequence](/appendix/decorrelator-sequence)
 * [Interleaving](/appendix/interleaving)
-* [M17 Internet Protocol (IP) Networking](/appendix/ip-networking)
-    * [Standard IP Framing](/appendix/ip-networking#standard-ip-framing)
-    * [Control Packets](/appendix/ip-networking#control-packets)
 * [KISS Protocol](/appendix/kiss-protocol)
     * [References](/appendix/kiss-protocol#references)
     * [Glossary](/appendix/kiss-protocol#glossary)
