@@ -1,9 +1,9 @@
 ---
-title: 'Part I - Air and IP Interface'
+title: 'Part I - Air Interface'
 taxonomy:
     category: docs
 ---
 
 ### Part I
 
-# Air and IP Interface
+# Air Interface
