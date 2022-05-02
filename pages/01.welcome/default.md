@@ -13,6 +13,7 @@ title: Welcome
 * [Data Link Layer](/part-1/data-link-layer)
     * [Stream Mode](/part-1/data-link-layer#stream-mode)
     * [Packet Mode](/part-1/data-link-layer#packet-mode)
+    * [BERT Mode](/part-1/data-link-layer#bert-mode)
 * [Application Layer](/part-1/application-layer)
     * [Packet Superframes](/part-1/application-layer#packet-superframes)
     * [Encryption Types](/part-1/application-layer#encryption-types)

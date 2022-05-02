@@ -267,6 +267,21 @@ BERT mode is a standardized, interoperable mode for bit error rate testing.  The
 sent, followed by an indefinite sequence of BERT frames.  Notably, a link setup frame must not
 be sent in BERT mode.
 
+<table>
+    <caption><span style="font-weight:bold">Figure X </span><span>BERT Mode</span></caption>
+    <tbody style="text-align:center;border:none;">
+        <tr style="font-weight:bold; color:black;">
+            <td style="border:3px solid black;">PREAMBLE</td>
+            <td style="border:3px solid black;">BERT SYNC BURST</td>
+            <td style="border:3px solid black;">BERT FRAME</td>
+            <td style="border:3px dashed black;">&bull;&bull;&bull;</td>
+            <td style="border:3px solid black;">BERT SYNC BURST</td>
+            <td style="border:3px solid black;">BERT FRAME</td>
+            <td style="border:3px solid black;">EoT</td>
+        </tr>
+    </tbody>
+</table>
+
 #### Purpose
 
 The primary purpose of defining a bit error rate testing standard for M17 is to enhance
@@ -277,36 +292,38 @@ configuration and tuning of ad hoc communications equipment common in amateur ra
 
 Each BERT frame is preceeded by the BERT sync word, 0xDF55.
 
-The BERT frame consists of 197 bits from a `PRBS9 <https://en.wikipedia.org/wiki/Pseudorandom_binary_sequence>`_ 
+The BERT frame consists of 197 bits from a [PRBS9](https://en.wikipedia.org/wiki/Pseudorandom_binary_sequence)
 generator.  This is 24 bytes and 5 bits of data.  The next frame starts with the 198th bit from the PRBS9
 generator.  The same generator is used for each subsequent frame without being reset.  The number of bits
 pulled from the generator, 197, is a prime number.  This will produce a reasonably large number of unique
 frames even with a PRBS generator with a relatively short period.
 
-The PRBS uses the ITU standard PRBS9 polynomial :math:`x^{9}+x^{5}+1`
+The PRBS uses the ITU standard PRBS9 polynomial : \(x^{9}+x^{5}+1\)
 
 This is the traditional form for a linear feedback shift register (LFSR) used
 to generate a psuedorandom binary sequence.
 
-.. figure:: ../images/m17-traditional-lfsr.png
+<center><span style="font-weight:bold">Figure X</span> Traditional form LFSR</center>
+![Traditional_LFSR](m17-traditional-lfsr.png?classes=caption "Traditional LFSR")
 
 However, the M17 LFSR is a slightly different.  The M17 PRBS9 uses the
 generated bit as the output bit rather than the high-bit before the shift.
 
-.. figure:: ../images/m17-prbs9.png
+<center><span style="font-weight:bold">Figure X</span> M17 LFSR</center>
+![M17_LFSR](m17-prbs9.png?classes=caption "M17 LFSR")
 
 This will result in the same sequence, just shifted by nine bits.
 
-.. math:: {M17\_PRBS}_{n} = {PRBS9}_{n + 8}
+\({M17\_PRBS}_{n} = {PRBS9}_{n + 8}\)
 
 The reason for this is that it allows for easier synchronization.  This is
 equivalent to a multiplicative scrambler (a self-synchronizing scrambler)
 fed with a stream of 0s.
 
-.. figure:: ../images/m17-equivalent-scrambler.png
+<center><span style="font-weight:bold">Figure X</span> M17 PRBS9 Generator</center>
+![M17_PRBS9_Generator](m17-equivalent-scrambler.png?classes=caption "M17 PRBS9 Generator")
 
-.. code-block:: c++
-
+```
   class PRBS9 {
     static constexpr uint16_t MASK = 0x1FF;
     static constexpr uint8_t TAP_1 = 8;       // Bit 9
@@ -323,20 +340,17 @@ fed with a stream of 0s.
     }
     ...
   };
+```
 
 The PRBS9 SHOULD be initialized with a state of 1.
 
-.. list-table:: Bit fields of BERT frame
-   :header-rows: 1
+<center><span style="font-weight:bold">Table X</span> BERT Frame Contents</center>
+Bits  | Meaning
+----  | -------
+0-196 | BERT PRBS9 Payload
 
-   * - Bits
-     - Meaning
-   * - 0-196
-     - BERT PRBS9 payload
-   * - 4
-     - Flush bits for convolutional coder
-
-
+(..note to describe convolutional coder as appending 4 flush bits.. 4 + 197 = 201 bits)
+(..section needs reworking to be consistent with other sections..)
 The 201 bits are convolutionally encoded to 402 type 2 bits.
 
 The 402 bits are punctured using the P2 puncture matrix to get 368 type 3 bits.
@@ -346,15 +360,13 @@ to be transmitted.
 
 This provides the same error correction coding used for the stream payload.
 
-.. list-table:: BERT frame
-   :header-rows: 1
+<center><span style="font-weight:bold">Table X</span> BERT Frame</center>
+Bits  | Meaning
+----  | -------
+16    | Sync word 0xDF55
+368   | Payload
 
-   * - Bits
-     - Meaning
-   * - 16 bits
-     - Sync word 0xDF55
-   * - 368 bits
-     - Payload
+(..needs cleanup to here..)
 
 #### BERT Receiver
 
@@ -372,13 +384,13 @@ reset.  The received bit is then also shifted into the LFSR state register.
 Once a sequence of eighteen (18) consecutive good bits are recovered (twice
 the length of the LFSR), the stream is considered syncronized.
 
-.. figure:: ../images/m17-prbs9-sync.png
+<center><span style="font-weight:bold">Figure X</span> M17 PRBS9 Synchronization</center>
+![M17_PRBS9_Sync](m17-prbs9-sync.png?classes=caption "M17 PRBS9 Sync")
 
 During synchronization, bits received and bit errors are not counted towards
 the overall bit error rate.
 
-.. code-block:: c++
-
+```
   class PRBS9 {
     ...
     static constexpr uint8_t LOCK_COUNT = 18;   // 18 consecutive good bits.
@@ -402,6 +414,7 @@ the overall bit error rate.
     }
     ...
   };
+```
 
 ##### Counting Bit Errors
 
@@ -409,10 +422,10 @@ After synchronization, BERT mode switches to error-counting mode, where the
 received bits are compared to a free-running PRBS9 generator.  Each bit that
 does not match the output of the free-running LFSR is counted as a bit error.
 
-.. figure:: ../images/m17-prbs9-validation.png
+<center><span style="font-weight:bold">Figure X</span> M17 PRBS9 Validation</center>
+![M17_PRBS9_Validation](m17-prbs9-validation.png?classes=caption "M17 PRBS9 Validation")
 
-.. code-block:: c++
-
+```
   class PRBS9 {
     ...
     // PRBS validator.  Returns 0 if the bit matches the PRBS, otherwise 1.
@@ -431,6 +444,7 @@ does not match the output of the free-running LFSR is counted as a bit error.
     }
     ...
   };
+```
 
 ##### Resynchronization
 
@@ -444,18 +458,12 @@ towards the bit error rate.
 
 #### References
 
- - http://www.itu.int/rec/T-REC-O.150-199210-S
- - http://www.pldworld.com/_hdl/5/-thorsten-gaertner.de/vhdl/PRBS.pdf
+ - [ITU O.150 : Digital test patterns for performance measurements on digital transmission equipment](http://www.itu.int/rec/T-REC-O.150-199210-S)
+ - [PRBS (according ITU-T O.150) and Bit-Sequence Tester : VHDL-Modules](http://www.pldworld.com/_hdl/5/-thorsten-gaertner.de/vhdl/PRBS.pdf)
 
+---
 
-
-
-
-
-
-
-
-
+## FEC items that need work
 
 
 ### Bit types
