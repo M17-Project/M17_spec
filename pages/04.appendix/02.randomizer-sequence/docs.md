@@ -1,5 +1,5 @@
 ---
-title: 'Decorrelator Sequence'
+title: 'Randomizer Sequence'
 taxonomy:
     category:
         - docs

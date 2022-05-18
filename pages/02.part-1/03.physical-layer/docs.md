@@ -146,7 +146,7 @@ Payload shall be transmitted in multiples of 2 bits (1 symbol).
 To avoid transmitting long sequences of constant symbols (e.g. +3, +3, +3, ...), a simple randomizing algorithm is used. At the transmitter, all payload bits shall be XORed with a pseudorandom predefined sequence before being converted to symbols.  At the receiver, the randomized payload symbols are converted to bits and are
 again passed through the same XOR algorithm to obtain the original payload bits.   
 
-The pseudorandom sequence is composed of the 46 bytes (368 bits) found in the appendix ([Decorrelator Sequence](../../appendix/decorrelator-sequence)).
+The pseudorandom sequence is composed of the 46 bytes (368 bits) found in the appendix ([Randomizer Sequence](../../appendix/randomizer-sequence)).
 
 Before each bit of payload is converted to symbols for transmission, it is XORed with a bit from the pseudorandom sequence.  The first payload bit is XORed with most significant bit (bit 7) of sequence byte 0 (0xD6), second payload bit with bit 6 of sequence byte 0, continuing to the eigth payload bit and bit 0 of sequence byte 0.  The ninth payload bit is XORed with bit 7 of sequence byte 1 (0xB5), tenth payload bit with bit 6 of sequence byte 1, etc.
 
@@ -192,4 +192,6 @@ EoT --> phy_chunk_dibit
 ### Issues to address...
 
 * Time limits for RF carrier and no symbol generation before the preamble and after the EoT.
+* Nothing to consistently address loss of signal/fades/missing EoT
+* No limit on transmission duration
 
