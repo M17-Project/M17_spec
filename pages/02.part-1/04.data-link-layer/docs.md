@@ -81,7 +81,7 @@ During a [Transmission](../physical-layer#transmission), only one LSF Sync Burst
 
 BERT Sync Bursts, if present, may only follow the Preamble or other BERT frames.
 
-Multiple Stream and Packet Sync Bursts may be present during a Transmission.
+Multiple Stream or Packet Sync Bursts may be present during a Transmission, depending on the mode.
 
 <center><span style="font-weight:bold">Table 2</span> Frame Specific Sync Bursts</center>
 Frame Type | Preamble | Sync Burst Bytes | Sync Burst Symbols
@@ -144,7 +144,7 @@ Message                  | CRC Output
 (empty string)           | 0xFFFF
 ASCII string "A"         | 0x206E
 ASCII string "123456789" | 0x772B
-Bytes 0x00 to 0xFF       | 0x1c31
+Bytes 0x00 to 0xFF       | 0x1C31
 
 #### LSF Contents ECC/FEC
 
