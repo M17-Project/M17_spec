@@ -156,7 +156,7 @@ On the receive side, symbols are converted to randomized payload bits.  Each ran
 
 ### End of Transmission marker (EoT)
 
-Every transmission ends with a distinct symbol stream, which shall consist of of 40 ms (192 symbols) of a repeating 0x55 0x5D (+3, +3, +3, +3, +3, +3, -3, +3) pattern.
+Every transmission ends with a distinct symbol stream, which shall consist of 40 ms (192 symbols) of a repeating 0x55 0x5D (+3, +3, +3, +3, +3, +3, -3, +3) pattern.
 
 ### Carrier-sense Multiple Access (CSMA)
 
