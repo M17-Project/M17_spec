@@ -25,7 +25,7 @@ There are four frame types each with their own specific Sync Burst: [Link Setup 
 #### Forward Error Correction (FEC)
 The Data Link Layer Contents of a specific frame are modified using various Error Correction Code (ECC) methods. Applying these codes at the transmitter allows the receiver to correct some amount of induced errors in a Forward Error Correction (FEC) process.  It is this ECC/FEC data that is inserted into the Payload portion of the Frame.  The exact ECC/FEC techniques used vary by frame type. 
 
-Applying ECC/FEC may be a multi-step process.  To distinquish data bits at the various stages of the process, Bit Types are defined as shown in the following table.  It is important to note that not all ECC/FEC processes utilize both Type 2 and Type 3 bits.  Prior to decoding Data Link Layer contents, a receiver would need to convert incoming bits from Type 4 back to Type 1 bits, which may also include conversion through Type 3 and/or Type 2 bits.  The exact ECC/FEC methods and Bit Types utilized will be indicated for each frame type.
+Applying ECC/FEC may be a multi-step process.  To distinguish data bits at the various stages of the process, Bit Types are defined as shown in the following table.  It is important to note that not all ECC/FEC processes utilize both Type 2 and Type 3 bits.  Prior to decoding Data Link Layer contents, a receiver would need to convert incoming bits from Type 4 back to Type 1 bits, which may also include conversion through Type 3 and/or Type 2 bits.  The exact ECC/FEC methods and Bit Types utilized will be indicated for each frame type.
 
 <center><span style="font-weight:bold">Table 1</span> Bit Types</center>
 Type   | Description
