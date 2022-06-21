@@ -3,48 +3,99 @@ title: 'Data Link Layer'
 taxonomy:
     category:
         - docs
-media_order: M17_stream.png
+media_order:
 ---
 
-The Data Link layer is split into three modes:
+### Frame
 
-* Packet mode
-   Data are sent in small bursts, on the order of 100s to 1000s of bytes at a time, after which the physical layer stops sending data. e.g. messages, beacons, etc.
+A Frame shall be composed of a frame type specific [Synchronization Burst (Sync Burst)](#synchronization-burst-sync-burst) followed by 368 bits (184 symbols) of Payload.  The combination of Sync Burst plus Payload results in a constant 384 bit (192 symbol) Frame.  At the M17 data rate of 4800 symbols/s (9600 bits/s), each Frame is exactly 40ms in duration. 
 
-* Stream mode
-   Data are sent in a continuous stream for an indefinite amount of time, with no break in physical layer output, until the stream ends. e.g. voice data, bulk data transfers, etc.
+There are four frame types each with their own specific Sync Burst: [Link Setup Frames (LSF)](#link-setup-frame-lsf), Bit Error Rate Test (BERT) Frames, [Stream Frames](#stream-frames), and [Packet Frames](#packet-frames).
 
-* BERT mode
+<table style="width:75%;margin-left:auto;margin-right:auto;">
+    <caption><span style="font-weight:bold">Figure 5 </span><span>Frame</span></caption>
+    <tbody style="text-align:center;border:none;">
+        <tr style="font-weight:bold; color:black;">
+            <th style="border:3px solid black;text-align:center;width:35%;">SYNC BURST<br/>(16 bits / 8 symbols)</th>
+            <th style="border:3px solid black;text-align:center;">PAYLOAD<br/>(368 bits / 184 symbols)</th>
+        </tr>
+    </tbody>
+</table>
+
+#### Forward Error Correction (FEC)
+The Data Link Layer Contents of a specific frame are modified using various Error Correction Code (ECC) methods. Applying these codes at the transmitter allows the receiver to correct some amount of induced errors in a Forward Error Correction (FEC) process.  It is this ECC/FEC data that is inserted into the Payload portion of the Frame.  The exact ECC/FEC techniques used vary by frame type. 
+
+Applying ECC/FEC may be a multi-step process.  To distinquish data bits at the various stages of the process, Bit Types are defined as shown in the following table.  It is important to note that not all ECC/FEC processes utilize both Type 2 and Type 3 bits.  Prior to decoding Data Link Layer contents, a receiver would need to convert incoming bits from Type 4 back to Type 1 bits, which may also include conversion through Type 3 and/or Type 2 bits.  The exact ECC/FEC methods and Bit Types utilized will be indicated for each frame type.
+
+<center><span style="font-weight:bold">Table 1</span> Bit Types</center>
+Type   | Description
+----   | -----------
+Type 1 | Data link layer content bits
+Type 2 | Bits after appropriate encoding
+Type 3 | Bits after puncturing
+Type 4 | Interleaved (re-ordered) bits
+
+<center><span style="font-weight:bold">Figure 1</span> Transmit Contents to Payload</center>
+[mermaid]
+graph LR
+  contents[Data Link Layer Contents] -- Type 1 bits --> fec[ECC/FEC Encode] -- Type 4 bits--> payload[Payload]
+  style contents fill:#ffffffff,stroke:#ffffffff,stroke-width:0px
+  style fec fill:#fff,stroke:#000,stroke-width:2px
+  style payload fill:#ffffffff,stroke:#ffffffff,stroke-width:0px
+[/mermaid]
+
+<center><span style="font-weight:bold">Figure 2</span> Receive Payload to Contents</center>
+[mermaid]
+graph LR
+  payload[Payoad] -- Type 4 bits --> fec[ECC/FEC Decode] -- Type 1 bits--> contents[Data Link Layer Contents]
+  style contents fill:#ffffffff,stroke:#ffffffff,stroke-width:0px
+  style fec fill:#fff,stroke:#000,stroke-width:2px
+  style payload fill:#ffffffff,stroke:#ffffffff,stroke-width:0px
+[/mermaid]
+
+### Modes
+
+The Data Link layer shall operate in one of three modes during a [Transmission](../physical-layer#transmission).
+
+* [Stream Mode](#stream-mode)  
+  Data are sent in a continuous stream for an indefinite amount of time, with no break in physical layer output, until the stream ends. e.g. voice data, bulk data transfers, etc.
+  Stream Mode shall start with an LSF and is followed by one or more Stream Frames.
+
+* [Packet Mode](#packet-mode)  
+   Data are sent in small bursts, up to 798 bytes at a time, after which the physical layer stops sending data. e.g. messages, beacons, etc.
+   Packet Mode shall start with an LSF and is followed by one to 32 Packet Frames.
+
+* [BERT Mode](#bert-mode)  
    PRBS9 is used to fill frames with a deterministic bit sequence.  Frames are sent in a continuous sequence.
+   Bert Mode shall start with a BERT frame, and is followed by one or more BERT Frames.
 
-When the physical layer is idle (no RF being transmitted or received), the data link defaults to packet mode.
+**Note:** As is the convention with other networking protocols, all values and data structures are encoded in big endian byte order.
 
-As is the convention with other networking protocols, all values are
-encoded in big endian byte order.
+### Synchronization Burst (Sync Burst)
 
-### Stream Mode
+All frames shall be preceded by 16 bits (8 symbols) of [Sync Burst](../physical-layer#synchronization-burst-sync-burst).  The Sync Burst definition straddles both the Physical Layer and the Data Link Layer.
 
-In Stream Mode, an *indefinite* amount of payload data is sent continuously without breaks in the physical layer. The *stream* is broken up into parts, called *frames* to not confuse them with *packets* sent in packet mode. Frames contain payload data interleaved with frame signalling (similar to packets). Frame signalling is contained within the **Link Information Channel (LICH)**.
+Only LSF and BERT Sync Bursts may immediately follow the [Preamble](../physical-layer#preamble), and each requires a different Preamble symbol pattern as shown in the table below.  
 
-#### Sync Burst
+During a [Transmission](../physical-layer#transmission), only one LSF Sync Burst may be present, and if present, it shall immediately follow the Preamble.
 
-All frames are preceded by a 16-bit *synchronization burst*.
+BERT Sync Bursts, if present, may only follow the Preamble or other BERT frames.
 
-* Link setup frames shall be preceded with 0x55F7.
-* Stream frames shall be preceeded with 0xFF5D.
-* Packet frames shall be preceeded with 0x75FF.
-* BERT frames shall be preceeded with 0xDF55.
+Multiple Stream or Packet Sync Bursts may be present during a Transmission, depending on the mode.
 
-All syncwords are type 4 bits.
+<center><span style="font-weight:bold">Table 2</span> Frame Specific Sync Bursts</center>
+Frame Type | Preamble | Sync Burst Bytes | Sync Burst Symbols
+---------- | -------- | ---------------- | ------------------
+LSF        | +3, -3   | 0x55 0xF7        | +3, +3, +3, +3, -3, -3, +3, -3
+BERT       | -3, +3   | 0xDF 0x55        | -3, +3, -3, -3, +3, +3, +3, +3
+Stream     | None     | 0xFF 0x5D        | -3, -3, -3, -3, +3, +3, -3, +3
+Packet     | None     | 0x75 0xFF        | +3, -3, +3, +3, -3, -3, -3, -3
 
-These sync words are based on [Barker codes](https://en.wikipedia.org/wiki/Barker_code).
+### Link Setup Frame (LSF)
 
-#### Link setup frame
+The LSF is the intial frame for both Stream and Packet Modes and contains information needed to establish a link.
 
-First frame of the transmission contains full LSF data. It’s called the **Link Setup Frame (LSF)**, and is not part of any superframes.
-
-##### LSF Fields
-
+<center><span style="font-weight:bold">Table 3</span> Link Setup Frame Contents</center>
 Field | Length   | Description
 ----- | ------   | -----------
 DST   | 48 bits  | Destination address - Encoded callsign or a special number (eg. a group)
@@ -52,99 +103,32 @@ SRC   | 48 bits  | Source address - Encoded callsign of the originator or a spec
 TYPE  | 16 bits  | Information about the incoming data stream
 META  | 112 bits | Metadata field, suitable for cryptographic metadata like IVs or single-use numbers, or non-crypto metadata like the sender’s GNSS position.
 CRC   | 16 bits  | CRC for the link setup data
-TAIL  | 4 bits   | Flushing bits for the convolutional encoder that do not carry any information. Only included for RF frames, not included for IP purposes.
+Total: 240 Type 1 bits
 
-##### Bitfields of Type Field
+##### LSF DST and SRC
 
+Destination and source addresses may be encoded amateur radio callsigns, or special numbers.  See the [Address Encoding Appendix](../../appendix/address-encoding) for details.
+
+##### LSF TYPE
+
+The TYPE field contains information about the frames to follow LSF.  The Packet/Stream indicator bit determines which mode (Packet or Stream) will be used during the transmission.
+The remaining field meanings are defined by the specific mode and application.
+
+<center><span style="font-weight:bold">Table 4</span> LSF TYPE definition</center>
 Bits   | Meaning
 ----   | -------
-0      | Packet/stream indicator, 0=packet, 1=stream
-1..2   | Data type indicator, $01_2$ =data (D), $10_2$ =voice (V), $11_2$ =V+D, $00_2$ =reserved
-3..4   | Encryption type, $00_2$ =none, $01_2$ =AES, $10_2$ =scrambling, $11_2$ =other/reserved
-5..6   | Encryption subtype (meaning of values depends on encryption type)
+0      | Packet/Stream indicator, 0=Packet Mode, 1=Stream Mode
+1..2   | Data type indicator
+3..4   | Encryption type
+5..6   | Encryption subtype
 7..10  | Channel Access Number (CAN)
 11..15 | Reserved (don’t care)
 
-The fields in Table 3 (except TAIL) form initial LSF. It contains all information needed to establish M17 link. Later in the transmission, the initial LSF is divided into 6 “chunks” and transmitted beside the payload data. This allows late-joiners to reconstruct the LICH after collecting all the pieces, and start decoding the stream even though they missed the beginning of the transmission. The process of collecting full LSF takes 6 frames or 6\*40 ms = 240 ms. Four TAIL bits are needed for the convolutional coder to go back to state 0, so the ending trellis position is also known. 
+##### LSF META
 
-Voice coder rate is inferred from TYPE field, bits 1 and 2.
+The LSF META field is defined by the specific application.
 
-##### Voice Coder Rates
-
-Data Type Indicator | Voice Coder Rate
-------------------- | ----------------
-$00_2$              | none / reserved
-$01_2$              | no voice
-$10_2$              | 3200 bps
-$11_2$              | 1600 bps
-
-#### Subsequent Frames
-
-##### Fields for Frames other than LSF
-
-Field   | Length   | Description
------   | ------   | -----------
-LICH    | 48 bits  | LSF chunk, one of 6
-FN      | 16 bits  | Frame number, starts from 0 and increments every frame to a max of 0x7fff where it will then wrap back to 0. High bit set indicates this frame is the last of the stream
-PAYLOAD | 128 bits | Payload/data, can contain arbitrary data
-TAIL    | 4 bits   | Flushing bits for the convolutional encoder that don’t carry any information
-
-The most significant bit in the FN counter is used for transmission end signalling. When transmitting the last frame, it shall be set to 1 (one), and 0 (zero) in all other frames.
-
-The payload is used so that earlier data in the voice stream is sent first. For mixed voice and data payloads, the voice data is stored first, then the data.
-
-##### LSF Chunk Structure
-
-Bits   | Content
-----   | -------
-0..39  | 40 bits of full LSF
-40..42 | A modulo 6 counter (LICH_CNT) for LSF re-assembly
-43..47 | Reserved
-
-##### Payload Example 1
-
-`Codec2 encoded frame t + 0 | Codec2 encoded frame t + 1`
-
-##### Payload Example 2
-
-`Codec2 encoded frame t + 0 | Mixed data t + 0`
-
-#### Superframes
-
-Each frame contains a chunk of the LSF frame that was used to establish the stream. Frames are grouped into superframes, which is the group of 6 frames that contain everything needed to rebuild the original LSF packet, so that the user who starts listening in the middle of a stream (late-joiner) is eventually able to reconstruct the LSF message and understand how to receive the in-progress stream.
-
-![M17_stream](M17_stream.png?classes=caption "Stream consisting of one superframe")
-
-[mermaid]
-graph TD
-c0["conv. coder"]
-p0["P_1 puncturer"]
-i0["interleaver"]
-w0["decorrelator"]
-s0["prepend LSF_SYNC"]
-l0["LICH combiner"]
-chunker_40["chunk 40 bits"]
-golay_24_12["Golay (24, 12)"]
-c1["conv. coder"]
-p1["P_2 puncturer"]
-i1["interleaver"]
-w1["decorrelator"]
-s1["prepend FRAME_SYNC"]
-fn["add FN"]
-chunker_128["chunk 128 bits"]
-framecomb["Frame Combiner"]
-supercomb["Superframe Combiner"]
-
-counter --> l0
-LSF --> c0 --> p0 --> i0 --> w0 --> s0 --> supercomb
-LSF --> chunker_40 --> l0 --> golay_24_12 --> framecomb
-data --> chunker_128 --> fn --> c1 --> p1 --> framecomb
-framecomb --> i1 --> w1 --> s1 --> supercomb
-preamble --> supercomb
-[/mermaid]
-<center>An overview of the forward dataflow</center>
-
-#### CRC
+##### <span id="lsf-crc">LSF CRC</span>
 
 M17 uses a non-standard version of 16-bit CRC with polynomial $x^{16} + x^{14} + x^{12} + x^{11} + x^8 + x^5 + x^4 + x^2 + 1$ or 0x5935 and initial value of 0xFFFF. This polynomial allows for detecting all errors up to hamming distance of 5 with payloads up to 241 bits, which is less than the amount of data in each frame.
 
@@ -154,104 +138,389 @@ The input to the CRC algorithm consists of DST, SRC (each 48 bits), 16 bits of T
 
 The test vectors in the following table are calculated by feeding the given message and then 16 zero bits to the CRC algorithm.
 
+<center><span style="font-weight:bold">Table 5</span> CRC Test Vectors</center>
 Message                  | CRC Output
 -------                  | ----------
 (empty string)           | 0xFFFF
 ASCII string "A"         | 0x206E
 ASCII string "123456789" | 0x772B
-Bytes 0x00 to 0xFF       | 0x1c31
+Bytes 0x00 to 0xFF       | 0x1C31
+
+#### LSF Contents ECC/FEC
+
+The 240 Type 1 bits of the Link Setup Frame Contents along with 4 flush bits are [convolutionally coded](../../04.appendix/03.convolutional-encoder) using a rate 1/2 coder with constraint K=5.  244 bits total are encoded resulting in 488 Type 2 bits.
+
+Type 3 bits are computed by [\(P_1\) puncturing](../../04.appendix/05.code-puncturing) the Type 2 bits, resulting in 368 Type 3 bits.
+
+[Interleaving](../../04.appendix/06.interleaving/) the Type 3 bits produces 368 Type 4 bits that are ready to be passed to the Physical Layer.
+
+Within the Physical Layer, the 368 Type 4 bits are randomized and combined with the 16-bit LSF Sync Burst, which results in a complete frame of 384 bits (384 bits / 9600bps = 40 ms).
+
+[mermaid]
+graph TD
+
+lsf_conv_coder["convolutional encoder"]
+lsf_p1_puncturer["P<sub>1</sub> puncturer"]
+lsf_interleaver["interleaver"]
+lsf_randomizer["randomizer"]
+lsf_sync["prepend LSF Sync Burst"]
+lsf_flush["add 4 flush bits"]
+
+phy_cont["Physical Layer Continues..."]
+
+classDef default fill:#fff,stroke:#000,stroke-width:2px
+
+subgraph phy["Physical Layer"]
+    lsf_randomizer --> lsf_sync -- 384-bit Frame -->phy_cont
+end
+
+subgraph data_link["Data Link Layer"]
+    LSF[LSF Contents] -- 240 Type 1 bits--> lsf_flush --> lsf_conv_coder -- 488 Type 2 bits --> lsf_p1_puncturer -- 368 Type 3 bits --> lsf_interleaver -- 368 Type 4 bits --> lsf_randomizer
+end
+
+[/mermaid]
+
+
+### Stream Mode
+
+In Stream Mode, an *indefinite* amount of data is sent continuously without breaks in the physical layer. Stream Mode shall always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 1 (Stream Mode). Other valid LSF TYPE parameters are selected per application.
+
+Following the LSF, one or more Stream Frames may be sent.  
+
+<table>
+    <caption><span style="font-weight:bold">Figure 3 </span><span>Stream Mode</span></caption>
+    <tbody style="text-align:center;border:none;">
+        <tr style="font-weight:bold; color:black;">
+            <td style="border:3px solid black;">PREAMBLE</td>
+            <td style="border:3px solid black;">LSF SYNC BURST</td>
+            <td style="border:3px solid black;">LSF FRAME</td>
+            <td style="border:3px solid black;">STREAM SYNC BURST</td>
+            <td style="border:3px solid black;">STREAM FRAME</td>
+            <td style="border:3px dashed black;">&bull;&bull;&bull;</td>
+            <td style="border:3px solid black;">STREAM SYNC BURST</td>
+            <td style="border:3px solid black;">STREAM FRAME</td>
+            <td style="border:3px solid black;">EoT</td>
+        </tr>
+    </tbody>
+</table>
+
+#### Stream Frames
+
+Stream Frames are composed of frame signalling information contained within the [Link Information Channel (LICH)](#link-information-channel-lich) combined with [Stream Contents](#stream-contents).  Both the LICH and Stream Contents utilize different ECC/FEC mechanisms, and are combined at the bit level in a [Frame Combiner](#frame-combiner).
+
+
+##### Link Information Channel (LICH)
+
+The LICH allows for late listening and indepedent decoding to check destination address if the LSF for the current transmission was missed.
+
+Each Stream Frame contains a 48-bit Link Information Channel (LICH). Each LICH within a Stream Frame includes a 40-bit chunk of the 240-bit LSF frame that was used to establish the stream.  A 3-bit modulo 6 counter (LICH_CNT) is used to indicate which chunk of the LSF is present in the current Stream Frame.  LICH_CNT starts at 0, increments to 5, then wraps back to 0. 
+
+<center><span style="font-weight:bold">Table 7</span> Link Information Channel Contents</center>
+Bits   | Content
+----   | -------
+0..39  | 40-bit chunk of full LSF Contents (Type 1 bits)
+40..42 | LICH_CNT
+43..47 | Reserved
+Total: 48 bits
+
+The 40-bit chunks start with the most significant byte of the LSF.
+
+<center><span style="font-weight:bold">Table 8</span> LICH_CNT and LSF bits</center>
+LICH_CNT | LSF bits
+-------- | -------
+0        | 239:200
+1        | 199:160
+2        | 159:120
+3        | 119:80
+4        | 79:40
+5        | 39:0
+
+##### LICH Contents ECC/FEC
+
+The 48-bit LICH Contents is partitioned into 4 12-bit parts and encoded using [Golay (24, 12) code](../../appendix/golay-encoder). This produces 96 encoded Type 2 bits that are fed into the [Frame Combiner](#frame-combiner).
+
+##### Stream Contents
+
+<center><span style="font-weight:bold">Table 6</span> Stream Contents</center>
+Field   | Length   | Description
+-----   | ------   | -----------
+FN      | 16 bits  | Frame Number
+STREAM  | 128 bits | Stream data, can contain arbitrary data
+Total: 144 Type 1 bits
+
+The Frame Number (FN) starts from 0 and increments every frame to a maximum of 0x7fff where it will then wrap back to 0. The most significant bit in the FN is used for transmission end signalling. When transmitting the last frame, it shall be set to 1 (one), and 0 (zero) in all other frames.
+
+Stream data (STREAM) is obtained by extracting 128 bits at a time from the continuous stream of application layer data. If the last frame will contain less than 128 bits of valid data, the remaining bits should be set to zero.  
+
+##### Stream Contents ECC/FEC
+
+The 144 Type 1 bits of Stream Contents along with 4 flush bits are [convolutionally coded](#../../04.appendix/03.convolutional-encoder) using a rate 1/2 coder with constraint K=5.  148 bits total are encoded resulting in 296 Type 2 bits. 
+
+These bits are [\(P_2\) punctured](../../04.appendix/05.code-puncturing) to generate 272 Type 3 bits that are fed into the [Frame Combiner](#frame-combiner).
+
+##### Frame Combiner
+
+The 96 Type 2 bits of the ECC/FEC LICH Contents are concatenated with 272 Type 3 bits of the ECC/FEC Stream Contents resuting in 368 of combined Type 2/3 bits.
+
+<center><span style="font-weight:bold">Table N</span> LICH and Stream Combined</center>
+Field  | Length   | Description
+------ | ------   | -----------
+LICH   | 96 bits  | ECC/FEC LICH Contents Type 2 bits
+STREAM | 272 bits | ECC/FEC STREAM Contents Type 3 bits
+Total: 368 Type 2/3 bits
+
+[Interleaving](../../04.appendix/06.interleaving/) the Combined Type 2/3 bits produces 368 Type 4 bits that are ready to be passed to the Physical Layer.
+
+Within the Physical Layer, the 368 Type 4 bits are randomized and combined with the 16-bit Stream Sync Burst, which results in a complete frame of 384 bits (384 bits / 9600bps = 40 ms).
+
+[mermaid]
+graph TD
+
+lich_chunk_40["chunk 40 bits"]
+lich_golay_24_12["Golay (24, 12)"]
+lich_counter["add LICH counter"]
+
+stream_data["Stream Data"]
+stream_chunk_128["chunk 128 bits"]
+stream_frame_number["prepend frame number"]
+stream_flush["add 4 flush bits"]
+stream_conv_coder["convolutional encoder"]
+stream_p2_puncturer["P<sub>2</sub> puncturer"]
+
+lich_stream_frame_combiner["Frame Combiner"]
+
+stream_interleaver["interleaver"]
+stream_randomizer["randomizer"]
+stream_sync["prepend Stream Sync Burst"]
+
+phy_cont["Physical Layer Continues..."]
+
+classDef default fill:#fff,stroke:#000,stroke-width:2px
+
+subgraph phy ["Physical Layer"]
+    stream_randomizer --> stream_sync -- 384-bit Frame --> phy_cont
+end
+
+subgraph data_link["Data Link Layer"]
+    LSF[LSF Contents] --> lich_chunk_40 -- 40 Type 1 bits --> lich_counter --> lich_golay_24_12 -- 96 Type 2 bits --> lich_stream_frame_combiner
+    stream_chunk_128 --> stream_frame_number -- 144 Type 1 bits --> stream_flush --> stream_conv_coder -- 296 Type 2 bits --> stream_p2_puncturer -- 272 Type 3 bits --> lich_stream_frame_combiner
+    lich_stream_frame_combiner -- 96 Type 2 bits + 372 Type 3 bits = 368 Type 2/3 bits --> stream_interleaver -- 368 Type 4 bits --> stream_randomizer
+end
+
+subgraph application_layer["Application Layer"]
+    stream_data -- Continuous data --> stream_chunk_128
+end
+
+[/mermaid]
+
+#### Stream Superframes
+
+Stream Frames are grouped into Stream Superframes, which is the group of 6 frames that contain everything needed to rebuild the original LSF packet, so that the user who starts listening in the middle of a stream (late-joiner) is eventually able to reconstruct the LSF message and understand how to receive the in-progress stream.
+
+<center><span style="font-weight:bold">Figure 6</span> Stream Superframes</center>
+![M17_stream](M17_stream.png?classes=caption "Stream consisting of one superframe")
 
 ### Packet Mode
 
-In *packet mode*, a finite amount of payload data (for example – text messages or application layer data) is wrapped with a packet, sent over the physical layer, and is completed when done. ~~Any acknowledgement or retransmission is done at the application layer.~~
+In Packet Mode, a Single Packet with up to 798 bytes of Application Packet Data along with an appended two byte CRC may be sent over the physical layer during one Transmission.  
 
-#### Link Setup Frame
-
-Packet mode uses the same link setup frame that has been defined for stream mode above. The packet/stream indicator is set to 0 in the type field.
-
-##### Bitfields of Type Field
-
-Bits   | Meaning
-----   | -------
-0      | Packet/stream indicator, 0=packet, 1=stream
-1..2   | Data type indicator, $01_2$ =data (D), $10_2$ =voice (V), $11_2$ =V+D, $00_2$ =reserved
-3..4   | Encryption type, $00_2$ =none, $01_2$ =AES, $10_2$ =scrambling, $11_2$ =other/reserved
-5..6   | Encryption subtype (meaning of values depends on encryption type)
-7..10  | Channel Access Number (CAN)
-11..15 | Reserved (don’t care)
-
-Raw packet frames have no packet type metadata associated with them. Encapsulated packet format is discussed in Packet Superframes in the Application Layer section. This provides data type information and is the preferred format for use on M17.
-
-When encryption type is $00_2$, meaning no encryption, the encryption subtype bits are used to indicate the contents of the META field in the LSF. Since that space would otherwise go be unused, we can store small bits of data in that field such as free text or the sender’s GNSS position.
-
-Encryption type and subtype bits, including the plaintext data formats when not using encryption, are described in more detail in the Application Layer section of this document.
-
-Currently the contents of the source and destination fields are arbitrary as no behavior is defined which depends on the content of these fields. The only requirement is that the content is base-40 encoded.
-
-#### Packet Format
-
-M17 packet mode can transmit up to 798 bytes of payload data within one transmission. It acheives a base throughput of 5 kbps, and a net throughput of about 4.7 kbps for the largest data payload, and over 3 kbps for 100-byte payloads. [^1]
-[^1]: Net throughput takes into account preamble and link setup overhead.
-
-The packet superframe consists of 798 payload data bytes and a 2-byte CCITT CRC-16 checksum.
-
-##### Byte Fields of Packet Superframe
-
+<center><span style="font-weight:bold">Table 9</span> Single Packet</center>
 Bytes  | Meaning
 -----  | -------
-1..798 | Packet payload
-2      | CRC-16
+1..798 | Application Packet Data
+2      | CRC
+Total: 800 bytes (maximum)
 
-The CRC used here is the same as described in [Chapter 2.4](https://spec.m17project.org/part-1/data-link-layer#crc).
+The CRC used here is the same as described in [LSF CRC](#lsf-crc).
 
-Packet data is split into frames of 368 type 4 bits preceded by a packet-specific 16-bit sync word (0xFF5D). This is the same size frame used by stream mode.
+Packet Mode shall always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode).  Following the LSF, one to 32 Packet Frames may be sent.  
 
-The packet frame starts with a 210 bit frame of type 1 data. It is noteworthy that it does not terminate on a byte boundary.
+Packet Mode acheives a base throughput of 5 kbps, a net throughput of approximately 4.7 kbps for the largest data payload, and over 3 kbps for 100-byte payloads.  Net throughput takes into account preamble and link setup overhead.
 
-The frame has 200 bits (25 bytes) of payload data, 6 bits of frame metadata, and 4 bits to flush the convolutional coder.
+<table>
+    <caption><span style="font-weight:bold">Figure 3 </span><span>Packet Mode</span></caption>
+    <tbody style="text-align:center;border:none;">
+        <tr style="font-weight:bold; color:black;">
+            <td style="border:3px solid black;">PREAMBLE</td>
+            <td style="border:3px solid black;">LSF SYNC BURST</td>
+            <td style="border:3px solid black;">LSF FRAME</td>
+            <td style="border:3px solid black;">PACKET SYNC BURST</td>
+            <td style="border:3px solid black;">PACKET FRAME</td>
+            <td style="border:3px dashed black;">&bull;&bull;&bull;</td>
+            <td style="border:3px solid black;">PACKET SYNC BURST</td>
+            <td style="border:3px solid black;">PACKET FRAME</td>
+            <td style="border:3px solid black;">EoT</td>
+        </tr>
+    </tbody>
+</table>
 
-##### Bit Fields of Packet Frame
+#### Packet Frames
 
+Packet Frames contain Packet Contents after ECC/FEC is applied. 
+
+#### Packet Contents
+
+<center><span style="font-weight:bold">Table 10</span> Packet Contents</center>
 Bits   | Meaning
 ----   | -------
-0..199 | Packet payload
-1      | EOF indicator
-5      | Frame / Byte count
-4      | Flush bits for convolutional coder
+0..199 | 200-bit chunk of Single Packet 
+1      | End of Frame (EOF) indicator
+5      | Packet Frame/Byte Counter
+Total: 206 Type 1 bits
 
-The metadata field contains a 1 bit **end of frame (EOF)** indicator, and a 5-bit frame/byte counter.
+The metadata field contains the 1-bit End of Frame (EOF) indicator, and the 5-bit Packet Frame/Byte Counter.
 
-The **EOF** bit is 1 only on the last frame. The **counter** field is used to indicate the frame number when **EOF** is 0, and the number of bytes in the last frame when **EOF** is 1. This encodes the exact packet size, up to 800 bytes, in a 6-bit field.
+Each Packet Frame Content payload contains up to a 25-byte chunk of the Single Packet.  The 25-byte chunks start with the first byte of the Application Packet data, and finally end with the 2 CRC bytes.  If fewer than 25 bytes are able to be extracted from the Single Packet (i.e. for the last Packet Frame), the Single Packet chunk is padded with undefined bytes to reach 25 bytes total.  This results in a minimum of one to a maximum of 32 Packet Frames per Transmission.  The Packet Frame Counter is reset to zero at the start of Packet Mode.  
 
-##### Metadata Field with EOF = 0
+For each Packet Frame where there is at least 1 byte remaining in the Single Packet after removing a 25-byte chunk, the EOF metadata bit is set to zero, the Packet Frame Counter value is inserted into the Packet Frame/Byte Counter metadata field, and the Packet Frame Counter is incremented.
 
+When there are no bytes remaining in the Single Packet after removing a 25-byte (or less) chunk, the EOF metadata bit is set to one, the Packet Byte Counter is set to the number of valid bytes extracted in the last chunk (1 to 25), inserted into the Packet Frame/Byte Counter metadata field, and Packet Mode is ended.
+
+<br/>
+
+<center><span style="font-weight:bold">Table 11</span> Metadata Field with EOF = 0</center>
 Bits | Meaning
 ---- | -------
 0    | Set to 0, Not end of frame
 1..5 | Frame number, 0..31
 
-##### Metadata Field with EOF = 1
+<br/>
 
+<center><span style="font-weight:bold">Table 12</span> Metadata Field with EOF = 1</center>
 Bits | Meaning
 ---- | -------
 0    | Set to 1, End of frame
 1..5 | Number of bytes in frame, 1..25
 
-Note that it is non-conforming to send a last frame with a length of 0 bytes. The number of bytes **includes** 2-byte CRC.
+##### Packet Contents ECC/FEC
 
-#### Convolutional Coding
+The 206 Type 1 bits of the Packet Contents along with 4 flush bits are [convolutionally coded](#../../04.appendix/03.convolutional-encoder) using a rate 1/2 coder with constraint K=5.  210 bits total are encoded resulting in 410 Type 2 bits. 
 
-The entire frame is convolutionally coded, giving 420 bits of type 2 data. It is then punctured using a 7/8 puncture matrix (1,1,1,1,1,1,1,0) to give 368 type 3 bits. These are then interleaved and decorrelated to give 368 type 4 bits.
+These bits are [\(P_3\) punctured](../../04.appendix/05.code-puncturing) to generate 368 Type 3 bits.
 
-##### Packet Frame
+[Interleaving](../../04.appendix/06.interleaving/) the Type 3 bits produces 368 Type 4 bits that are ready to be passed to the Physical Layer.
 
-Bits     | Meaning
-----     | -------
-16 bits  | Sync word 0xFF5D
-368 bits | Payload
+Within the Physical Layer, the 368 Type 4 bits are randomized and combined with the 16-bit Packet Sync Burst, which results in a complete frame of 384 bits (384 bits / 9600bps = 40 ms).
 
-#### Carrier-sense Multiple Access
+[mermaid]
+graph TD
 
-When sending packets, the sender is reponsible for ensuring the channel is clear before transmitting. CSMA is used to minimize collisions on a shared network. Specifically, P-persistent access is used. Each time slot is 40ms (one packet length) and the probability SHOULD default to 25%. In terms of the values used by the KISS protocol, these equate to a slot time of 4 and a P-persistence value of 63.
+packet_data["Packet Data"]
+packet_crc["add CRC"]
+packet_chunk_200["chunk 200 bits"]
+packet_frame_number["add metadata"]
+packet_flush["add 4 flush bits"]
+packet_conv_coder["convolutional encoder"]
+packet_p3_puncturer["P<sub>3</sub> puncturer"]
+packet_interleaver["interleaver"]
+packet_randomizer["randomizer"]
+packet_sync["prepend Packet Sync Burst"]
 
-The benefit of this method is that it imposes no penalty on uncontested networks.
+phy_cont["Physical Layer Continues..."]
+
+classDef default fill:#fff,stroke:#000,stroke-width:2px
+
+subgraph phy ["Physical Layer"]
+    packet_randomizer -->packet_sync --> phy_cont
+end
+
+subgraph data_link["Data Link Layer"]
+    packet_crc --> packet_chunk_200 --> packet_frame_number -- 206 Type 1 bits --> packet_flush --> packet_conv_coder -- 420 Type 2 bits --> packet_p3_puncturer --  368 Type 3 bits --> packet_interleaver -- 368 Type 4 bits --> packet_randomizer
+end
+
+subgraph application_layer["Application Layer"]
+    packet_data -- 798 bytes max per packet --> packet_crc
+end
+[/mermaid]
+
+#### Packet Superframes
+
+A Packet Superframe consists of up to the 32 Packet Frames used to reconstruct the original Single Packet.
+
+### BERT Mode
+
+BERT mode is a standardized, interoperable mode for bit error rate testing.  The preamble is 
+sent, followed by an indefinite sequence of BERT frames.  Notably, an LSF is not sent in BERT mode.
+
+The primary purpose of defining a bit error rate testing standard for M17 is to enhance
+interoperability testing across M17 hardware and software implementations, and to aid in the
+configuration and tuning of ad hoc communications equipment common in amateur radio.
+
+<table>
+    <caption><span style="font-weight:bold">Figure X </span><span>BERT Mode</span></caption>
+    <tbody style="text-align:center;border:none;">
+        <tr style="font-weight:bold; color:black;">
+            <td style="border:3px solid black;">PREAMBLE</td>
+            <td style="border:3px solid black;">BERT SYNC BURST</td>
+            <td style="border:3px solid black;">BERT FRAME</td>
+            <td style="border:3px dashed black;">&bull;&bull;&bull;</td>
+            <td style="border:3px solid black;">BERT SYNC BURST</td>
+            <td style="border:3px solid black;">BERT FRAME</td>
+            <td style="border:3px solid black;">EoT</td>
+        </tr>
+    </tbody>
+</table>
+
+#### BERT Frames
+
+BERT Frames contain BERT Contents after ECC/FEC is applied.
+
+##### BERT Contents
+
+The BERT Contents consists of 197 bits from a [PRBS9](https://en.wikipedia.org/wiki/Pseudorandom_binary_sequence)
+generator.  This is 24 bytes and 5 bits of data.  The next BERT Contents starts with the 198th bit from the PRBS9
+generator.  The same generator is used for each subsequent BERT Contents without being reset.  The number of bits
+pulled from the generator, 197, is a prime number.  This will produce a reasonably large number of unique
+frames even with a PRBS generator with a relatively short period.  
+
+See the Appendix for [BERT generation and reception details](../../04.appendix/07.bert-details).
+
+<center><span style="font-weight:bold">Table X</span> BERT Contents</center>
+Bits  | Meaning
+----  | -------
+0-196 | BERT PRBS9 Payload
+Total: 197 Type 1 bits
+
+##### BERT Contents ECC/FEC
+
+The 197 Type 1 bits of the Packet Contents along with 4 flush bits are [convolutionally coded](#../../04.appendix/03.convolutional-encoder) using a rate 1/2 coder with constraint K=5.  201 bits total are encoded resulting in 402 Type 2 bits. 
+
+These bits are [\(P_2\) punctured](../../04.appendix/05.code-puncturing) to generate 368 Type 3 bits.
+
+[Interleaving](../../04.appendix/06.interleaving/) the Type 3 bits produces 368 Type 4 bits that are ready to be passed to the Physical Layer.
+
+This provides the same error ECC/FEC used for Stream Frames.
+
+Within the Physical Layer, the 368 Type 4 bits are randomized and combined with the 16-bit BERT Sync Burst, which results in a complete frame of 384 bits (384 bits / 9600bps = 40 ms).
+
+[mermaid]
+graph TD
+
+bert_data["BERT PRBS9 Data"]
+bert_chunk_197["chunk 197 bits"]
+bert_flush["add 4 flush bits"]
+bert_conv_coder["convolutional encoder"]
+bert_p2_puncturer["P_2 puncturer"]
+bert_interleaver["interleaver"]
+bert_randomizer["randomizer"]
+bert_sync["prepend BERT Sync Burst"]
+
+phy_cont["Physical Layer Continues..."]
+
+classDef default fill:#fff,stroke:#000,stroke-width:2px
+
+subgraph phy ["Physical Layer"]
+    bert_randomizer --> bert_sync --> phy_cont
+end
+
+subgraph data_link["Data Link Layer"]
+    bert_data --> bert_chunk_197 -- 197 Type 1 bits --> bert_flush --> bert_conv_coder -- 402 Type 2 bits --> bert_p2_puncturer -- 368 Type 3 bits --> bert_interleaver -- 368 Type 4 bits --> bert_randomizer
+end
+[/mermaid]
+
+
+### Issues to address...
+
+* Stream FN rollover - allowed or not?
+* 
+
