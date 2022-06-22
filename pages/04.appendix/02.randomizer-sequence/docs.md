@@ -5,6 +5,7 @@ taxonomy:
         - docs
 ---
 
+<center><span style="font-weight:bold">Table 1</span> Randomizer values</center>
 Seq. number | Value | Seq. number | Value
 ----------- | ----- | ----------- | -----
 00          | 0xD6  | 23          | 0x6E

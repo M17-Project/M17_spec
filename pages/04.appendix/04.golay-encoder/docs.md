@@ -48,7 +48,8 @@ This is equivalent to 0xC75 in hexadecimal notation. Both the generating matrix 
 \)
  
 The output of the Golay encoder is shown in the table below.
- 
+
+<center><span style="font-weight:bold">Table 1</span> Golay encoder details</center>
 Field      | Data     | Check bits  | Parity
 -----      | ----     | ----------  | ------
 Position   | 23..12   | 11..1       | 0 (LSB)
