@@ -15,8 +15,8 @@ title: Welcome
     * [Packet Mode](/part-1/data-link-layer#packet-mode)
     * [BERT Mode](/part-1/data-link-layer#bert-mode)
 * [Application Layer](/part-1/application-layer)
-    * [Packet Superframes](/part-1/application-layer#packet-superframes)
-    * [Encryption Types](/part-1/application-layer#encryption-types)
+    * [Amateur Radio Voice Application](/part-1/application-layer#m17-amateur-radio-voice-application)
+    * [Packet Application](/part-1/application-layer#packet-application)
 
 ## Part II - Internet Interface
 * [M17 Internet Protocol (IP) Networking](/part-2/ip-networking)
