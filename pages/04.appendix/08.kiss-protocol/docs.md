@@ -131,8 +131,9 @@ The streaming protocol is fairly trivial to describe. It is used by sending firs
 
 #### Stream Format
 
-##### M17 Kiss Stream Protocol
+##### M17 KISS Stream Protocol
 
+<center><span style="font-weight:bold">Table 1</span> KISS Stream</center>
 Frame Size | Contents
 ---------- | --------
 30         | Link Setup Frame
@@ -153,6 +154,7 @@ The data frames contain a 6-byte (48-bit) LICH segment followed by a 20 byte pay
 
 ##### KISS Stream Data Frame
 
+<center><span style="font-weight:bold">Table 2</span> KISS Stream Data</center>
 Frame Size | Contents
 ---------- | --------
 6          | LICH (48 bits)

@@ -43,6 +43,7 @@ The rate at which new symbols are generated.  For M17, this is 4800 symbols per 
 ### File Extensions
 Multiple files are used when testing the different elements of the M17 protocol.  File extensions (the three characters after a period in a complete file name) are defined to standardize formats and usage.
 
+<center><span style="font-weight:bold">Table 1</span> File extensions</center>
 Extension | Description | Data Format | Data Rate
 --------- | ----------- | ----------- | ---------
 aud       | Mono audio  | Signed 16-bit LE | 8000 samples per second

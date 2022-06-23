@@ -16,6 +16,7 @@ The convolutional code shall encode the input bit sequence after appending 4 tai
 
 The output from the encoder must be read alternately.
 
+<center><span style="font-weight:bold">Figure 1</span> Convolutional encoder</center>
 ![convolutional](convolutional.svg?classes=caption "Convolutional coder diagram")
 
 ### Issues to address...

@@ -12,13 +12,13 @@ The PRBS uses the ITU standard PRBS9 polynomial : \(x^{9}+x^{5}+1\)
 This is the traditional form for a linear feedback shift register (LFSR) used
 to generate a psuedorandom binary sequence.
 
-<center><span style="font-weight:bold">Figure X</span> Traditional form LFSR</center>
+<center><span style="font-weight:bold">Figure 1</span> Traditional form LFSR</center>
 ![Traditional_LFSR](m17-traditional-lfsr.png?classes=caption "Traditional LFSR")
 
 However, the M17 LFSR is a slightly different.  The M17 PRBS9 uses the
 generated bit as the output bit rather than the high-bit before the shift.
 
-<center><span style="font-weight:bold">Figure X</span> M17 LFSR</center>
+<center><span style="font-weight:bold">Figure 2</span> M17 LFSR</center>
 ![M17_LFSR](m17-prbs9.png?classes=caption "M17 LFSR")
 
 This will result in the same sequence, just shifted by nine bits.
@@ -29,7 +29,7 @@ The reason for this is that it allows for easier synchronization.  This is
 equivalent to a multiplicative scrambler (a self-synchronizing scrambler)
 fed with a stream of 0s.
 
-<center><span style="font-weight:bold">Figure X</span> M17 PRBS9 Generator</center>
+<center><span style="font-weight:bold">Figure 3</span> M17 PRBS9 Generator</center>
 ![M17_PRBS9_Generator](m17-equivalent-scrambler.png?classes=caption "M17 PRBS9 Generator")
 
 ```
@@ -69,7 +69,7 @@ reset.  The received bit is then also shifted into the LFSR state register.
 Once a sequence of eighteen (18) consecutive good bits are recovered (twice
 the length of the LFSR), the stream is considered syncronized.
 
-<center><span style="font-weight:bold">Figure X</span> M17 PRBS9 Synchronization</center>
+<center><span style="font-weight:bold">Figure 4</span> M17 PRBS9 Synchronization</center>
 ![M17_PRBS9_Sync](m17-prbs9-sync.png?classes=caption "M17 PRBS9 Sync")
 
 During synchronization, bits received and bit errors are not counted towards
@@ -107,7 +107,7 @@ After synchronization, BERT mode switches to error-counting mode, where the
 received bits are compared to a free-running PRBS9 generator.  Each bit that
 does not match the output of the free-running LFSR is counted as a bit error.
 
-<center><span style="font-weight:bold">Figure X</span> M17 PRBS9 Validation</center>
+<center><span style="font-weight:bold">Figure 5</span> M17 PRBS9 Validation</center>
 ![M17_PRBS9_Validation](m17-prbs9-validation.png?classes=caption "M17 PRBS9 Validation")
 
 ```

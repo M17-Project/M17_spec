@@ -14,6 +14,7 @@ M17 uses 48-bit (6-byte) addresses. Callsigns and special purpose addresses are 
 
 ### Address Scheme
 
+<center><span style="font-weight:bold">Table 1</span> M17 Addresses</center>
 Address Range (base-16)         | Category  | Number of Addresses | Remarks
 -------------                   | --------  | ------------------- | -------
 0x000000000000                  | RESERVED  | 1                   | For future use
@@ -25,6 +26,7 @@ Address Range (base-16)         | Category  | Number of Addresses | Remarks
 
 9 characters from an alphabet of 40 possible characters can be encoded into 48 bits (6 bytes). The base-40 alphabet is:
 
+<center><span style="font-weight:bold">Table 2</span> M17 Callsign Alphabet</center>
 Value (base-10) | Character | Note
 --------------- | --------- | ----
 0               | ' '       | A space, ASCII 32 (0x20). Invalid characters will be replaced with this.
@@ -124,6 +126,7 @@ Secondary operating suffixes are often added to callsign to indicate temporary c
 
 The minimum number of allowed callsign characters in the callsign alphabet is 37 ('A' through 'Z', '0' through '9', and '/').  The following table shows how many bytes are required to encoded a callsign using an alphabet size of 37.
 
+<center><span style="font-weight:bold">Table 3</span> Storage required for number of callsign characters</center>
 Callsign Characters | Bits                  | Bytes
 ------------------- | ----                  | -----
 7                   | $log_2(37^7)=36.47$    | 5
@@ -140,6 +143,7 @@ Of these, 9 characters into 6 bytes, or 12 charcters into 8 bytes are the most e
 
 The following table shows how many bytes are required to encode a 9 character callsign using callsign alphabet sizes of 37 through 41.
 
+<center><span style="font-weight:bold">Table 4</span> Storage required for alphabet size</center>
 Alphabet Size | Bits               | Bytes
 ------------- | ----               | -----
 37            | $log_2(37^9)=46.89$ | 6

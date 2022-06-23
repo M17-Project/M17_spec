@@ -7,7 +7,7 @@ taxonomy:
 
 For interleaving a Quadratic Permutation Polynomial (QPP) is used. The polynomial \(\pi(x)=(45x+92x^2)\mod 368\) is used for a 368 bit interleaving pattern QPP.
 
-
+<center><span style="font-weight:bold">Table 1</span> Interleaver mapping</center>
 input index | output index | input index | output index | input index | output index | input index | output index
 ----------- | ------------ | ----------- | ------------ | ----------- | ------------ | ----------- | ------------
 0           | 0            | 92          | 92           | 184         | 184          | 276         | 276
