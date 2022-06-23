@@ -20,7 +20,7 @@ Credit to Jonathan Naylor (G4KLX) for [documenting and implementing](#references
 
 A Stream Mode Transmission begins with an [LSF](../04.data-link-layer/#link-setup-frame-lsf).  
 
-#### M17 Amateur Radio Voice Application LSF/LICH
+#### LSF/LICH
 
 <center><span style="font-weight:bold">Table 16</span> Link Setup Frame Contents</center>
 Field | Length   | Description
@@ -89,7 +89,7 @@ Encryption is **optional**. The use of it may be restricted within some radio se
 
 Encryption type = $00_2$
 
-When no encryption is used, the 14-byte (112-bit) META field of the LSF and corresponding LICH of the stream can be used for transmitting relatively small ammounts of extended data without affecting the bandwidth available for the audio. The full 14 bytes of META extended data is potentially decodable every six stream frames, at a 240 ms update rate. The extended data is transmitted in a simple round robin manner, with the only exception being GPS data which should be transmitted as soon as possible after the GPS data is received from its source.
+When no encryption is used, the 14-byte (112-bit) META field of the LSF and corresponding LICH of the stream can be used for transmitting relatively small amounts of extended data without affecting the bandwidth available for the audio. The full 14 bytes of META extended data is potentially decodable every six stream frames, at a 240 ms update rate. The extended data is transmitted in a simple round robin manner, with the only exception being GPS data which should be transmitted as soon as possible after the GPS data is received from its source.
 
 The "Encryption SubType" bits in the Stream Type field indicate what extended data is stored in the META field.
 
@@ -225,6 +225,10 @@ To combat replay attacks, a 32-bit timestamp shall be embedded into the cryptogr
 
 The Channel Access Number (CAN) is a four bit code that may be used to filter received audio, text, and GNSS data. A receiver may optionally allow reception from sources only if their transmitted CAN value matches the receiver's own specified CAN value. 
 
+#### Stream Frames
+
+[Stream Frames](../data-link-layer#stream-frames) will contain the appropriate LICH data (described above). The Stream Contents will include the incrementing 16-bit Frame Number, and 128 bits of Codec 2 data (unencrypted or encrypted).
+
 #### References / Acknowledgements
 
  - [Jonathan Naylor (G4KLX) Source/Destination and META fields in the M17 Voice Application](https://discourse.m17project.org/t/callsigns-and-extended-use-of-the-meta-field-in-m17/103)
@@ -234,12 +238,21 @@ The Channel Access Number (CAN) is a four bit code that may be used to filter re
 
 ### Packet Application
 
+**!!! Incomplete !!! This is work in progress.**
+
+A single packet of up to 798 bytes of data may be sent in one transmission.
+
+Packets are sent using [Packet Mode](../data-link-layer#packet-mode).
+
+A Stream Mode Transmission begins with an [LSF](../04.data-link-layer/#link-setup-frame-lsf).
+
 Packet superframes are composed of a 1..n byte data type specifier, 0..797 bytes of payload data. The data type specifier is encoded in the same way as UTF-8. It provides efficient coding of common data types. And it can be extended to include a very large number of distinct packet data type codes.
 
 The data type specifier can also be used as a protocol specifier. For example, the following protocol identifers are reserved in the M17 packet spec:
 
 ##### Reserved Protocols
 
+<center><span style="font-weight:bold">Table 24</span> Packet protocol identifiers</center>
 Identifier | Protocol
 ---------- | --------
 0x00       | RAW
