@@ -7,7 +7,7 @@ taxonomy:
 
 #### Extended Golay(24,12) code
 
-The extended Golay(24,12) encoder uses generating polynomial g given below to generate the 11 check bits. The check bits and an additional parity bit are appended to the 12 bit data, resulting in a 24 bit codeword. The resulting code is systematic, meaning that the input data (message) is embedded in the codeword.
+The extended Golay(24,12) encoder uses generating polynomial *g(x)* given below to generate the 11 check bits. The check bits and an additional parity bit are appended to the 12 bit data, resulting in a 24 bit codeword. The resulting code is systematic, meaning that the input data (message) is embedded in the codeword.
 
 \(g(x) = x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1\)
 
