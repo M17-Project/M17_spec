@@ -204,7 +204,7 @@ The 96-bit AES nonce value is extracted from the 96 most significant bits of the
 
 The 16-bit frame number and 40 ms frames can provide for over 20 minutes of streaming without rolling over the counter.
 
-> The effective capacity of the counter is 15 bits, as the MSB is used for transmission end signalling. At 40ms per frame, or 25 frames per second, and $2^15$ frames, we get $2^15$ frames / 25 frames per second = 1310 seconds, or almost 22 minutes.
+> The effective capacity of the counter is 15 bits, as the MSB is used for transmission end signalling. At 40ms per frame, or 25 frames per second, and $2^{15}$ frames, we get $2^{15}$ frames / 25 frames per second = 1310 seconds, or almost 22 minutes.
 
 The random part of the nonce value should be generated with a hardware random number generator or any other method of generating non-repeating values. 
 
@@ -217,7 +217,7 @@ To combat replay attacks, a 32-bit timestamp shall be embedded into the cryptogr
 | --------- | ----------- | -------- |
 | 32        | 64          | 16       |
 
-**CTR_HIGH** field initializes the highest 16 bits of the CTR, with the rest of the counter being equal to the FN counter.
+**CTR_HIGH** field initializes the highest 16 bits of the CTR, with the rest of the counter being equal to the FN counter. Encryption subtypes are not applicable for this encryption scheme. All parties are assumed to know the key length used for each transmission.
 
 !! In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received messages are proven to be exactly as-sent by the sender should add application-layer authentication, such as HMAC. In the future, use of a different mode, such as Galois/Counter Mode, could alleviate this issue.
 
