@@ -103,6 +103,10 @@ input index | output index | input index | output index | input index | output i
 90          | 2            | 182         | 94           | 274         | 186          | 366         | 278
 91          | 139          | 183         | 231          | 275         | 323          | 367         | 47
 
+#### References
+
+ - [Trifina Lucian, Tarniceriu Daniela, Munteanu Valeriu. "Improved QPP Interleavers for LTE Standard." ISSCS 2011 - International Symposium on Signals, Circuits and Systems (2011)](https://arxiv.org/abs/1103.3794)
+
 ### Issues to address...
 
 * More details on parameter choice/performance
