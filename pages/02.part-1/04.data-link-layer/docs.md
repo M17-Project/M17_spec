@@ -125,7 +125,7 @@ Bits   | Content
 11..15 | Reserved (don’t care)
 
 <center><span style="font-weight:bold">Table 5a</span> Packet/Stream indicator</center>
-Value  | Content
+Value  | Mode
 ----   | -------
 0      | Packet mode
 1      | Stream mode
@@ -139,7 +139,7 @@ Value    | Content
 \(11_2\) | Voice+Data
 
 <center><span style="font-weight:bold">Table 5c</span> Encryption type</center>
-Value    | Content
+Value    | Encryption
 ----     | -------
 \(00_2\) | None
 \(01_2\) | AES
