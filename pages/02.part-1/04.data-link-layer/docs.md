@@ -115,14 +115,38 @@ The TYPE field contains information about the frames to follow LSF.  The Packet/
 The remaining field meanings are defined by the specific mode and application.
 
 <center><span style="font-weight:bold">Table 5</span> LSF TYPE definition</center>
-Bits   | Meaning
+Bits   | Content
 ----   | -------
-0      | Packet/Stream indicator, 0=Packet Mode, 1=Stream Mode
+0      | Packet/Stream indicator
 1..2   | Data type indicator
 3..4   | Encryption type
 5..6   | Encryption subtype
 7..10  | Channel Access Number (CAN)
 11..15 | Reserved (don’t care)
+
+<center><span style="font-weight:bold">Table 5a</span> Packet/Stream indicator</center>
+Value  | Content
+----   | -------
+0      | Packet mode
+1      | Stream mode
+
+<center><span style="font-weight:bold">Table 5b</span> Data type</center>
+Value    | Content
+----     | -------
+\(00_2\) | Reserved
+\(01_2\) | Data
+\(10_2\) | Voice
+\(11_2\) | Voice+Data
+
+<center><span style="font-weight:bold">Table 5c</span> Encryption type</center>
+Value    | Content
+----     | -------
+\(00_2\) | None
+\(01_2\) | AES
+\(10_2\) | Scrambler
+\(11_2\) | Other/reserved
+
+For the encryption subtype, meaning of values depends on encryption type.
 
 ##### LSF META
 
