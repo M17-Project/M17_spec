@@ -47,7 +47,7 @@ graph LR
 <center><span style="font-weight:bold">Figure 7</span> Receive Payload to Contents</center>
 [mermaid]
 graph LR
-  payload[Payoad] -- Type 4 bits --> fec[ECC/FEC Decode] -- Type 1 bits--> contents[Data Link Layer Contents]
+  payload[Payload] -- Type 4 bits --> fec[ECC/FEC Decode] -- Type 1 bits--> contents[Data Link Layer Contents]
   style contents fill:#ffffffff,stroke:#ffffffff,stroke-width:0px
   style fec fill:#fff,stroke:#000,stroke-width:2px
   style payload fill:#ffffffff,stroke:#ffffffff,stroke-width:0px

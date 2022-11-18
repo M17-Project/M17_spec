@@ -80,10 +80,10 @@ the overall bit error rate.
     ...
     static constexpr uint8_t LOCK_COUNT = 18;   // 18 consecutive good bits.
     ...
-    // PRBS Syncronizer. Returns 0 if the bit matches the PRBS, otherwise 1.
+    // PRBS Synchronizer. Returns 0 if the bit matches the PRBS, otherwise 1.
     // When synchronizing the LFSR used in the PRBS, a single bad input bit
     // will result in 3 error bits being emitted, one for each tap in the LFSR.
-    bool syncronize(bool bit)
+    bool synchronize(bool bit)
     {
         bool result = (bit ^ (state >> TAP_1) ^ (state >> TAP_2)) & 1;
         state = ((state << 1) | bit) & MASK;

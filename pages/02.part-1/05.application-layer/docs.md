@@ -185,14 +185,14 @@ $01_2$             | $x^{16} + x^{15} + x^{13} + x^4 + 1$    | 16 bits | 65,535
 $10_2$             | $x^{24} + x^{23} + x^{22} + x^{17} + 1$ | 24 bits | 16,777,215
 
 ---
-<center><span style="font-weight:bold">Figure 16</span> 8-bit LSFR taps</center>
-![LSFR_8](LFSR_8.svg?classes=caption "8-bit LSFR taps")
+<center><span style="font-weight:bold">Figure 16</span> 8-bit LFSR taps</center>
+![LFSR_8](LFSR_8.svg?classes=caption "8-bit LFSR taps")
 ---
-<center><span style="font-weight:bold">Figure 17</span> 16-bit LSFR taps</center>
-![LSFR_16](LFSR_16.svg?classes=caption "16-bit LSFR taps")
+<center><span style="font-weight:bold">Figure 17</span> 16-bit LFSR taps</center>
+![LFSR_16](LFSR_16.svg?classes=caption "16-bit LFSR taps")
 ---
-<center><span style="font-weight:bold">Figure 18</span> 24-bit LSFR taps</center>
-![LSFR_24](LFSR_24.svg?classes=caption "24-bit LSFR taps")
+<center><span style="font-weight:bold">Figure 18</span> 24-bit LFSR taps</center>
+![LFSR_24](LFSR_24.svg?classes=caption "24-bit LFSR taps")
 
 ##### Advanced Encryption Standard (AES)
 
