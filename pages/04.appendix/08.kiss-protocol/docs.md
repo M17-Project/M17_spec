@@ -174,7 +174,7 @@ The TNC must stop transmitting if the transmit buffers are empty. The TNC commun
 
 TNC to host transfers are similar in that the TNC first sends the 30-byte link setup frame received to the host, followed by a stream of 26-byte data frames as described above. These are sent using **KISS port** 2.
 
-The TNC must send the link setup frame first. This means that tne TNC must be able to decode LICH segments and assemble a valid link setup frame before it sends the first data frame. The TNC will only send a link setup frame with a valid CRC to the host. After the link setup frame is sent, the TNC ignores the CRC and sends all valid frames (those received after a valid sync word) to the host. If the stream is lost before seeing an end-of-stream flag, the TNC sends a 0-byte data frame to indicate loss of signal.
+The TNC must send the link setup frame first. This means that the TNC must be able to decode LICH segments and assemble a valid link setup frame before it sends the first data frame. The TNC will only send a link setup frame with a valid CRC to the host. After the link setup frame is sent, the TNC ignores the CRC and sends all valid frames (those received after a valid sync word) to the host. If the stream is lost before seeing an end-of-stream flag, the TNC sends a 0-byte data frame to indicate loss of signal.
 
 The TNC must then re-acquire the signal by decoding a valid link setup frame from the LICH in order to resume sending to the host.
 

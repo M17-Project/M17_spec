@@ -10,7 +10,7 @@ taxonomy:
 The PRBS uses the ITU standard PRBS9 polynomial : \(x^{9}+x^{5}+1\)
 
 This is the traditional form for a linear feedback shift register (LFSR) used
-to generate a psuedorandom binary sequence.
+to generate a pseudorandom binary sequence.
 
 <center><span style="font-weight:bold">Figure 1</span> Traditional form LFSR</center>
 ![Traditional_LFSR](m17-traditional-lfsr.png?classes=caption "Traditional LFSR")
@@ -57,7 +57,7 @@ The PRBS9 SHOULD be initialized with a state of 1.
 
 The receiver detects the frame is a BERT Frame based on the Sync Burst
 received.  If the PRBS9 generator is reset at this point, the sender and
-receiver should be synchonized at the start.  This, however, is not common
+receiver should be synchronized at the start.  This, however, is not common
 nor is it required. PRBS generators can be self-synchronizing.
 
 ##### Synchronization
@@ -67,7 +67,7 @@ with the LFSR taps.  If the result of the XOR is a 1, it is an error (the
 expected feedback bit and the input do not match) and the sync count is
 reset.  The received bit is then also shifted into the LFSR state register.
 Once a sequence of eighteen (18) consecutive good bits are recovered (twice
-the length of the LFSR), the stream is considered syncronized.
+the length of the LFSR), the stream is considered synchronized.
 
 <center><span style="font-weight:bold">Figure 4</span> M17 PRBS9 Synchronization</center>
 ![M17_PRBS9_Sync](m17-prbs9-sync.png?classes=caption "M17 PRBS9 Sync")
