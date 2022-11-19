@@ -47,7 +47,7 @@ graph LR
 <center><span style="font-weight:bold">Figure 7</span> Receive Payload to Contents</center>
 [mermaid]
 graph LR
-  payload[Payoad] -- Type 4 bits --> fec[ECC/FEC Decode] -- Type 1 bits--> contents[Data Link Layer Contents]
+  payload[Payload] -- Type 4 bits --> fec[ECC/FEC Decode] -- Type 1 bits--> contents[Data Link Layer Contents]
   style contents fill:#ffffffff,stroke:#ffffffff,stroke-width:0px
   style fec fill:#fff,stroke:#000,stroke-width:2px
   style payload fill:#ffffffff,stroke:#ffffffff,stroke-width:0px
@@ -93,7 +93,7 @@ Packet     | None     | 0x75 0xFF        | +3, -3, +3, +3, -3, -3, -3, -3
 
 ### Link Setup Frame (LSF)
 
-The LSF is the intial frame for both Stream and Packet Modes and contains information needed to establish a link.
+The LSF is the initial frame for both Stream and Packet Modes and contains information needed to establish a link.
 
 <center><span style="font-weight:bold">Table 4</span> Link Setup Frame Contents</center>
 Field | Length   | Description
@@ -236,7 +236,7 @@ Stream Frames are composed of frame signalling information contained within the 
 
 ##### Link Information Channel (LICH)
 
-The LICH allows for late listening and indepedent decoding to check destination address if the LSF for the current transmission was missed.
+The LICH allows for late listening and independent decoding to check destination address if the LSF for the current transmission was missed.
 
 Each Stream Frame contains a 48-bit Link Information Channel (LICH). Each LICH within a Stream Frame includes a 40-bit chunk of the 240-bit LSF frame that was used to establish the stream.  A 3-bit modulo 6 counter (LICH_CNT) is used to indicate which chunk of the LSF is present in the current Stream Frame.  LICH_CNT starts at 0, increments to 5, then wraps back to 0. 
 
@@ -285,7 +285,7 @@ These bits are [\(P_2\) punctured](../../04.appendix/05.code-puncturing) to gene
 
 ##### Frame Combiner
 
-The 96 Type 2 bits of the ECC/FEC LICH Contents are concatenated with 272 Type 3 bits of the ECC/FEC Stream Contents resuting in 368 of combined Type 2/3 bits.
+The 96 Type 2 bits of the ECC/FEC LICH Contents are concatenated with 272 Type 3 bits of the ECC/FEC Stream Contents resulting in 368 of combined Type 2/3 bits.
 
 <center><span style="font-weight:bold">Table 10</span> LICH and Stream Combined</center>
 Field  | Length   | Description
@@ -361,7 +361,7 @@ The CRC used here is the same as described in [LSF CRC](#lsf-crc).
 
 Packet Mode shall always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode).  Following the LSF, one to 32 Packet Frames may be sent.  
 
-Packet Mode acheives a base throughput of 5 kbps, a net throughput of approximately 4.7 kbps for the largest data payload, and over 3 kbps for 100-byte payloads.  Net throughput takes into account preamble and link setup overhead.
+Packet Mode achieves a base throughput of 5 kbps, a net throughput of approximately 4.7 kbps for the largest data payload, and over 3 kbps for 100-byte payloads.  Net throughput takes into account preamble and link setup overhead.
 
 <table>
     <caption><span style="font-weight:bold">Figure 12 </span><span>Packet Mode</span></caption>

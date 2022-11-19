@@ -137,7 +137,7 @@ Callsign Characters | Bits                  | Bytes
 12                  | $log_2(37^{12})=62.51$ | 8
 13                  | $log_2(37^{13})=67.72$ | 9
 
-Of these, 9 characters into 6 bytes, or 12 charcters into 8 bytes are the most efficient. Given that 9 callsign characters and 6 bytes should be suitable for the majority of use cases, can the callsign alphabet be increased without using more than 6 bytes?
+Of these, 9 characters into 6 bytes, or 12 characters into 8 bytes are the most efficient. Given that 9 callsign characters and 6 bytes should be suitable for the majority of use cases, can the callsign alphabet be increased without using more than 6 bytes?
 
 ##### Alphabet Size vs. Bytes
 

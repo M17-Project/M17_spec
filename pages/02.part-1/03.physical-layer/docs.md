@@ -148,9 +148,9 @@ again passed through the same XOR algorithm to obtain the original payload bits.
 
 The pseudorandom sequence is composed of the 46 bytes (368 bits) found in the appendix ([Randomizer Sequence](../../appendix/randomizer-sequence)).
 
-Before each bit of payload is converted to symbols for transmission, it is XORed with a bit from the pseudorandom sequence.  The first payload bit is XORed with most significant bit (bit 7) of sequence byte 0 (0xD6), second payload bit with bit 6 of sequence byte 0, continuing to the eigth payload bit and bit 0 of sequence byte 0.  The ninth payload bit is XORed with bit 7 of sequence byte 1 (0xB5), tenth payload bit with bit 6 of sequence byte 1, etc.
+Before each bit of payload is converted to symbols for transmission, it is XORed with a bit from the pseudorandom sequence.  The first payload bit is XORed with most significant bit (bit 7) of sequence byte 0 (0xD6), second payload bit with bit 6 of sequence byte 0, continuing to the eighth payload bit and bit 0 of sequence byte 0.  The ninth payload bit is XORed with bit 7 of sequence byte 1 (0xB5), tenth payload bit with bit 6 of sequence byte 1, etc.
 
-When payload bits have XORed through sequence byte 45 (0xC3), the psuedorandom sequence is restarted at sequence byte 0 (0xD6)
+When payload bits have XORed through sequence byte 45 (0xC3), the pseudorandom sequence is restarted at sequence byte 0 (0xD6)
 
 On the receive side, symbols are converted to randomized payload bits.  Each randomized payload bit is converted back to a payload bit by once again XORing each randomized bit with the corresponding pseudorandom sequence bit. 
 

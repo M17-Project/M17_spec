@@ -7,7 +7,7 @@ media_order: 'LFSR_8.svg,LFSR_16.svg,LFSR_24.svg'
 ---
 ### M17 Amateur Radio Voice Application
 
-This section defines the application layer parameters for an audio stream containing low bit rate speech encoded using the open source [Codec 2](http://rowetel.com/codec2.html) codec.  It is intended to be used over the air by amateur radio operators worldwide.  Implementation details for M17 clients, repeaters, and gateways ensure that an M17 Amateur Radio Voice Application is legal under all licencing regimes.
+This section defines the application layer parameters for an audio stream containing low bit rate speech encoded using the open source [Codec 2](http://rowetel.com/codec2.html) codec.  It is intended to be used over the air by amateur radio operators worldwide.  Implementation details for M17 clients, repeaters, and gateways ensure that an M17 Amateur Radio Voice Application is legal under all licensing regimes.
 
 Definitions
 - M17 Client - an end station that transmits and receives M17 voice
@@ -72,7 +72,7 @@ Bits   | Meaning
 3..4   | Encryption type
 <nbsp> | $00_2$ = None 
 <nbsp> | $01_2$ = Scrambling
-<nbps> | $10_2$ = AES
+<nbsp> | $10_2$ = AES
 5..6   | Encryption subtype
 7..10  | Channel Access Number (CAN)
 11..15 | Reserved (don’t care)
@@ -103,7 +103,7 @@ $11_2$                  | Reserved
 
 ##### Text Data
 
-The first byte of the Text Data is a Control Byte. To maintain backward compatability, a Control Byte of 0x00 indicates that no Text Data is included.
+The first byte of the Text Data is a Control Byte. To maintain backward compatibility, a Control Byte of 0x00 indicates that no Text Data is included.
 
 Up to four Text Data blocks compose a complete message with a maximum length of 52 bytes.  Each block may contain up to 13 bytes of UTF-8 encoded text, and is padded with space characters to fill any unused space at the end of the last used Text Data block. 
 
@@ -175,7 +175,7 @@ Encryption type = $01_2$
 
 Scrambling is an encryption by bit inversion using a bitwise exclusive-or (XOR) operation between the bit sequence of data and a pseudorandom bit sequence.
 
-Pseudorandom bit sequence is generated using a Fibonacci-topology Linear-Feedback Shift Register (LFSR). Three different LFSR sizes are available: 8, 16 and 24-bit. Each shift register has an associated polynomial. The polynomials are listed in Table 7. The LFSR is initialised with a seed value of the same length as the shift register. The seed value acts as an encryption key for the scrambler algorithm. Figures 16 to 18 show block diagrams of the algorithm.
+Pseudorandom bit sequence is generated using a Fibonacci-topology Linear-Feedback Shift Register (LFSR). Three different LFSR sizes are available: 8, 16 and 24-bit. Each shift register has an associated polynomial. The polynomials are listed in Table 7. The LFSR is initialized with a seed value of the same length as the shift register. The seed value acts as an encryption key for the scrambler algorithm. Figures 16 to 18 show block diagrams of the algorithm.
 
 <center><span style="font-weight:bold">Table 22</span> Scrambling</center>
 Encryption subtype | LFSR polynomial                         | Seed length | Sequence period
@@ -185,14 +185,14 @@ $01_2$             | $x^{16} + x^{15} + x^{13} + x^4 + 1$    | 16 bits | 65,535
 $10_2$             | $x^{24} + x^{23} + x^{22} + x^{17} + 1$ | 24 bits | 16,777,215
 
 ---
-<center><span style="font-weight:bold">Figure 16</span> 8-bit LSFR taps</center>
-![LSFR_8](LFSR_8.svg?classes=caption "8-bit LSFR taps")
+<center><span style="font-weight:bold">Figure 16</span> 8-bit LFSR taps</center>
+![LFSR_8](LFSR_8.svg?classes=caption "8-bit LFSR taps")
 ---
-<center><span style="font-weight:bold">Figure 17</span> 16-bit LSFR taps</center>
-![LSFR_16](LFSR_16.svg?classes=caption "16-bit LSFR taps")
+<center><span style="font-weight:bold">Figure 17</span> 16-bit LFSR taps</center>
+![LFSR_16](LFSR_16.svg?classes=caption "16-bit LFSR taps")
 ---
-<center><span style="font-weight:bold">Figure 18</span> 24-bit LSFR taps</center>
-![LSFR_24](LFSR_24.svg?classes=caption "24-bit LSFR taps")
+<center><span style="font-weight:bold">Figure 18</span> 24-bit LFSR taps</center>
+![LFSR_24](LFSR_24.svg?classes=caption "24-bit LFSR taps")
 
 ##### Advanced Encryption Standard (AES)
 
@@ -248,7 +248,7 @@ A Stream Mode Transmission begins with an [LSF](../04.data-link-layer/#link-setu
 
 Packet superframes are composed of a 1..n byte data type specifier, 0..797 bytes of payload data. The data type specifier is encoded in the same way as UTF-8. It provides efficient coding of common data types. And it can be extended to include a very large number of distinct packet data type codes.
 
-The data type specifier can also be used as a protocol specifier. For example, the following protocol identifers are reserved in the M17 packet spec:
+The data type specifier can also be used as a protocol specifier. For example, the following protocol identifiers are reserved in the M17 packet spec:
 
 ##### Reserved Protocols
 
