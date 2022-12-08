@@ -13,7 +13,7 @@ This section describes the M17 standard radio physical layer suitable for use wh
 ### 4-level Frequency-shift Keying Modulation (4FSK)
 
 The M17 standard uses 4FSK at 4800 symbols/s (9600
-bits/s) with a deviation index h=0.33 for transmission in a 9 kHz
+bits/s) with a deviation index h=1/3 for transmission in a 9 kHz
 channel bandwidth. Minimum channel spacing is 12.5 kHz. 
 
 #### Dibit, Symbol, and Frequency-shift
