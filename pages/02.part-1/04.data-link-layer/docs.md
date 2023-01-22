@@ -330,7 +330,7 @@ end
 subgraph data_link["Data Link Layer"]
     LSF[LSF Contents] --> lich_chunk_40 -- 40 Type 1 bits --> lich_counter --> lich_golay_24_12 -- 96 Type 2 bits --> lich_stream_frame_combiner
     stream_chunk_128 --> stream_frame_number -- 144 Type 1 bits --> stream_flush --> stream_conv_coder -- 296 Type 2 bits --> stream_p2_puncturer -- 272 Type 3 bits --> lich_stream_frame_combiner
-    lich_stream_frame_combiner -- 96 Type 2 bits + 372 Type 3 bits = 368 Type 2/3 bits --> stream_interleaver -- 368 Type 4 bits --> stream_randomizer
+    lich_stream_frame_combiner -- 96 Type 2 bits + 272 Type 3 bits = 368 Type 2/3 bits --> stream_interleaver -- 368 Type 4 bits --> stream_randomizer
 end
 
 subgraph application_layer["Application Layer"]
