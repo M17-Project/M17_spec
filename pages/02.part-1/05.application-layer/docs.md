@@ -127,7 +127,9 @@ Size in bits | Format            | Contents
 8            | unsigned integer  | Data Source
 <nbsp>       | <nbsp>            | Used to modify the message added to the APRS message sent to APRS-IS
 <nbsp>       | <nbsp>            | 0x00 : M17 Client
-<nbsp>       | <nbsp>            | 0x01 : Open RTX
+<nbsp>       | <nbsp>            | 0x01 : OpenRTX
+<nbsp>       | <nbsp>            | 0x02..0xFE : reserved
+<nbsp>       | <nbsp>            | 0xFF : other data source
 8            | unsigned integer  | Station Type
 <nbsp>       | <nbsp>            | Translated into suitable APRS symbols when gated to APRS-IS
 <nbsp>       | <nbsp>            | 0x00 : Fixed Station
