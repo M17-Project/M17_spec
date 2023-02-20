@@ -7,7 +7,7 @@ taxonomy:
 
 M17 uses 48-bit (6-byte) addresses. Callsigns and special purpose addresses are encoded into these 6 bytes in the following ways:
 
-* An address of 0 is reserved for future use.
+* An address of 0 is invalid.
 * Address values between 1 and 262143999999999 ($40^{9}−1$), contain up to 9 characters of text encoded using base-40 as described below.
 * Address values between 262144000000000 ($40^{9}$) and 281474976710654 ($2^{48}−2$) are reserved for future use.
 * An address of 0xFFFFFFFFFFFF is a broadcast.
