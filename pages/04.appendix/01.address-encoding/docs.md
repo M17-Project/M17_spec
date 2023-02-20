@@ -17,7 +17,7 @@ M17 uses 48-bit (6-byte) addresses. Callsigns and special purpose addresses are 
 <center><span style="font-weight:bold">Table 1</span> M17 Addresses</center>
 Address Range (base-16)         | Category  | Number of Addresses | Remarks
 -------------                   | --------  | ------------------- | -------
-0x000000000000                  | RESERVED  | 1                   | For future use
+0x000000000000                  | INVALID   | 1                   | 
 0x000000000001 - 0xEE6B27FFFFFF | Unit ID   | 262143999999999     | 
 0xEE6B28000000 - 0xFFFFFFFFFFFE | RESERVED  | 19330976710655      | For future use
 0xFFFFFFFFFFFF                  | Broadcast | 1                   | Valid only for destination
