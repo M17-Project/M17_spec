@@ -83,7 +83,8 @@ Bits   | Meaning
 
 This application requires Stream Mode.
 
-The Voice only Data type indicator specifies voice data encoded at 3200 bps using Codec 2.
+The Voice only data type indicator ($10_2$) specifies voice data encoded at 3200 bps using Codec 2.
+The Voice and Data data type indicator ($11_2) specifies voice data encoded at 1600 bps using Codec 2, the remaining 1600 bytes can be used for arbitrary data.
 
 #### Encryption Types
 
