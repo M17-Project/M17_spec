@@ -5,6 +5,7 @@ taxonomy:
         - docs
 media_order: 'LFSR_8.svg,LFSR_16.svg,LFSR_24.svg'
 ---
+
 ### M17 Amateur Radio Voice Application
 
 This section defines the application layer parameters for an audio stream containing low bit rate speech encoded using the open source [Codec 2](http://rowetel.com/codec2.html) codec.  It is intended to be used over the air by amateur radio operators worldwide.  Implementation details for M17 clients, repeaters, and gateways ensure that an M17 Amateur Radio Voice Application is legal under all licensing regimes.
@@ -68,7 +69,10 @@ Bits   | Meaning
 0      | Packet/Stream indicator
 <nbsp> | 1 = Stream Mode
 1..2   | Data type indicator
+<nbsp> | $00_2$ = Reserved
+<nbsp> | $01_2$ = Data
 <nbsp> | $10_2$ = Voice only (3200 bps)
+<nbsp> | $11_2$ = Voice (1600 bps) + Data
 3..4   | Encryption type
 <nbsp> | $00_2$ = None 
 <nbsp> | $01_2$ = Scrambling
