@@ -5,7 +5,7 @@
 title: M17 Protocol Specification
 layout: default
 ---
-<div class="w-100" id="spec"></div>
+<div class="w-100 vh-100" id="spec"></div>
 <script src="https://unpkg.com/pdfobject@2.2.12/pdfobject.min.js"></script>
 <script>
   var options = {
