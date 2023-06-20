@@ -5,4 +5,5 @@
 title: M17 Protocol Specification
 layout: default
 ---
-<embed src="/pdf/M17_spec.pdf" type="application/pdf" width="100%" height="100%" />
+
+<object data="/pdf/M17_spec.pdf" type="application/pdf" width="100%" height="100%" />
