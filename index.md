@@ -11,5 +11,5 @@ layout: default
   var options = {
     fallbackLink: "<p>Most mobile browsers do not support inline PDFs. You can either view this page on a desktop/laptop or:<br /><br /><a href='https://spec.m17project.org/pdf/M17_spec.pdf'>Download the Specification</a><br /><br />to view the PDF natively on your device.</p>"
   };
-  PDFObject.embed("{{ "/pdf/M17_spec.pdf" | relative_url }}", "#spec");
+  PDFObject.embed("{{ "/pdf/M17_spec.pdf" | relative_url }}", "#spec", options);
 </script>
