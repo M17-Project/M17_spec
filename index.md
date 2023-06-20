@@ -5,5 +5,6 @@
 title: M17 Protocol Specification
 layout: default
 ---
-
-<object data="/pdf/M17_spec.pdf" type="application/pdf" width="100%" height="100%" />
+<div class="w-100" id="spec"></div>
+<script src="https://unpkg.com/pdfobject@2.2.12/pdfobject.min.js"></script>
+<script>PDFObject.embed("{{ "/pdf/M17_spec.pdf" | relative_url }}", "#spec");</script>
