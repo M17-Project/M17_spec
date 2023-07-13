@@ -728,6 +728,21 @@ The Frame Number (FN) starts from 0 and increments every frame to a maximum of \
 
 Stream data (STREAM) is obtained by extracting 128 bits at a time from the continuous stream of application layer data. If the last frame will contain less than 128 bits of valid data, the remaining bits should be set to zero.
 
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={llXX},
+		}
+		\hline
+		Mode & Codec 2 rate & Frame t + 0 & Frame t + 1... \\
+		\hline
+		Voice & 3200 & 128 bits encoded speech & 128 bits encoded speech \\
+		Voice + Data & 1600 & 64 bits encoded speech + 64 bits arbitrary data & 64 bits encoded speech + 64 bits arbitrary data \\
+		\hline[2px]
+	\end{tblr}
+	\caption{STREAM Payload Examples}
+\end{table}
+
 \paragraph{Stream Contents ECC/FEC}
 
 The 144 Type 1 bits of Stream Contents along with 4 flush bits are convolutionally coded using a rate 1/2 coder with constraint K=5. 148 bits total are encoded resulting in 296 Type 2 bits.
