@@ -900,11 +900,11 @@ Total: 206 Type 1 bits
 
 The packet metadata field contains the 1-bit End of Frame (EOF) indicator, and the 5-bit Packet Frame/Byte Counter. This is \textit{NOT} to be confused with the LSF's 112-bit metadata field.
 
-Each Packet Frame payload contains up to a 25-byte chunk of the Packet Data. The 25-byte chunks start with the first byte of the Application Packet data, and finally end with the 2 CRC bytes at the last frame. If fewer than 25 bytes are able to be extracted from the Single Packet (i.e.~for the last Packet Frame), the Packet Data chunk is padded with zero bytes to reach 25 bytes total. This results in a minimum of one to a maximum of 32 Packet Frames per transmission. The Packet Frame Counter is reset to zero at the start of Packet Mode.
+Data starting with the first byte of the Packet Data, and  ending with 2 computed and appended CRC bytes is split in groups of 25 bytes (chunks). Each Packet Frame payload contains up to a 25-byte chunk of the Packet Data. If fewer than 25 bytes are able to be extracted from the Single Packet (i.e.~for the last Packet Frame), the Packet Data chunk is padded with zero bytes to reach 25 bytes total. This results in a minimum of one to a maximum of 32 Packet Frames per transmission. The Packet Frame Counter is reset to zero at the start of Packet Mode.
 
-For each Packet Frame where there is at least 1 byte remaining in the Packet Data after removing a 25-byte chunk, the EOF metadata bit is set to zero, the Packet Frame Counter value is inserted into the Packet Frame/Byte Counter metadata field, and the Packet Frame Counter is incremented.
+For each Packet Frame where there is at least 1 byte remaining in the Packet Data after removing a 25-byte chunk, the EOF metadata bit is set to zero, the Packet Frame Counter value is inserted into the Packet Frame/Byte Counter metadata field, and the Packet Frame Counter is incremented afterwards.
 
-When there are no bytes remaining in the Packet Data after removing a 25-byte (or less) chunk, 2 CRC bytes are computed and inserted at the beginning of the frame. Then, the EOF bit is set to one, the Packet Byte Counter is set to the number of valid bytes extracted in the previous chunk (1 to 25) and both are concatenated into the Packet Frame/Byte Counter metadata field. Packet Mode is ended.
+When there are no bytes remaining in the Packet Data after removing a 25-byte (or less) chunk, the EOF bit is set to one, the Packet Byte Counter is set to the number of valid bytes present in the current frame (1 to 25) and both fields are concatenated into the Packet Frame/Byte Counter metadata field. Packet Mode is ended with an End of Transmission frame.
 
 \begin{table}[H]
 	\centering
@@ -914,8 +914,9 @@ When there are no bytes remaining in the Packet Data after removing a 25-byte (o
 		\hline
 		Bits & Meaning \\
 		\hline
-		0 & Set to 0, Not end of frame \\
-		1..5 & Frame number, 0..31 \\
+  		0..1 & non-existent \\
+		2..6 & Frame number, 0..31 \\
+  		7 & Set to 0, Not end of frame \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Packet Metadata Field with EOF = 0}
@@ -929,8 +930,9 @@ When there are no bytes remaining in the Packet Data after removing a 25-byte (o
 		\hline
 		Bits & Meaning \\
 		\hline
-		0 & Set to 1, End of frame \\
-		1..5 & Number of bytes in frame, 1..25 \\
+  		0..1 & non-existent \\
+		2..7 & Number of bytes in frame, 1..25 \\
+  		7 & Set to 1, End of frame \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Packet Metadata Field with EOF = 1}
