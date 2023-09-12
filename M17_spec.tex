@@ -914,9 +914,8 @@ When there are no bytes remaining in the Packet Data after removing a 25-byte (o
 		\hline
 		Bits & Meaning \\
 		\hline
-  		0..1 & non-existent \\
-		2..6 & Frame number, 0..31 \\
-  		7 & Set to 0, Not end of frame \\
+		0..4 & Frame number, 0..31 \\
+  		5 & Set to 0, Not end of frame \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Packet Metadata Field with EOF = 0}
@@ -930,9 +929,8 @@ When there are no bytes remaining in the Packet Data after removing a 25-byte (o
 		\hline
 		Bits & Meaning \\
 		\hline
-  		0..1 & non-existent \\
-		2..7 & Number of bytes in frame, 1..25 \\
-  		7 & Set to 1, End of frame \\
+		0..4 & Number of bytes in frame, 1..25 \\
+  		5 & Set to 1, End of frame \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Packet Metadata Field with EOF = 1}
