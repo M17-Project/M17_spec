@@ -849,14 +849,14 @@ In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data 
 		\hline
 		Bytes & Meaning \\
 		\hline
-		0..822 & Application Packet Data \\
-		823..824 & CRC \\
+		0..n-1 & Application Packet Data \\
+		n..n+1 & CRC \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Single Packet}
 \end{table}
 
-The CRC calculation used here is the same as described for LSF CRC.
+n is the number of bytes of the Application Packet Data. The CRC calculation used here is the same as described for LSF CRC.
 
 Packet Mode shall always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode). Following the LSF, 1 to 33 Packet Frames may be sent.
 
