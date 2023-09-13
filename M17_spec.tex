@@ -416,7 +416,7 @@ The Data Link layer shall operate in one of three modes during a Transmission.
     Data are sent in a continuous stream for an indefinite amount of time, with no break in physical layer output, until the stream ends. e.g.~voice data, bulk data transfers, etc. Stream Mode shall start with an LSF and is followed by one or more Stream Frames.
 	\item
 	Packet Mode
-	Data are sent in small bursts, up to 798 bytes at a time, after which the physical layer stops sending data. e.g.~messages, beacons, etc. Packet Mode shall start with an LSF and is followed by one to 32 Packet Frames.
+	Data are sent in small bursts, up to 823 bytes at a time, after which the physical layer stops sending data. e.g.~messages, beacons, etc. Packet Mode shall start with an LSF and is followed by one to 33 Packet Frames.
 	\item
 	BERT Mode
 	PRBS9 is used to fill frames with a deterministic bit sequence. Frames are sent in a continuous sequence. Bert Mode shall start with a BERT frame, and is followed by one or more BERT Frames.
@@ -990,7 +990,7 @@ Within the Physical Layer, the 368 Type 4 bits are randomized and combined with 
 
 \subsection{Packet Superframes}
 
-A Packet Superframe consists of up to the 32 Packet Frames used to reconstruct the original Single Packet.
+A Packet Superframe consists of up to the 33 Packet Frames used to reconstruct the original Single Packet.
 
 \section{BERT Mode}
 
@@ -1459,7 +1459,7 @@ Stream Frames will contain the appropriate LICH data (described above). The Stre
 	ATTENTION This is work in progress.
 \end{quote}
 
-A single packet of up to 798 bytes of data may be sent in one transmission.
+A single packet of up to 823 bytes of data may be sent in one transmission.
 
 Packets are sent using Packet Mode.
 
@@ -2480,7 +2480,7 @@ If there is another packet to be sent, the preamble can be skipped and the TNC w
 
 \paragraph{Limitations}
 
-The KISS specification defines no limitation to the packet size allowed. Nor does it specify any means of returning error conditions back to the host. M17 packet protocol limits the raw packet payload size to 798 bytes. The TNC must drop any packets larger than this.
+The KISS specification defines no limitation to the packet size allowed. Nor does it specify any means of returning error conditions back to the host. M17 packet protocol limits the raw packet payload size to 823 bytes. The TNC must drop any packets larger than this.
 
 \paragraph{Receiving Data}
 
