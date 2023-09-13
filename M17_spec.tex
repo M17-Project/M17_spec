@@ -889,8 +889,8 @@ Packet Frames contain Packet Contents after ECC/FEC is applied.
 		Bits & Meaning \\
 		\hline
 		0..199 & 200-bit chunk of Single Packet \\
-		1 & End of Frame (EOF) indicator \\
-		5 & Packet Frame/Byte Counter \\
+		200 & End of Frame (EOF) indicator \\
+		201..205 & Packet Frame/Byte Counter \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Packet Contents}
