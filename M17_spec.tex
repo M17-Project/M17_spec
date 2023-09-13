@@ -839,7 +839,7 @@ Stream Frames are grouped into Stream Superframes, which is the group of 6 frame
 
 \section{Packet Mode}
 
-In Packet Mode, a Single Packet with up to 798 bytes of Application Packet Data along with an appended two byte CRC may be sent over the physical layer during one Transmission.
+In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data along with an appended two byte CRC may be sent over the physical layer during one Transmission. The total number of bytes is 825 (33*25).
 
 \begin{table}[H]
 	\centering
@@ -849,18 +849,18 @@ In Packet Mode, a Single Packet with up to 798 bytes of Application Packet Data 
 		\hline
 		Bytes & Meaning \\
 		\hline
-		1..798 & Application Packet Data \\
-		2 & CRC \\
+		0..822 & Application Packet Data \\
+		823..824 & CRC \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Single Packet}
 \end{table}
 
-The CRC used here is the same as described in LSF CRC.
+The CRC calculation used here is the same as described for LSF CRC.
 
-Packet Mode shall always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode). Following the LSF, one to 32 Packet Frames may be sent.
+Packet Mode shall always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode). Following the LSF, 1 to 33 Packet Frames may be sent.
 
-Packet Mode achieves a base throughput of 5 kbps, a net throughput of approximately 4.7 kbps for the largest data payload, and over 3 kbps for 100- byte payloads. Net throughput takes into account preamble and link setup overhead.
+Packet Mode achieves a base throughput of 5 kbps, a net throughput of approximately 4.7 kbps for the largest data payload, and over 3 kbps for 100-byte payloads. Net throughput takes into account preamble and link setup overhead. (TODO: recompute this)
 
 \begin{table}[H]
 	\centering
@@ -900,11 +900,11 @@ Total: 206 Type 1 bits
 
 The packet metadata field contains the 1-bit End of Frame (EOF) indicator, and the 5-bit Packet Frame/Byte Counter. This is \textit{NOT} to be confused with the LSF's 112-bit metadata field.
 
-Data starting with the first byte of the Packet Data, and  ending with 2 computed and appended CRC bytes is split in groups of 25 bytes (chunks). Each Packet Frame payload contains up to a 25-byte chunk of the Packet Data. If fewer than 25 bytes are able to be extracted from the Single Packet (i.e.~for the last Packet Frame), the Packet Data chunk is padded with zero bytes to reach 25 bytes total. This results in a minimum of one to a maximum of 32 Packet Frames per transmission. The Packet Frame Counter is reset to zero at the start of Packet Mode.
+Data starting with the first byte of the Packet Data, and  ending with 2 computed and appended CRC bytes is split in groups of 25 bytes (chunks). Each Packet Frame payload contains up to a 25-byte chunk of the Packet Data. If fewer than 25 bytes are able to be extracted from the Single Packet (i.e.~for the last Packet Frame), the Packet Data chunk is padded with zero bytes to reach 25 bytes total.
 
-For each Packet Frame where there is at least 1 byte remaining in the Packet Data after removing a 25-byte chunk, the EOF metadata bit is set to zero, the Packet Frame Counter value is inserted into the Packet Frame/Byte Counter metadata field, and the Packet Frame Counter is incremented afterwards.
+The Packet Frame Counter is reset to zero at the start of Packet Mode. For each Packet Frame where there is at least 1 byte remaining in the Packet Data after removing a 25-byte chunk, the EOF metadata bit is set to zero, the Packet Frame Counter value is inserted into the Packet Frame/Byte Counter metadata field, and the Packet Frame Counter is incremented afterwards.
 
-When there are no bytes remaining in the Packet Data after removing a 25-byte (or less) chunk, the EOF bit is set to one, the Packet Byte Counter is set to the number of valid bytes present in the current frame (1 to 25) and both fields are concatenated into the Packet Frame/Byte Counter metadata field. Packet Mode is ended with an End of Transmission frame.
+When there are no bytes remaining in the Packet Data after removing a 25-byte (or less) chunk, the EOF bit is set to one, the Packet Byte Counter is set to the number of valid bytes present in the current frame (1 to 25) and both fields are concatenated into the Packet Frame/Byte Counter metadata field. This results in a minimum of 1 to a maximum of 33 Packet Frames per transmission. Packet Mode is ended with an End of Transmission frame.
 
 \begin{table}[H]
 	\centering
