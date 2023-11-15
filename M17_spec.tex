@@ -1465,7 +1465,7 @@ Packets are sent using Packet Mode.
 
 A Stream Mode Transmission begins with an LSF.
 
-Packet superframes are composed of a 1..n byte data type specifier, 0..797 bytes of payload data. The data type specifier is encoded in the same way as UTF-8. It provides efficient coding of common data types. And it can be extended to include a very large number of distinct packet data type codes.
+Packet superframes are composed of a 1..n byte data type specifier, 0..823-n bytes of payload data. The data type specifier is encoded in the same way as UTF-8. It provides efficient coding of common data types. And it can be extended to include a very large number of distinct packet data type codes.
 
 The data type specifier can also be used as a protocol specifier. For example, the following protocol identifiers are reserved in the M17 packet spec:
 
@@ -1482,7 +1482,7 @@ The data type specifier can also be used as a protocol specifier. For example, t
 		0x02 & APRS \\
 		0x03 & 6LoWPAN \\
 		0x04 & IPv4 \\
-		0x05 & SMS \\
+		0x05 & SMS (null-terminated, UTF-8 encoded string) \\
 		0x06 & Winlink \\
 		\hline[2px]
 	\end{tblr}
