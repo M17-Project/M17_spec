@@ -397,7 +397,7 @@ utilized will be indicated for each frame type.
 	\centering
 	\begin{tikzpicture}[node distance=2cm]
 		\node (payload) [whrectround] {Payload};
-		\node (ecc) [whrectround, right of=payload, xshift=2.5cm] {ECC/FEC Encode};
+		\node (ecc) [whrectround, right of=payload, xshift=2.5cm] {ECC/FEC Decode};
 		\node (cont) [whrectround, right of=ecc, xshift=2.5cm] {Data Link Layer Contents};
 		
 		\draw [-latex](payload) -- node [midway, above] {Type 4 bits} (ecc);
