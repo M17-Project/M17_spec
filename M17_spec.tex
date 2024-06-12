@@ -1419,9 +1419,9 @@ The 112-bit nonce value is stored in the META field. The FN (Frame Number) value
 
 The random part of the nonce value should be generated with a hardware random number generator or any other cryptographicaly secure method of generating random values.
 
-To combat replay attacks, a 32-bit timestamp shall be embedded into the cryptographic nonce field. The field structure of the 128 bit counter is shown in Table 9. Timestamp is the number of seconds that elapsed since the beginning of January 1, 2020, 00:00:00 UTC, minus leap seconds.
+To combat replay attacks, a 32-bit timestamp shall be embedded into the cryptographic nonce field. The field structure of the 128 bit counter is shown in Table 9. Timestamp is the number of seconds that elapsed since January 1, 2020, 00:00:00 UTC, minus leap seconds.
 
-\paragraph{128 bit counter field structure}
+\paragraph{128 bit counter structure}
 
 FN field sets the most significant 16 bits of the counter, with the 32-bit least significant part holding the timestamp. The remaining 80-bit portion is filled with random data, re-generated per transmission. Encryption subtypes are not applicable for this encryption scheme. All parties are assumed to know the key length used for each transmission.
 
@@ -1436,7 +1436,7 @@ FN field sets the most significant 16 bits of the counter, with the 32-bit least
 		32 & 80 & 16 \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Nonce field}
+	\caption{AES counter}
 \end{table}
 
 \begin{quote}
@@ -1454,7 +1454,7 @@ Stream Frames will contain the appropriate LICH data (described above). The Stre
 \section{Packet Application}
 
 \begin{quote}
-	ATTENTION This is work in progress.
+	\textbf{ATTENTION} This is work in progress.
 \end{quote}
 
 A single packet of up to 823 bytes of data may be sent in one transmission.
