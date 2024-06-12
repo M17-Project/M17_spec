@@ -1409,23 +1409,21 @@ Pseudorandom bit sequence is generated using a Fibonacci-topology Linear- Feedba
 
 Encryption type = $10_2$
 
-This method uses AES block cipher in counter (CTR) mode, with a 96-bit nonce that should never be used for more than one separate stream and a 32-bit CTR.
+This method uses AES block cipher in counter mode (AES-CTR), with a 112-bit nonce that should never be used for more than one stream (transmission) and a 16-bit counter.
 
-The 96-bit AES nonce value is extracted from the 96 most significant bits of the META field, and the remaining 16 bits of the META field form the highest 16 bits of the 32-bit counter. The FN (Frame Number) field value is then used to fill out the lower 16 bits of the counter, and always starts from 0 (zero) in a new voice stream.
-
-The 16-bit frame number and 40 ms frames can provide for over 20 minutes of streaming without rolling over the counter.
+The 112-bit nonce value is stored in the META field. The FN (Frame Number) value is then used to fill out the remaining 16 bits of the counter, totalling to 128 bits, and always starts from 0 (zero) in a new voice stream.
 
 \begin{quote}
-	NOTE The effective capacity of the counter is 15 bits, as the MSB is used for transmission end signalling. At 40ms per frame, or 25 frames per second, and $2^{15}$ frames, we get $2^{15}$ frames / 25 frames per second = 1310 seconds, or almost 22 minutes.
+	\textbf{NOTE} The effective capacity of the frame counter is 15 bits, as its most significant bit is used for transmission end signalling. At 25 frames per second and $2^{15}$ frames, the transmission can last up to $2^{15}$ frames / 25 frames per second = 1310 seconds, or almost 22 minutes, without rolling over the counter.
 \end{quote}
 
-The random part of the nonce value should be generated with a hardware random number generator or any other method of generating non-repeating values.
+The random part of the nonce value should be generated with a hardware random number generator or any other cryptographicaly secure method of generating random values.
 
-To combat replay attacks, a 32-bit timestamp shall be embedded into the cryptographic nonce field. The field structure of the 96 bit nonce is shown in Table 9. Timestamp is 32 LSB portion of the number of seconds that elapsed since the beginning of 1970-01-01, 00:00:00 UTC, minus leap seconds (a.k.a. ``unix time'').
+To combat replay attacks, a 32-bit timestamp shall be embedded into the cryptographic nonce field. The field structure of the 128 bit counter is shown in Table 9. Timestamp is the number of seconds that elapsed since the beginning of January 1, 2020, 00:00:00 UTC, minus leap seconds.
 
-\paragraph{96 bit nonce field structure}
+\paragraph{128 bit counter field structure}
 
-CTR\_HIGH field initializes the highest 16 bits of the CTR, with the rest of the counter being equal to the FN counter. Encryption subtypes are not applicable for this encryption scheme. All parties are assumed to know the key length used for each transmission.
+FN field sets the most significant 16 bits of the counter, with the 32-bit least significant part holding the timestamp. The remaining 80-bit portion is filled with random data, re-generated per transmission. Encryption subtypes are not applicable for this encryption scheme. All parties are assumed to know the key length used for each transmission.
 
 \begin{table}[h]
 	\centering
@@ -1433,16 +1431,16 @@ CTR\_HIGH field initializes the highest 16 bits of the CTR, with the rest of the
 		colspec={XXX},
 		}
 		\hline
-		Timestamp & Random Data & CTR\_HIGH \\
+		Timestamp & Random Data & FN \\
 		\hline
-		32 & 64 & 16 \\
+		32 & 80 & 16 \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Nonce field}
 \end{table}
 
 \begin{quote}
-	WARNING In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received messages are proven to be exactly as-sent by the sender should add application-layer authentication, such as HMAC. In the future, use of a different mode, such as Galois/Counter Mode, could alleviate this issue.
+	\textbf{WARNING} In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received messages are proven to be exactly as-sent by the sender should add application-layer authentication, such as HMAC.
 \end{quote}
 
 \subsection{Channel Access Number (CAN)}
