@@ -274,7 +274,7 @@ Transmissions may include more than one synchronization burst followed by a payl
 
 \subsection{Preamble}
 
-Every transmission shall start with a preamble, which shall consist of 40 ms (192 symbols) of alternating outer symbols (+3, -3) or (-3, +3). To ensure a zero crossing prior to a synchronization burst, the last symbol transmitted within the preamble shall be opposite the first symbol transmitted in the synchronization burst.
+Every transmission shall start with a preamble, which shall consist of 40 ms (192 symbols) of alternating outer symbols (+3, -3) or (-3, +3), see \autoref{sec:sync_burst} for details. To ensure a zero crossing prior to a synchronization burst, the last symbol transmitted within the preamble shall be opposite the first symbol transmitted in the synchronization burst.
 
 \subsection{Synchronization Burst (Sync Burst)}
 
@@ -427,6 +427,7 @@ The Data Link layer shall operate in one of three modes during a Transmission.
 \end{quote}
 
 \section{Synchronization Burst (Sync Burst)}
+\label{sec:sync_burst}
 
 All frames shall be preceded by 16 bits (8 symbols) of
 Sync Burst. The Sync Burst definition straddles both the Physical Layer and the Data Link Layer.
