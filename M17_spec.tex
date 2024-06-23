@@ -530,10 +530,10 @@ The TYPE field contains information about the frames to follow LSF. The Packet/S
 		\hline
 		Value & Content \\
 		\hline
-		$(00_2)$ & Reserved \\
-		$(01_2)$ & Data \\
-		$(10_2)$ & Voice \\
-		$(11_2)$ & Voice+Data \\
+		$00_2$ & Reserved \\
+		$01_2$ & Data \\
+		$10_2$ & Voice \\
+		$11_2$ & Voice+Data \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Data type}
@@ -547,16 +547,33 @@ The TYPE field contains information about the frames to follow LSF. The Packet/S
 		\hline
 		Value & Encryption \\
 		\hline
-		$(00_2)$ & None \\
-		$(01_2)$ & Scrambler \\
-		$(10_2)$ & AES \\
-		$(11_2)$ & Other/reserved \\
+		$00_2$ & None \\
+		$01_2$ & Scrambler \\
+		$10_2$ & AES \\
+		$11_2$ & Other/reserved \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Encryption type}
 \end{table}
 
 For the encryption subtype, meaning of values depends on encryption type.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lXX},
+		}
+		\hline
+		Value & Scrambler & AES \\
+		\hline
+		$00_2$ & 8-bit & 128-bit \\
+		$01_2$ & 16-bit & 192-bit \\
+		$10_2$ & 24-bit & 256-bit \\
+		$11_2$ & reserved & reserved \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Key lengths for encryption subtypes}
+\end{table}
 
 \subsection{LSF META}
 
@@ -1225,7 +1242,7 @@ Encryption type = $00_2$
 
 When no encryption is used, the 14-byte (112-bit) META field of the LSF and corresponding LICH of the stream can be used for transmitting relatively small amounts of extended data without affecting the bandwidth available for the audio. The full 14 bytes of META extended data is potentially decodable every six stream frames, at a 240 ms update rate. The extended data is transmitted in a simple round robin manner, with the only exception being GPS data which should be transmitted as soon as possible after the GPS data is received from its source.
 
-The ``Encryption SubType'' bits in the Stream Type field indicate what extended data is stored in the META field.
+The ``Encryption subtype'' bits in the Stream Type field indicate what extended data is stored in the META field.
 
 \begin{table}[H]
 	\centering
@@ -1411,6 +1428,25 @@ Encryption type = $10_2$
 
 This method uses AES block cipher in counter mode (AES-CTR), with a 112-bit nonce that should never be used for more than one stream (transmission) and a 16-bit counter.
 
+Key length is defined by the encryption subtype field.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={XX},
+		}
+		\hline
+		Encryption subtype & Key length \\
+		\hline
+		$00_2$ & 128 bits \\
+		$01_2$ & 192 bits \\
+		$10_2$ & 256 bits \\
+		$11_2$ & reserved \\
+		\hline[2px]
+	\end{tblr}
+	\caption{AES key lengths}
+\end{table}
+
 The 112-bit nonce value is stored in the META field. The FN (Frame Number) value is then used to fill out the remaining 16 bits of the counter, totalling to 128 bits, and always starts from 0 (zero) in a new voice stream.
 
 \begin{quote}
@@ -1423,7 +1459,7 @@ To combat replay attacks, a 32-bit timestamp shall be embedded into the cryptogr
 
 \paragraph{128 bit counter structure}
 
-FN field sets the most significant 16 bits of the counter, with the 32-bit least significant part holding the timestamp. The remaining 80-bit portion is filled with random data, re-generated per transmission. Encryption subtypes are not applicable for this encryption scheme. All parties are assumed to know the key length used for each transmission.
+FN field sets the most significant 16 bits of the counter, with the 32-bit least significant part holding the timestamp. The remaining 80-bit portion is filled with random data, re-generated per transmission.
 
 \begin{table}[h]
 	\centering
