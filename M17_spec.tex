@@ -586,9 +586,9 @@ M17 uses a non-standard version of 16-bit CRC with polynomial $x^{16} + x^{14} +
 
 As M17's native bit order is most significant bit first, neither the input nor the output of the CRC algorithm gets reflected.
 
-The input to the CRC algorithm consists of DST, SRC (each 48 bits), 16 bits of TYPE field and 112 bits META, and then depending on whether the CRC is being computed or verified either 16 zero bits or the received CRC.
+The input to the CRC algorithm consists of 28 bytes: 6-byte DST, 6-byte SRC, 2-byte TYPE and 14-byte META field. For data integrity verification, the received 28 bytes of LSF can be appended with CRC value. The CRC algoritm returns zero if the data is valid.
 
-The test vectors in the following table are calculated by feeding the given message and then 16 zero bits to the CRC algorithm.
+The test vectors in the following table are calculated by feeding the given message to the CRC algorithm.
 
 \begin{table}[H]
 	\centering
