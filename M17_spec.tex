@@ -81,7 +81,7 @@ draw=black]
 	\textbf{\LARGE M17 Protocol Specification} \\
 	\today
 	\vfill
-	{\large Version 1.0}
+	{\large Version 1.1}
 	\vfill
 	\LaTeX version compiled by Steve Miller KC1AWV
 \end{titlepage}
@@ -118,7 +118,7 @@ M17 is an RF protocol that is:
 
 \begin{itemize}
 	\item
-	Completely open: open specification, open source code, open source hardware, open algorithms. Anyone must be able to build an M17 radio  and interoperate with other M17 radios without having to pay anyone else for the right to do so.
+	Completely open: open specification, open source code, open source hardware, open algorithms. Anyone must be able to build an M17 radio and interoperate with other M17 radios without having to pay anyone else for the right to do so.
 	\item
 	Optimized for amateur radio use.
 	\item
@@ -1105,28 +1105,11 @@ Within the Physical Layer, the 368 Type 4 bits are randomized and combined with 
 
 \section{M17 Amateur Radio Voice Application}
 
-This section defines the application layer parameters for an audio stream containing low bit rate speech encoded using the open source \href{http://rowetel.com/codec2.html}{Codec 2} codec. It is intended to be used over the air by amateur radio operators worldwide.
-Implementation details for M17 clients, repeaters, and gateways ensure that an M17 Amateur Radio Voice Application is legal under all licensing regimes.
+This section defines the application layer parameters for an audio stream containing low bit rate speech encoded using the open source \href{http://rowetel.com/codec2.html}{Codec 2} codec. It is intended to be used over the air by amateur radio operators worldwide. Implementation details for M17 clients, repeaters, and gateways ensure that an M17 Amateur Radio Voice Application is legal under all licensing regimes.
 
-Definitions
+There are many applications and devices provided by various developers that support M17: clients, repeaters and hot-spots, and reflectors. An updated list of third-party applications is \href{https://m17project.org/get-started/software}{available here}. The use of these applications are not discussed in this document but can be found in various manuals and README files of those applications.
 
-\begin{itemize}
-	\item
-	M17 Client - an end station that transmits and receives M17 voice
-	\item
-	M17 Repeater - a station that receives and retransmits (repeats) M17
-	voice
-	\item
-	M17 Gateway - a station that receives and transmits M17 voice,
-	converting to and from different formats (e.g.~D-Star, DMR, EchoLink,
-	etc.)
-\end{itemize}
-
-Credit to Jonathan Naylor (G4KLX) for documenting and implementing the details included here.
-
-Data Link Layer Stream Mode is used for this application.
-
-A Stream Mode Transmission begins with an LSF.
+A Stream Mode Transmission begins with an Link Setup Frame, LSF.
 
 \subsection{LSF/LICH}
 
@@ -1151,48 +1134,9 @@ A Stream Mode Transmission begins with an LSF.
 
 Destination (DST) and source (SRC) addresses may be encoded amateur radio callsigns, or special identifiers. See the Address Encoding Appendix for details on how up to 9 characters of text can be encoded into the 6-byte address value.
 
-The source address is always the callsign of the station transmitting, be it a client, repeater, or gateway. This is not a problem for a client, but for a repeater/gateway this raises issues about identifying the original source of a transmission. Having a repeater/gateway always use its own callsign for the source field does ensure that there are no issues with licensing authorities. To retain identification of the original source for a repeater/gateway, an extended callsign data field will be encoded in the LSF META field.
+The source address is always the callsign of the station transmitting, be it a client, repeater, or gateway. This is not a problem for a client, but for a repeater/gateway this raises issues about identifying the original source of a transmission. Having a repeater/gateway always use its own callsign for the source field does ensure that there are no issues with licensing authorities. To retain identification of the original source for a voice stream, an extended callsign data field will be encoded in the LSF META field.
 
-The destination address used by a client may simply be a callsign for a point to point contact, or may be one of the following special identifiers in the table below.
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lcX},
-		}
-		\hline
-		Identifier & Address Value & Description \\
-		\hline
-		(Callsign) & varies & Destination callsign for a point to point
-		contact \\
-		ALL & 0xFFFFFFFFFFFF & Broadcast and any transmission is relayed to any connected reflector \\
-		ECHO & 0x0000000ED87D & Enable the local echo function in a repeater/gateway \\
-		INFO & 0x0000000ECDB9 & Trigger a voice and text announcement of the current linked status of the repeater/gateway \\
-		UNLINK & 0x0000454F7745 & Unlink from a reflector and trigger an INFO	response \\
-		(Reflector Name) & varies & Link to a reflector and trigger an INFO response (if valid and not already linked) \\
-		\hline[2pt]
-	\end{tblr}
-	\caption{Client destination address}
-\end{table}
-
-The destination address of locally repeated radio transmission retains its original destination address, and the originator's callsign is encoded in the extended callsign data. For other transmissions, one of the following special identifiers may be used.
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lcX},
-		}
-		\hline
-		Identifier & Address Value & Description \\
-		\hline
-		(Callsign) & varies & Destination callsign for a locally repeated radio transmission \\
-		ALL & 0xFFFFFFFFFFFF & All transmitted reflector traffic, originator's callsign and the currently linked reflector are encoded in the extended callsign data \\
-		ECHO & 0x0000000ED87D & Reply of the built-in echo function, originator's callsign is encoded in the extended callsign data \\
-		INFO & 0x0000000ECDB9 & Voice and text announcement of the current linked status of the repeater/gateway \\
-		\hline[2pt]
-	\end{tblr}
-	\caption{Repeater/gateway destination address}
-\end{table}
+The destination address used by a client may simply be a callsign or reflector designation for a point to point contact, or may be a special identifier. Special identifiers are 6-byte addresses than can't be encoded in the standard way. For an explanation, see the Address Encoding Appendix.
 
 \paragraph{TYPE field}
 
@@ -1562,165 +1506,40 @@ M17 over IP is big endian, consistent with other IP protocols. We have standardi
 
 The CRC checksum must be recomputed after modification or re-assembly of the packet, such as when translating from RF to IP framing.
 
-\section{Control Packets}
-
-Reflectors use a few different types of control frames, identified by
-their magic:
-
-\begin{itemize}
-	\item
-	CONN - Connect to a reflector
-	\item
-	ACKN - acknowledge connection
-	\item
-	NACK - deny connection
-	\item
-	PING - keepalive for the connection from the reflector to the client
-	\item
-	PONG - keepalive response from the client to the reflector
-	\item
-	DISC - Disconnect (client-\textgreater reflector or
-	reflector-\textgreater client)
-\end{itemize}
-
-\subsection{CONN}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``CONN'' \\
-		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
-		10 & Module to connect to - single ASCII byte A-Z \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of CONN Packet}
-\end{table}
-
-A client sends this to a reflector to initiate a connection. The reflector replies with ACKN on successful linking, or NACK on failure.
-
-\subsection{ACKN}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline	
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``ACKN'' \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of ACKN Packet}
-\end{table}
-
-\subsection{NACK}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``NACK'' \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of NACK Packet}
-\end{table}
-
-\subsection{PING}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``PING'' \\
-		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of PING Packet}
-\end{table}
-
-\subsection{PONG}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-			colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``PONG'' \\
-		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of PONG Packet}
-\end{table}
-
-\subsection{DISC}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``DISC'' \\
-		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of DISC Packet}
-\end{table}
-
 \appendix
 
 \chapter{Address Encoding}
 
-M17 uses 48-bit (6-byte) addresses. Callsigns and special purpose
-addresses are encoded into these 6 bytes in the following ways:
+M17 uses 48-bit (6-byte) addresses. Callsigns and special purpose addresses are encoded into these 6 bytes in the following ways:
 
 \begin{itemize}
 	\item
 	An address of \texttt{0} is invalid.
 	\item
-	Address values between \texttt{1} and \texttt{262143999999999} ($40^{9}-1$), contain up to 9 characters of text encoded using base-40 as described below.
+	Address values between \texttt{1} and \texttt{262143999999999} ($40^{9}-1$), contain up to 9 characters of text encoded using base-40 as described below and account for about 93\% of the 48-bit address space.
 	\item
-	Address values between \texttt{262144000000000} ($40^{9}$) and \texttt{281474976710654} ($2^{48}-2$) are reserved for future use.
+	Address values between \texttt{262144000000000} ($40^{9}$) and \texttt{281474976710654} ($2^{48}-2$) are reserved or special purpose address and account for about 7\% of the address space. About a third of these addresses can be encoded by prepending an 8 character text with a hash character, '\#'.
 	\item
-	An address of \texttt{0xFFFFFFFFFFFF} is a broadcast.
+	An address of \texttt{0xFFFFFFFFFFFF} is a broadcast. This address should only be used in the LSF destination field when the stream or packet is to be transmitted at radio frequency.
 \end{itemize}
 
 \section{Address Scheme}
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lllX},
-		}
+	\begin{tblr}{ccrl}
 		\hline
 		Address Range (base-16) & Category & Number of Addresses & Remarks \\
 		\hline
-		\texttt{0x000000000000} & INVALID & 1 & \\
+		\texttt{0x000000000000} & INVALID & \texttt{1} & never used! \\
 		\hline
-		\texttt{0x000000000001 - 0xEE6B27FFFFFF} & Unit ID & 262,143,999,999,999 & \\
+		\texttt{0x000000000001 - 0xEE6B27FFFFFF} & Unit ID & \texttt{262,143,999,999,999} & 9 characters \\
 		\hline
-		\texttt{0xEE6B28000000 - 0xFFFFFFFFFFFE} & RESERVED & 19,330,976,710,655 & For future use \\
+		\texttt{0xEE6B28000000 - 0xF46108FFFFFF} & Hash ID & \texttt{6,553,600,000,000} & '\#' and 8 characters \\
 		\hline
-		\texttt{0xFFFFFFFFFFFF} & Broadcast & 1 & Valid only for destination \\
+		\texttt{0xF46109000000 - 0xFFFFFFFFFFFE} & Reserved & \texttt{12,777,376,710,655} & for application use \\
+		\hline
+		\texttt{0xFFFFFFFFFFFF} & Broadcast & \texttt{1} & Valid only for destination \\
 		\hline[2pt]	
 	\end{tblr}
 	\caption{M17 Addresses}
@@ -1763,65 +1582,134 @@ DC1BA (base-40), \texttt{0$\times$0000009fdd51} (base-16), 10476881 (base-10)
 
 The final address encoded into the 6-byte LSF/LICH field would be \texttt{0$\times$0000009fdd51}
 
-\section{Example Encoder}
+\section{Encoding Reserved Addresses}
 
-\begin{lstlisting}[language=Python]
-def encodeM17(call):
-	"""Encode a text string into an M17 address value"""
-	
-	charMap = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/.'
-	
-	# convert to upper case
-	call = call.upper()
-	
-	# generate an assert error if more than 9 characters long
-	assert len(call) <= 9, 'Error: <callsign> must be 9 characters or less'
-	
-	if call == 'ALL':
-	# handle the special case for Broadcast
-	encoded = 0xFFFFFFFFFFFF
-	else:
-	encoded = 0
-	# loop through the characters starting from the end (right most character)
-	for c in call[::-1]:
-	# find the position of the character in the map
-	value = charMap.find(c)
-	
-	# if value < 0, the character was not found
-	# invalid characters are forced to 0
-	if value < 0:
-	value = 0
-	
-	# shift the current value by one base-40 character (40 decimal)
-	# and add the current value
-	encoded = encoded*40 + value
-	
-	return encoded
+Reserved addresses can be encoded by prepending an 8 character callsign with a hash character, \texttt{\#}. The hash 
+indicates that \texttt{$40^9$} is added to the encoded value of the eight character subfield. Thus, a lone hash 
+symbol encodes to \texttt{0$\times$EE6B28000000},
+while \texttt{\#A} is \texttt{0$\times$EE6B28000001} and so on. 
+Using this scheme, the last hash encodable special address, a hash followed by eight dots, is
+\texttt{0$\times$F46108FFFFFF}.
+
+Address between \texttt{0$\times$F4610A000000} and
+\texttt{0$\times$FFFFFFFFFFFE} are unencodable using this scheme, but could still be used by
+applications for special, internal purposes. These would be encoded by the application
+developer using their own procedure.
+
+Any hash address that are going to be used between different M17 applications should
+be documented here. Developers can register the hash address(es) by submitting an issue or a pull request to the
+\href{https://github.com/M17-Project/M17_spec}{M17 Specification repository}.
+
+
+\pagebreak
+
+\section{C++ Encoder Example}
+
+\begin{lstlisting}[language=C++]
+#include <string>
+#include <cassert>
+#include <cstdint>
+
+const std::string m17chars(" ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/.");
+
+// Input callsign is assumed to be in uppercase
+void Encode(const std::string& callsign, uint8_t* pUChar)
+{
+	assert(NULL != pUChar);
+
+	std::string cs(callsign);
+	cs.resize(9, ' '); // truncate or fill to 9 characters
+
+	uint64_t address = 0;
+
+	if (0 == cs.compare("ALL      "))
+	{
+		address = 0xffffffffffffu;	// handle the broadcast
+	}
+	else
+	{
+		bool isReserved = false;
+		// is this a reserved callsign?
+		if ('#' == cs.at(0))
+		{
+			isReserved = true;
+			cs.erase(0, 1);
+		}
+
+		// calculate the address, in host byte order
+		for (int i = cs.size() - 1; i >= 0; i--)
+		{
+			auto pos = m17chars.find(cs.at(i));
+			if (pos == std::string::npos)
+			{
+				pos = 0; // not in the M17 character set, use a space
+			}
+			address *= 40;
+			address += pos;
+		}
+
+		if (isReserved)
+		{
+			// offset the address if there was a leading '#'
+			address += 0xee6b28000000u;
+		}
+	}
+
+	// store the address in network byte order
+	for (int i = 5; i >= 0; i--)
+	{
+		pUChar[i] = address & 0xffu;
+		address /= 0x100u;
+	}
+}
 \end{lstlisting}
 
-\section{Example Decoder}
+\pagebreak
 
-\begin{lstlisting}[language=Python]
-def decodeM17(encoded):
-	"""Decode an M17 address value to a text string"""
-	
-	charMap = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/.'
-	
-	# check for unique values
-	if encoded == 0xFFFFFFFFFFFF:
-	# BROADCAST
-	call = 'ALL'
-	elif encoded == 0:
-	call = 'RESERVED'
-	elif encoded >= 0xEE6B28000000:
-	call = 'RESERVED'
-	else:
-	call = ''
-	while (encoded > 0):
-	call = call + charMap[encoded % 40]
-	encoded = encoded // 40
-	
-	return call
+\section{C++ Decoder Example}
+
+\begin{lstlisting}[language=C++]
+#include <string>
+#include <cassert>
+#include <cstdint>
+
+std::string Decode(const uint8_t* pUChar)
+{
+	assert(NULL != pUChar);
+
+	// calculate the address in host byte order
+	uint64_t address = 0;
+	for (int i=0; i<6; i++)
+		address = address * 0x100u + pUChar[i];
+
+	// is this the broadcast address?
+	if (address == 0xffffffffffffu)
+	{
+		return std::string("ALL      ");
+	}
+
+	std::string callsign;
+
+	// is it in the decodable range?
+	if (address < 0xf4610a000000u)
+	{
+		// is this a reserved address
+		if (address > 0xee6b27ffffffu)
+		{
+			callsign.assign("#");
+			address -= 0xee6b28000000u;
+		}
+
+		while (address)
+		{
+			callsign.append(1, m17chars[address % 40u]);
+			address /= 40u;
+		}
+	}
+
+	callsign.resize(9, ' '); // fill to 9 characters
+	return callsign;
+}
 \end{lstlisting}
 
 \section{Why base-40?}
