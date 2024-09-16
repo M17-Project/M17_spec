@@ -1516,9 +1516,11 @@ M17 uses 48-bit (6-byte) addresses. Callsigns and special purpose addresses are 
 	\item
 	An address of \texttt{0} is invalid.
 	\item
-	Address values between \texttt{1} and \texttt{262143999999999} ($40^{9}-1$), contain up to 9 characters of text encoded using base-40 as described below and account for about 93\% of the 48-bit address space.
+	Address values between \texttt{1} and \texttt{262143999999999} ($40^{9}-1$), contain up to 9 characters of text encoded using base-40 as described below and account for about 93.13\% of the 48-bit address space.
 	\item
-	Address values between \texttt{262144000000000} ($40^{9}$) and \texttt{281474976710654} ($2^{48}-2$) are reserved or special purpose address and account for about 7\% of the address space. About a third of these addresses can be encoded by prepending an 8 character text with a hash character, '\#'.
+	Address values between \texttt{262144000000000} ($40^9$) and \texttt{268697599999999} ($40^{9}+40^{8}-1$) are hash addresses that have a leading \# character followed by up to 8 base-40 characters and account for about 2.33\% fo the address space.
+	\item
+	Address values between \texttt{268697600000000} ($40^{9}+40^{8}$) and \texttt{281474976710654} ($2^{48}-2$) are reserved addresses and account for about 4.54\% of the address space. Developers are free to use these for their own special purpose.
 	\item
 	An address of \texttt{0xFFFFFFFFFFFF} is a broadcast. This address should only be used in the LSF destination field when the stream or packet is to be transmitted at radio frequency.
 \end{itemize}
