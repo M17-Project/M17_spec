@@ -1,4 +1,5 @@
-\documentclass[a4paper,11pt]{book}
+% if you need a document suitable for printing/binding, remove the ",oneside" from the following line.
+\documentclass[a4paper,11pt,oneside]{book}
 \usepackage[centering,margin=2.5cm]{geometry}
 \usepackage[export]{adjustbox}
 \usepackage[utf8]{inputenc}
@@ -365,9 +366,7 @@ utilized will be indicated for each frame type.
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
+	\begin{tblr}{ll}
 		\hline
 		Type & Description \\
 		\hline
@@ -592,9 +591,7 @@ The test vectors in the following table are calculated by feeding the given mess
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
+	\begin{tblr}{ll}
 		\hline
 		Message & CRC Output \\
 		\hline
@@ -773,9 +770,7 @@ The 96 Type 2 bits of the ECC/FEC LICH Contents are concatenated with 272 Type 3
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lcX},
-		}
+	\begin{tblr}{lrl}
 		\hline
 		Field & Length & Description \\
 		\hline
@@ -900,9 +895,7 @@ Packet Frames contain Packet Contents after ECC/FEC is applied.
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
+	\begin{tblr}{ll}
 		\hline
 		Bits & Meaning \\
 		\hline
@@ -1040,9 +1033,7 @@ See the Appendix for BERT generation and reception details.
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
+	\begin{tblr}{ll}
 		\hline
 		Bits & Meaning \\
 		\hline
@@ -1115,9 +1106,7 @@ A Stream Mode Transmission begins with an Link Setup Frame, LSF.
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lcX},
-		}
+	\begin{tblr}{lrl}
 		\hline
 		Field & Length & Description \\
 		\hline
@@ -1144,9 +1133,7 @@ The TYPE field contains information about the frames to follow LSF.
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
+	\begin{tblr}{ll}
 		\hline
 		Bits & Meaning \\
 		\hline
@@ -1191,9 +1178,7 @@ The ``Encryption subtype'' bits in the Stream Type field indicate what extended 
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
+	\begin{tblr}{ll}
 		\hline
 		Encryption subtype bits & LSF META data contents \\
 		\hline
@@ -1543,7 +1528,7 @@ Here are some facts and rules about the encoding an address from a callsign:
 	\item
 		Since the space character has a value of zero, trailing spaces will not affect the encoded value. For example the calcuated address of \texttt{'ABC'} is the same as \texttt{'ABC~'}, or \texttt{'ABC~~~~~~'}.
 	\item
-		If a uncoded address represents an amateur radio callsign it should be left-justified. That means that the first character will always be a digit or letter.
+		If an uncoded address represents an amateur radio callsign it should be left-justified. That means that the first character will always be a digit or letter.
 	\item
 		Over 262 trillion address can be encoded from \texttt{0x1} (\texttt{A}) to \texttt{0xEE6B27FFFFFF} (\texttt{.........}) and only a fraction of these callsign actually look like an amateur radio callsign. Those encodable base-40 text strings that don't look like an amateur radio callsign can be used by applications for triggering events and features that their programs offer.
 	\item
@@ -1564,7 +1549,7 @@ $( ( ( ( 4 ) \times 40 + 3 ) \times 40 + 28 ) \times 40 + 2 ) \times 40 + 1$
 
 producing the resulting address:
 
-DC1BA (base-40), \texttt{0x9fdd51} (base-16), \texttt{10476881} (base-10).
+\texttt{0x9fdd51} (base-16), \texttt{10476881} (base-10).
 
 \section{Encoded Addresses}
 
@@ -1576,13 +1561,13 @@ Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can
 		\hline
 		Address Range & Category & Number of Addresses & Remarks \\
 		\hline
-		\texttt{0x000000000000} & INVALID & \texttt{1} & never used! \\
+		\texttt{0x000000000000} & INVALID & \texttt{1} & Forbidden \\
 		\hline
 		{\texttt{0x000000000001} \\ \texttt{0xEE6B27FFFFFF}} & Codable & \textasciitilde{}262 trillion & "\texttt{A}" to "\texttt{.........}" \\
 		\hline
 		{\texttt{0xEE6B28000000} \\ \texttt{0xFFFFFFFFFFFE}} & Uncodable & \textasciitilde{}19 trillion & for application use \\
 		\hline
-		\texttt{0xFFFFFFFFFFFF} & BROADCAST & \texttt{1} & Valid only for a destination \\
+		\texttt{0xFFFFFFFFFFFF} & BROADCAST & \texttt{1} & valid only for a destination \\
 		\hline[2pt]
 	\end{tblr}
 	\caption{M17 Addresses}
@@ -1603,11 +1588,11 @@ void Encode(const char *callsign, uint8_t *pUChar)
 {
 	uint64_t address = 0;	// the calculate address in host byte order
 
-	if (pUChar && callsign && *callsign) // quick check the input
+	if (pUChar && callsign && *callsign) // make sure we can return a non-zero address
 	{
 		const char *p = callsign;
 
-		// find the last char
+		// find the last char, but don't select more than 9 characters
 		while (*p++ && (p-callsign < 9)) ;
 
 		// process each char from the end to the beginning
@@ -1640,13 +1625,11 @@ void Encode(const char *callsign, uint8_t *pUChar)
 \begin{lstlisting}[language=C,numbers=none]
 char *Decode(const uint8_t* pUChar)
 {
-	static char cs[10];
-	strcpy(cs, "         ");
+	static char cs[10];	  // this is the return value
+	memset(cs, NULL, 10); // initialize it to nothing
 
-	if (NULL == pUChar)
+	if (NULL == pUChar) // nothing in, nothing out
 		return cs;
-
-	const char *m17chars = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/.";
 
 	// calculate the address in host byte order
 	uint64_t address = 0;
@@ -1654,19 +1637,26 @@ char *Decode(const uint8_t* pUChar)
 		address = address * 0x100u + pUChar[i];
 
 	if (address >= 0xee6b28000000u) // is it in the undecodable range?
-		return cs;
+		return cs; // practical applications will do something here
 
-	unsigned i = 0; // start decoding
+	// the M17 alphabet, ordered by value
+	const char *m17chars = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/.";
 
-	while (address) // get the characters
+	unsigned i = 0; // index for the current character
+
+	while (address)
 	{
+		// the current character is the address modulus 40
 		cs[i++] = m17chars[address % 40u];
-		address /= 40u;
+		address /= 40u; // keep dividing the address until there's nothing left
 	}
 
 	return cs;
 }
 \end{lstlisting}
+
+For an example of how to encode and decode BROADCAST, or how to use part of the Uncodable address space,
+see \href{https://github.com/M17-Project/libm17}{https://github.com/M17-Project/libm17}.
 
 \chapter{Randomizer Sequence}
 
