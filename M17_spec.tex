@@ -81,7 +81,7 @@ draw=black]
 	\textbf{\LARGE M17 Protocol Specification} \\
 	\today
 	\vfill
-	{\large Version 1.1}
+	{\large Version 1.2}
 	\vfill
 	\LaTeX version compiled by Steve Miller KC1AWV
 \end{titlepage}
@@ -98,7 +98,7 @@ draw=black]
 
 \paragraph{M17 Protocol Specification}
 
-Copyright \copyright{}  2023  M17 Project. \\
+Copyright \copyright{}  2023-2024  M17 Project. \\
 
 Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License'' or at the following web page: \href{https://www.gnu.org/licenses/fdl-1.3.en.html}{https://www.gnu.org/licenses/fdl-1.3.en.html}
 
@@ -1450,9 +1450,7 @@ The data type specifier can also be used as a protocol specifier. For example, t
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={XX},
-		}
+	\begin{tblr}{ll}
 		\hline
 		Identifier & Protocol \\
 		\hline
@@ -1479,8 +1477,6 @@ For commercial protocols like DMR, this is meant for linking metropolitan and st
 M17 is designed with this use in mind, and has native IP framing to support it.
 
 In competing radio protocols, a repeater or some other RF to IP bridge is required for linking, leading to the use of hotspots (tiny simplex RF bridges).
-
-The TR-9 and other M17 radios may support IP networking directly, such as through the ubiquitous ESP8266 chip or similar. This allows them to skip the RF link that current hotspot systems require, finally bringing to fruition the ``Amateur digital radio is just VoIP'' dystopian future we were all warned about.
 
 \section{Standard IP Framing}
 
@@ -1510,108 +1506,99 @@ The CRC checksum must be recomputed after modification or re-assembly of the pac
 
 \chapter{Address Encoding}
 
-M17 uses 48-bit (6-byte) addresses. Callsigns and special purpose addresses are encoded into these 6 bytes in the following ways:
+M17 uses a 48-bit (6-byte) address to represent the characters that define a source and destination.
+M17 uses a 40-character alphabet. Encoded, up to nine characters can be used to encode a source or destination address that will still fit in a 48-bit address field.
+These nine characters will usually, but not necessarily be an amateur radio callsign.
 
-\begin{itemize}
-	\item
-	An address of \texttt{0} is invalid.
-	\item
-	Address values between \texttt{1} and \texttt{262143999999999} ($40^{9}-1$), contain up to 9 characters of text encoded using base-40 as described below and account for about 93.13\% of the 48-bit address space.
-	\item
-	Address values between \texttt{262144000000000} ($40^9$) and \texttt{268697599999999} ($40^{9}+40^{8}-1$) are hash addresses that have a leading \# character followed by up to 8 base-40 characters and account for about 2.33\% fo the address space.
-	\item
-	Address values between \texttt{268697600000000} ($40^{9}+40^{8}$) and \texttt{281474976710654} ($2^{48}-2$) are reserved addresses and account for about 4.54\% of the address space. Developers are free to use these for their own special purpose.
-	\item
-	An address of \texttt{0xFFFFFFFFFFFF} is a broadcast. This address should only be used in the LSF destination field when the stream or packet is to be transmitted at radio frequency.
-\end{itemize}
+In nearly all circumstances, the source address will decode to an amateur callsign.
+But frequently, the destination address will not decode to an amateur radio callsign.
+Typically it will be a unit command, like \texttt{ECHO}, or \texttt{UNLINK}, or the module of a reflector, like \texttt{M17-M17 C}.
 
-\section{Address Scheme}
+In order to define how encoding and decoding are done, here are 40 characters used in M17 ordered by their value:
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{ccrl}
+	\begin{tblr}{cclcl}
 		\hline
-		Address Range (base-16) & Category & Number of Addresses & Remarks \\
+		Value & Character & Name & ASCII & Note \\
 		\hline
-		\texttt{0x000000000000} & INVALID & \texttt{1} & never used! \\
-		\hline
-		\texttt{0x000000000001 - 0xEE6B27FFFFFF} & Unit ID & \texttt{262,143,999,999,999} & 9 characters \\
-		\hline
-		\texttt{0xEE6B28000000 - 0xF46108FFFFFF} & Hash ID & \texttt{6,553,600,000,000} & '\#' and 8 characters \\
-		\hline
-		\texttt{0xF46109000000 - 0xFFFFFFFFFFFE} & Reserved & \texttt{12,777,376,710,655} & for application use \\
-		\hline
-		\texttt{0xFFFFFFFFFFFF} & Broadcast & \texttt{1} & Valid only for destination \\
-		\hline[2pt]
-	\end{tblr}
-	\caption{M17 Addresses}
-\end{table}
-
-\section{Callsign Encoding: base-40}
-
-9 characters from an alphabet of 40 possible characters can be encoded
-into 48 bits (6 bytes). The base-40 alphabet is:
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={llX},
-		}
-		\hline
-		Value (base-10) & Character & Note \\
-		\hline
-		0 & ' ' & A space, ASCII 32 (0x20). Invalid characters will be replaced
-		with this. \\
-		1 - 26 & `A' - `Z' & Upper case letters, ASCII 65 - 90 (0x41 - 0x5A). \\
-		27 - 36 & `0' - `9' & Numerals, ASCII 48 - 57 (0x30 - 0x39). \\
-		37 & `-' & Hyphen, ASCII 45 (0x2D). \\
-		38 & `/' & Forward Slash, ASCII 47 (0x2F). \\
-		39 & `.' & Dot, ASCII 46 (0x2E). \\
+		0 & '\texttt{~}' & Space  & 0x20& Also, any invalid character \\
+		1 - 26 & '\texttt{A}' - '\texttt{Z}' & Letter & 0x41 - 0x5A & Uppercase \\
+		27 - 36 & '\texttt{0}' - '\texttt{9}' & Digit & 0x30 - 0x39 & Decimal \\
+		37 & '\texttt{-}' & Hyphen & 0x2D & Dash \\
+		38 & '\texttt{/}' & Slash & 0x3F & Forward slash & \\
+		39 & '\texttt{.}' & Dot & 0x3E & Period \\
 		\hline[2px]
 	\end{tblr}
 	\caption{M17 Callsign Alphabet}
 \end{table}
 
-When computing the base-40 value of the callsign, the left most character of the callsign is the least significant value. Callsigns must be left justified. Leading spaces are not permitted.
+\section{Callsign Encoding}
 
-After the base-40 value is calculated, the final 6-byte address is the big endian encoded (most significant byte first) representation of the base-40 value.
+Here are some facts and rules about the encoding an address from a callsign:
 
-For example, for the callsign AB1CD, the base-40 representation would be DC1BA, and would be calculated as:
+\begin{itemize}
+	\item
+		A callsign is encoded backwards, from the last character to the first character. This means that the first character of the callsign is in the least significant bits of the address, while the last character is encode into the most significant bits of the address.
+	\item
+		Since the space character has a value of zero, trailing spaces will not affect the encoded value. For example the calcuated address of \texttt{'ABC'} is the same as \texttt{'ABC~'}, or \texttt{'ABC~~~~~~'}.
+	\item
+		If a uncoded address represents an amateur radio callsign it should be left-justified. That means that the first character will always be a digit or letter.
+	\item
+		Over 262 trillion address can be encoded from \texttt{0x1} (\texttt{A}) to \texttt{0xEE6B27FFFFFF} (\texttt{.........}) and only a fraction of these callsign actually look like an amateur radio callsign. Those encodable base-40 text strings that don't look like an amateur radio callsign can be used by applications for triggering events and features that their programs offer.
+	\item
+		A callsign consisting of one or more spaces is invalid because that would have a corresponding address of zero. That address is defined to be invalid.
+	\item
+		Using this scheme, there are over 19 trillion 48-bit addresses that can't be encoded by nine characters. Only one of these non-encodable addresses ($2^{48}-1$) has a specified use.
+	\item
+		After the base-40 value is calculated, the final 6-byte address is the big endian encoded representation of the base-40 value. This is also called network byte order.
+\end{itemize}
 
-(`D': $4 \times 40^4$) + (`C': $3 \times 40^3$) + (`1': $28 \times 40^2$) + (`B': $2 \times 40^1$) + (`A': $1 \times 40^0$)
+As an example, the address of \texttt{AB1CD} would be calculated as:
 
-DC1BA (base-40), \texttt{0$\times$0000009fdd51} (base-16), 10476881 (base-10)
+('\texttt{A}': $1$) + (`\texttt{B}': $2 \times 40$) + ('\texttt{1}': $28 \times 40^2$) + ('\texttt{C}': $3 \times 40^3$) + ('\texttt{D}': $4 \times 40^4$)
 
-The final address encoded into the 6-byte LSF/LICH field would be \texttt{0$\times$0000009fdd51}
+or, after refactoring and reordering:
 
-\section{Encoding Reserved Addresses}
+$( ( ( ( 4 ) \times 40 + 3 ) \times 40 + 28 ) \times 40 + 2 ) \times 40 + 1$
 
-Reserved addresses can be encoded by prepending an 8 character callsign with a hash character, \texttt{\#}. The hash
-indicates that \texttt{$40^9$} is added to the encoded value of the eight character subfield. Thus, a lone hash
-symbol encodes to \texttt{0$\times$EE6B28000000},
-while \texttt{\#A} is \texttt{0$\times$EE6B28000001} and so on.
-Using this scheme, the last hash encodable special address, a hash followed by eight dots, is
-\texttt{0$\times$F46108FFFFFF}.
+producing the resulting address:
 
-Address between \texttt{0$\times$F4610A000000} and
-\texttt{0$\times$FFFFFFFFFFFE} are unencodable using this scheme, but could still be used by
-applications for special, internal purposes. These would be encoded by the application
-developer using their own procedure.
+DC1BA (base-40), \texttt{0x9fdd51} (base-16), \texttt{10476881} (base-10).
 
-Any hash address that are going to be used between different M17 applications should
-be documented here. Developers can register the hash address(es) by submitting an issue or a pull request to the
-\href{https://github.com/M17-Project/M17_spec}{M17 Specification repository}.
+\section{Encoded Addresses}
 
+Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can't be accessed. Here is a map of the address space:
+
+\begin{table}[H]
+	\centering{}
+	\begin{tblr}{Q[c,m]Q[c,m]Q[c,m]Q[l,m]}
+		\hline
+		Address Range & Category & Number of Addresses & Remarks \\
+		\hline
+		\texttt{0x000000000000} & INVALID & \texttt{1} & never used! \\
+		\hline
+		{\texttt{0x000000000001} \\ \texttt{0xEE6B27FFFFFF}} & Codable & \textasciitilde{}262 trillion & "\texttt{A}" to "\texttt{.........}" \\
+		\hline
+		{\texttt{0xEE6B28000000} \\ \texttt{0xFFFFFFFFFFFE}} & Uncodable & \textasciitilde{}19 trillion & for application use \\
+		\hline
+		\texttt{0xFFFFFFFFFFFF} & BROADCAST & \texttt{1} & Valid only for a destination \\
+		\hline[2pt]
+	\end{tblr}
+	\caption{M17 Addresses}
+\end{table}
+
+The BROADCAST address should only be used in an RF transmission. As a destination address, it means that the RF stream is intended for any capable RF receivers.
+
+The Uncodable addresses can be used by applications for their own purposes and encoding/decoding algorithms for these addresses are left to the developer.
+
+For Codable addresses, the following encoding and decoding examples written in C will not treat the BROADCAST address. This is an implementation detail left to the developers.
 
 \pagebreak
 
 \section{Encoder Example}
 
 \begin{lstlisting}[language=C,numbers=none]
-#include <stddef.h>
-#include <stdint.h>
-#include <string.h>
-
 void Encode(const char *callsign, uint8_t *pUChar)
 {
 	uint64_t address = 0;	// the calculate address in host byte order
@@ -1634,14 +1621,8 @@ void Encode(const char *callsign, uint8_t *pUChar)
 			else if ('.' == *p)              val = 39;
 			else if ('a' <= *p && *p <= 'z') val = *p - 'a' + 1;
 
-			if (p == callsign && '#' == *p) // is this a hashed address?
-				address += 0xee6b28000000ull;
-			else
-				address = 40u * address + val; // increment and add
+			address = 40u * address + val; // increment and add
 		}
-
-		if (0x4ce1ull == address) // is this "ALL"?
-			address = 0xffffffffffffull;
 	}
 
 	for (int i=5; i>=0; i--) // put it in network byte order
@@ -1657,10 +1638,6 @@ void Encode(const char *callsign, uint8_t *pUChar)
 \section{Decoder Example}
 
 \begin{lstlisting}[language=C,numbers=none]
-#include <stddef.h>
-#include <stdint.h>
-#include <string.h>
-
 char *Decode(const uint8_t* pUChar)
 {
 	static char cs[10];
@@ -1676,19 +1653,10 @@ char *Decode(const uint8_t* pUChar)
 	for (int i=0; i<6; i++)
 		address = address * 0x100u + pUChar[i];
 
-	if (address == 0xffffffffffffu) // is this the broadcast address?
-		return "ALL      ";
-
-	if (address >= 0xf4610a000000u) // is it in the decodable range?
+	if (address >= 0xee6b28000000u) // is it in the undecodable range?
 		return cs;
 
 	unsigned i = 0; // start decoding
-
-	if (address > 0xee6b27ffffffu) // is this a reserved address?
-	{
-		cs[i++] = '#';
-		address -= 0xee6b28000000u;
-	}
 
 	while (address) // get the characters
 	{
@@ -1699,90 +1667,6 @@ char *Decode(const uint8_t* pUChar)
 	return cs;
 }
 \end{lstlisting}
-
-\section{Why base-40?}
-
-\subsection{Callsign Formats}
-
-The \href{https://www.itu.int/}{International Telecommunication Union (ITU)} coordinates radio callsign formats worldwide, with format details specified in ITU \href{https://www.itu.int/pub/R-REG-RR/en}{Radio Regulations} Articles 19.67 through 19.69. A very extensive \href{https://en.wikipedia.org/wiki/Amateur_radio_call_signs}{Wikipedia
-entry for Amateur Radio Call Signs} includes implementation details on callsign use around the world.
-
-From the ITU Articles, the longest standard callsign may consist of up to seven characters, with longer temporary special occasion callsigns allowed. The allowed callsign characters, or ``callsign alphabet'', are the 26 letters of the English alphabet (`A' through `Z') and the ten digits (`0' through `9').
-
-\paragraph{Secondary Operating Suffixes}
-
-Secondary operating suffixes are often added to callsign to indicate temporary changes of status, such as ``AB1CD/M'' for a mobile station, or ``AB1CD/AE'' to signify the station has additional operating privileges, etc. The `/' character will be included in callsign alphabet.
-
-\paragraph{Bits per Characters}
-
-The minimum number of allowed callsign characters in the callsign alphabet is 37 (`A' through `Z', `0' through `9', and `/'). The following table shows how many bytes are required to encoded a callsign using an alphabet size of 37.
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={llX},
-		}
-		\hline
-		Callsign Characters & Bits & Bytes \\
-		\hline
-		7 & \(log_2(37^7)=36.47\) & 5 \\
-		8 & \(log_2(37^8)=41.67\) & 6 \\
-		9 & \(log_2(37^9)=46.89\) & 6 \\
-		10 & \(log_2(37^{10})=52.09\) & 7 \\
-		11 & \(log_2(37^{11})=57.30\) & 8 \\
-		12 & \(log_2(37^{12})=62.51\) & 8 \\
-		13 & \(log_2(37^{13})=67.72\) & 9 \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Storage required for number of callsign characters}
-\end{table}
-
-Of these, 9 characters into 6 bytes, or 12 characters into 8 bytes are
-the most efficient. Given that 9 callsign characters and 6 bytes should
-be suitable for the majority of use cases, can the callsign alphabet be
-increased without using more than 6 bytes?
-
-\paragraph{Alphabet Size vs.~Bytes}
-
-The following table shows how many bytes are required to encode a 9 character callsign using callsign alphabet sizes of 37 through 41.
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={llX},
-		}
-		\hline
-		Alphabet Size & Bits & Bytes \\
-		\hline
-		37 & \(log_2(37^9)=46.89\) & 6 \\
-		38 & \(log_2(38^9)=47.23\) & 6 \\
-		39 & \(log_2(39^9)=47.57\) & 6 \\
-		40 & \(log_2(40^9)=47.90\) & 6 \\
-		41 & \(log_2(41^9)=48.22\) & 7 \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Storage required for alphabet size}
-\end{table}
-
-The largest callsign alphabet size able to encode 9 characters into 6
-bytes is 40. This means the minimal callsign alphabet of 37 can be
-extended with three additional characters.
-
-\subsection{Multiple Stations}
-
-To indicate multiple stations by the same operator, the `-' character can be used. A callsign such as ``AB1CD-1'' is considered a different station than ``AB1CD-2'' or even ``AB1CD'', but it is understood that these all belong to the same operator, ``AB1CD''. The `-' character will be included in callsign alphabet.
-
-\subsection{Fill}
-
-A space ' ' character is included in the callsign alphabet as a fill character or as a substitute for characters that are not part of the callsign alphabet.
-
-\subsection{Dot}
-
-A dot `.' character is included in the callsign alphabet as \ldots{} TBD \ldots{}
-
-\subsection{M17 base-40 Callsign Alphabet}
-
-These final additions complete the 40 character M17 callsign alphabet as ' ' (space), `A' through `Z', `0' through `9', `-' (hyphen), `/' (forward slash), and `.' (dot).
 
 \chapter{Randomizer Sequence}
 
