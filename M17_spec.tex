@@ -912,7 +912,7 @@ Total: 206 Type 1 bits
 
 The packet metadata field contains the 1-bit End of Frame (EOF) indicator, and the 5-bit Packet Frame/Byte Counter. This is \textit{NOT} to be confused with the LSF's 112-bit metadata field.
 
-Data starting with the first byte of the Packet Data, and  ending with 2 computed and appended CRC bytes is split in groups of 25 bytes (chunks). Each Packet Frame payload contains up to a 25-byte chunk of the Packet Data. If fewer than 25 bytes are able to be extracted from the Single Packet (i.e.~for the last Packet Frame), the Packet Data chunk is padded with zero bytes to reach 25 bytes total.
+Data starting with the first byte of the Packet Data, and  ending with 2 computed and appended CRC bytes (big-endian) is split in groups of 25 bytes (chunks). The CRC value is calculated over the whole Packet Data, including the terminating null-byte in the case of text. Each Packet Frame payload contains up to a 25-byte chunk of the Data. If fewer than 25 bytes can be extracted from the Data (i.e.~for the last Packet Frame), the Data chunk is padded with zero bytes (after the terminating CRC) to reach 25 bytes total.
 
 The Packet Frame Counter is reset to zero at the start of Packet Mode. For each Packet Frame where there is at least 1 byte remaining in the Packet Data after removing a 25-byte chunk, the EOF metadata bit is set to zero, the Packet Frame Counter value is inserted into the Packet Frame/Byte Counter metadata field, and the Packet Frame Counter is incremented afterwards.
 
