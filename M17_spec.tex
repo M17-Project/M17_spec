@@ -105,7 +105,7 @@ Permission is granted to copy, distribute and/or modify this document under the 
 
 \paragraph{M17 Project Software}
 
-Copyright (C) 2023  M17 Project \\
+Copyright (C) 2024  M17 Project \\
 
 Software included in the M17 Protocol Specification is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
@@ -1428,7 +1428,10 @@ At the beginning of the transmission, a $digest$ byte array of size 16 is initia
 	digest := digest \oplus payload
 \end{align*}
 
-This process is repeated until there is no more data to transmit. In case there is any encryption enabled, the $payload$ shall be the encrypted stream. This ensures the possibility of verification even if the encryption details are not known. The Frame Number's most significant bit of the last speech payload stream shall not be set, since it is not the last frame to be transmitted.
+This process is repeated until there is no more data to transmit. In case there is any encryption enabled, the $payload$ input shall be the encrypted stream. This ensures the possibility of verification, even if the encryption details are not known to the receiving parties. Frame Numbers of the frames carrying the signature should follow a succession of $\{7FFC_{16}, 7FFD_{16}, 7FFE_{16}, FFFF_{16}\}$.
+\begin{quote}
+	\textbf{NOTE} The Frame Number's most significant bit of the last speech payload stream shall not be set, since it is not the last frame to be transmitted.
+\end{quote}
 
 \subsubsection{Signature Generation and Transmission}
 At the transmitter-side, the stream digest is signed with a 256-bit private key. The resulting 512-bit signature is split into 4 chunks and sent as additional payload at the end of the transmission. To keep the combined LSF data consistent, the LICH counter shall advance normally. The most significant bit of the Frame Number (signalling end of transmission) shall be set in the last frame carrying the signature.
