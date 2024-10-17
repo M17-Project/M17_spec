@@ -61,7 +61,7 @@ draw=black]
 \renewcommand{\mainmatter}{\cleardoublepage\@mainmattertrue}
 \makeatother
 \usepackage[pdftex,
-			pdfauthor={Wojciech Kaczmarski SP5WWP, et al.},
+			pdfauthor={Wojciech Kaczmarski SP5WWP et al.},
 			pdftitle={M17 Protocol Specification},
 			pdfsubject={Protocol specification of the Amateur Radio digital mode commonly called M17},
 			pdfkeywords={m17, amateur radio, ham radio, digital, digital radio, codec 2, open source, specification},
@@ -69,7 +69,7 @@ draw=black]
 
 %opening
 \title{M17 Protocol Specification}
-\author{Wojciech Kaczmarski, SP5WWP et al.}
+\author{Wojciech Kaczmarski SP5WWP et al.}
 
 \begin{document}
 
@@ -77,12 +77,12 @@ draw=black]
 	\raggedleft
 	\includegraphics[width=0.7\linewidth,right]{img/m17_logo_shadow}
 	\vspace*{\baselineskip}
-	{\Large Wojciech Kaczmarski SP5WWP, et al.} \\
+	{\Large Wojciech Kaczmarski SP5WWP et al.} \\
 	\vspace*{0.167\textheight}
 	\textbf{\LARGE M17 Protocol Specification} \\
 	\today
 	\vfill
-	{\large Version 1.2}
+	{\large Version 1.3}
 	\vfill
 	\LaTeX version compiled by Steve Miller KC1AWV
 \end{titlepage}
@@ -501,7 +501,8 @@ The TYPE field contains information about the frames to follow LSF. The Packet/S
 		3..4 & Encryption type \\
 		5..6 & Encryption subtype \\
 		7..10 & Channel Access Number (CAN) \\
-		11..15 & Reserved (don't care) \\
+		11 & Stream signature available \\
+		12..15 & Reserved (don't care) \\
 		\hline[2px]
 	\end{tblr}
 	\caption{LSF TYPE definition}
@@ -1102,7 +1103,7 @@ There are many applications and devices provided by various developers that supp
 
 A Stream Mode Transmission begins with an Link Setup Frame, LSF.
 
-\subsection{LSF/LICH}
+\subsection{LSF}
 
 \begin{table}[H]
 	\centering
@@ -1333,7 +1334,7 @@ Pseudorandom bit sequence is generated using a Fibonacci-topology Linear- Feedba
 
 \begin{figure}[H]
 	\centering
-	\includegraphics{img/LFSR_8}
+	\scalebox{0.5}{\includegraphics{img/LFSR_8}}
 	\caption{8-bit LFSR taps}
 	\label{fig:lfsr8}
 \end{figure}
@@ -1406,7 +1407,7 @@ FN field sets the most significant 16 bits of the counter, with the 32-bit least
 \end{table}
 
 \begin{quote}
-	\textbf{WARNING} In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received messages are proven to be exactly as-sent by the sender should add application-layer authentication, such as HMAC.
+	\textbf{WARNING} In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received messages are proven to be exactly as-sent by the sender should use an appropriate digital signature algorithm, as described below.
 \end{quote}
 
 \subsection{Channel Access Number (CAN)}
@@ -1415,7 +1416,28 @@ The Channel Access Number (CAN) is a four bit code that may be used to filter re
 
 \subsection{Stream Frames}
 
-Stream Frames will contain the appropriate LICH data (described above). The Stream Contents will include the incrementing 16-bit Frame Number, and 128 bits of Codec 2 data (unencrypted or encrypted).
+Stream Frames will contain chunked LSF contents (in the LICH field). The Stream Contents will include the incrementing 16-bit Frame Number, and 128 bits of data (unencrypted or encrypted).
+
+\subsection{Digital Signatures}
+M17 protocol provides a stream authentication method through Elliptic Curve Digital Signature Algorithm (ECDSA). The curve used is $secp256r1$. Signature availability is signalled with a specific bit in the TYPE field. Signature use reduces the maximum length of the stream by 4 frames.
+
+\subsubsection{Message Digest Algorithm for Voice Streams}
+At the beginning of the transmission, a $digest$ byte array of size 16 is initialized with zeros. After every stream frame (starting at frame 0) an exclusive or (XOR) operation is performed over the contents of the $digest$ array and the frame's payload. The result shall be retained in the $digest$ array.
+
+\begin{align*}
+	digest := digest \oplus payload
+\end{align*}
+
+This process is repeated until there is no more data to transmit. In case there is any encryption enabled, the $payload$ shall be the encrypted stream. This ensures the possibility of verification even if the encryption details are not known. The Frame Number's most significant bit of the last speech payload stream shall not be set, since it is not the last frame to be transmitted.
+
+\subsubsection{Signature Generation and Transmission}
+At the transmitter-side, the stream digest is signed with a 256-bit private key. The resulting 512-bit signature is split into 4 chunks and sent as additional payload at the end of the transmission. To keep the combined LSF data consistent, the LICH counter shall advance normally. The most significant bit of the Frame Number (signalling end of transmission) shall be set in the last frame carrying the signature.
+
+\subsubsection{Signature Verification}
+At the receiver-side, the 512-bit signature is retrieved from the last 4 frames' contents, if the appropriate TYPE bit is set. The signature is then checked using a 512-bit public key. 
+\begin{quote}
+	\textbf{NOTE} The verification process will work if and only if all the data is received successfully (without transmission errors or dropped frames).
+\end{quote}
 
 \section{Packet Application}
 

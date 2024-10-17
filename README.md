@@ -5,4 +5,4 @@ This repository contains the specification describing it exhaustively, from top 
 
 The specification can be conveniently browsed [here](https://spec.m17project.org/).
 
-If you need a pdf file suitable for printing and binding, see the comment at the first line of the `M17_spec.txt` file.
+If you need a pdf file suitable for printing and binding, see the comment at the first line of the `M17_spec.tex` file.
