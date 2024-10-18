@@ -1422,10 +1422,11 @@ Stream Frames will contain chunked LSF contents (in the LICH field). The Stream 
 M17 protocol provides a stream authentication method through Elliptic Curve Digital Signature Algorithm (ECDSA). The curve used is $secp256r1$. Signature availability is signalled with a specific bit in the TYPE field. Signature use reduces the maximum length of the stream by 4 frames.
 
 \subsubsection{Message Digest Algorithm for Voice Streams}
-At the beginning of the transmission, a $digest$ byte array of size 16 is initialized with zeros. After every stream frame (starting at frame 0) an exclusive or (XOR) operation is performed over the contents of the $digest$ array and the frame's payload. The result shall be retained in the $digest$ array.
+At the beginning of the transmission, a $digest$ byte array of size 16 is initialized with zeros. After every stream frame (starting at frame 0) an exclusive or (XOR) operation is performed over the contents of the $digest$ array and the frame's payload. The $digest$ array is then rotated left by 1 byte. The result shall be retained in the array.
 
 \begin{align*}
-	digest := digest \oplus payload
+	digest :=& digest \oplus payload \\
+	digest :=& rol(digest, 8)
 \end{align*}
 
 This process is repeated until there is no more data to transmit. In case there is any encryption enabled, the $payload$ input shall be the encrypted stream. This ensures the possibility of verification, even if the encryption details are not known to the receiving parties. Frame Numbers of the frames carrying the signature should follow a succession of $\{7FFC_{16}, 7FFD_{16}, 7FFE_{16}, FFFF_{16}\}$.
@@ -1434,7 +1435,7 @@ This process is repeated until there is no more data to transmit. In case there 
 \end{quote}
 
 \subsubsection{Signature Generation and Transmission}
-At the transmitter-side, the stream digest is signed with a 256-bit private key. The resulting 512-bit signature is split into 4 chunks and sent as additional payload at the end of the transmission. To keep the combined LSF data consistent, the LICH counter shall advance normally. The most significant bit of the Frame Number (signalling end of transmission) shall be set in the last frame carrying the signature.
+At the transmitter-side, the stream digest is signed with a 256-bit private key. The resulting 512-bit signature is split into 4 chunks and sent as additional payload at the end of the transmission. To keep the reassembled LSF data consistent, the LICH counter shall advance normally. The most significant bit of the Frame Number (signalling end of transmission) shall be set only in the last frame carrying the signature.
 
 \subsubsection{Signature Verification}
 At the receiver-side, the 512-bit signature is retrieved from the last 4 frames' contents, if the appropriate TYPE bit is set. The signature is then checked using a 512-bit public key. 
