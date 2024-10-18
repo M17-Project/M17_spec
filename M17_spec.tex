@@ -586,7 +586,7 @@ M17 uses a non-standard version of 16-bit CRC with polynomial $x^{16} + x^{14} +
 
 As M17's native bit order is most significant bit first, neither the input nor the output of the CRC algorithm gets reflected.
 
-The input to the CRC algorithm consists of 28 bytes: 6-byte DST, 6-byte SRC, 2-byte TYPE and 14-byte META field. For data integrity verification, the received 28 bytes of LSF can be appended with CRC value. The CRC algorithm returns zero if the data is valid.
+The CRC field enables verification of the other 28 bytes forming the LSF: 6-byte DST, 6-byte SRC, 2-byte TYPE, and 14-byte META fields. Data integrity of an LSF frame is established by computing the CRC of the first 28 bytes and storing the resulting checksum in the trailing 2-byte CRC field, which can be compared by a recipient after repeating the same checksum process. Alternatively, a CRC computed over the entire 30-byte LSF frame, including a valid CRC field, will always equal zero.
 
 The test vectors in the following table are calculated by feeding the given message to the CRC algorithm.
 
