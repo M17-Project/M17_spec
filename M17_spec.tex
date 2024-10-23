@@ -157,6 +157,10 @@ This document attempts to document these layers.
 
 \textbf{Common terms used in M17}
 
+\paragraph{BER}
+
+Bit Error Rate
+
 \paragraph{ECC}
 
 Error Correcting Code
@@ -169,14 +173,13 @@ Forward Error Correction
 
 The individual components of a stream, each of which contains payload data interleaved with frame signalling.
 
-\paragraph{Link Setup Frame}
+\paragraph{Link Setup Frame (LSF)}
 
-The first frame of any transmission. It contains full link information
-data.
+The first data frame of any transmission. It contains full link information data.
 
 \paragraph{LICH}
 
-Link Information Channel. The LICH contains all information needed to establish an M17 link. The first frame of a transmission contains full LICH data, and subsequent frames each contain one sixth of the LICH data so that late-joiners can obtain the LICH\@.
+Link Information Channel. The LICH carries all information of an M17 link. The first frame of a transmission contains full link setup data, and subsequent frames each contain one sixth of this data, so that late-joiners can obtain the full link setup data information\@.
 
 \paragraph{Packet}
 
