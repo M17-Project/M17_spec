@@ -1561,7 +1561,7 @@ Here are some facts and rules about the encoding an address from a callsign:
 	\item
 		Over 262 trillion address can be encoded from \texttt{0x1} (\texttt{A}) to \texttt{0xEE6B27FFFFFF} (\texttt{.........}) and only a fraction of these callsign actually look like an amateur radio callsign. Those encodable base-40 text strings that don't look like an amateur radio callsign can be used by applications for triggering events and features that their programs offer.
 	\item
-		A callsign consisting of one or more spaces is invalid because that would have a corresponding address of zero. That address is defined to be invalid.
+		A callsign consisting of only spaces is invalid, because it would have a corresponding address of zero. That address is defined to be invalid.
 	\item
 		Using this scheme, there are over 19 trillion 48-bit addresses that can't be encoded by nine characters. Only one of these non-encodable addresses ($2^{48}-1$) has a specified use.
 	\item
