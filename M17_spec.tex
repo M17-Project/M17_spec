@@ -10,6 +10,8 @@
 \usepackage{tabularray}
 \usepackage{multirow}
 \usepackage{float}
+\usepackage{nicematrix}
+\NiceMatrixOptions{cell-space-top-limit=4pt, cell-space-bottom-limit=4pt}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta}
 \tikzstyle{textonly} = [rectangle,
@@ -487,28 +489,32 @@ Total: 240 Type 1 bits
 
 Destination and source addresses may be encoded amateur radio callsigns, or special numbers. See the Address Encoding Appendix for details.
 
-\subsection{LSF TYPE}
+\subsection{LSF TYPE} \label{lsftype}
 
 The TYPE field contains information about the frames to follow LSF. The Packet/Stream indicator bit determines which mode (Packet or Stream) will be used during the transmission. The remaining field meanings are defined by the specific mode and application.
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
+	\small
+	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|}
 		\hline
-		Bits & Content \\
+		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
+		\Hline[tikz=very thick]
+		0 &
+			\multicolumn{4}{c}{\textit{Reserved}} &
+			\parbox{3em}{\centering Signed Stream} &
+			\multicolumn{3}{c}{Channel Access Number\ldots} \\
 		\hline
-		0 & Packet/Stream indicator \\
-		1..2 & Data type indicator \\
-		3..4 & Encryption type \\
-		5..6 & Encryption subtype \\
-		7..10 & Channel Access Number (CAN) \\
-		11 & Stream signature available \\
-		12..15 & Reserved (don't care) \\
-		\hline[2px]
-	\end{tblr}
-	\caption{LSF TYPE definition}
+		1 &
+			\ldots &
+			\multicolumn{2}{c}{\parbox{6em}{\centering Encryption Subtype}} &
+			\multicolumn{2}{c}{\parbox{6em}{\centering Encryption Type}} &
+			\multicolumn{2}{c}{\parbox{6em}{\centering Data Type}} &
+			\parbox{3em}{\centering Packet/ Stream} \\
+		\hline
+	\end{NiceTabular}
+	\normalsize
+	\caption{LSF TYPE layout}
 \end{table}
 
 \begin{table}[H]
@@ -685,23 +691,22 @@ Each Stream Frame contains a 48-bit Link Information Channel (LICH). Each LICH w
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bits & Content \\
-		\hline
-		0..39 & 40-bit chunk of full LSF Contents (Type 1 bits) \\
-		40..42 & LICH\_CNT \\
-		43..47 & Reserved \\
-		\hline[2px]
-	\end{tblr}
+	\small
+	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|}[hvlines]
+		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
+		\Hline[tikz=very thick]
+		0 & \Block{3-8}{40-bit chunk of full LSF Contents (Type 1 bits)} \\
+		\ldots &  \\
+		4 & \\
+		5 & \multicolumn{3}{c}{LICH\_CNT} & \multicolumn{5}{c}{\textit{Reserved}} \\
+	\end{NiceTabular}
+	\normalsize
 	\caption{Link Information Channel Contents}
 \end{table}
 
 Total: 48 bits
 
-The 40-bit chunks start with the most significant byte of the LSF.
+The 40-bit chunks start from the beginning of the LSF.
 
 \begin{table}[H]
 	\centering
@@ -711,12 +716,12 @@ The 40-bit chunks start with the most significant byte of the LSF.
 		\hline
 		LICH\_CNT & LSF bits \\
 		\hline
-		0 & 239:200 \\
-		1 & 199:160 \\
-		2 & 159:120 \\
-		3 & 119:80 \\
-		4 & 79:40 \\
-		5 & 39:0 \\
+		0 & 0:39 \\
+		1 & 40:79 \\
+		2 & 80:119 \\
+		3 & 120:159 \\
+		4 & 160:199 \\
+		5 & 200:239 \\
 		\hline[2px]
 	\end{tblr}
 	\caption{LICH\_CNT and LSF bits}
@@ -899,15 +904,19 @@ Packet Frames contain Packet Contents after ECC/FEC is applied.
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{ll}
-		\hline
-		Bits & Meaning \\
-		\hline
-		0..199 & 200-bit chunk of Single Packet \\
-		200 & End of Frame (EOF) indicator \\
-		201..205 & Packet Frame/Byte Counter \\
-		\hline[2px]
-	\end{tblr}
+	\small
+	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|}[hvlines]
+		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
+		\Hline[tikz=very thick]
+		0 & \Block{3-8}{200-bit chunk of Single Packet} \\
+		\ldots &  \\
+		24 & \\
+		25 &
+			\parbox{3em}{\centering End of Frame} &
+			\multicolumn{5}{c}{Packet Frame/Byte Counter} &
+			\Block[fill=gray]{1-2}{} & \\
+	\end{NiceTabular}
+	\normalsize
 	\caption{Packet Contents}
 \end{table}
 
@@ -923,31 +932,31 @@ When there are no bytes remaining in the Packet Data after removing a 25-byte (o
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bits & Meaning \\
-		\hline
-		0..4 & Frame number, 0..31 \\
-  		5 & Set to 0, Not end of frame \\
-		\hline[2px]
-	\end{tblr}
+	\small
+	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|}[hvlines]
+		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
+		\Hline[tikz=very thick]
+		0 &
+			0 &
+			\multicolumn{5}{c}{Frame number, 0..31} &
+			\Block[fill=gray]{1-2}{} & \\
+	\end{NiceTabular}
+	\normalsize
 	\caption{Packet Metadata Field with EOF = 0}
 \end{table}
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bits & Meaning \\
-		\hline
-		0..4 & Number of bytes in frame, 1..25 \\
-  		5 & Set to 1, End of frame \\
-		\hline[2px]
-	\end{tblr}
+	\small
+	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|}[hvlines]
+		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
+		\Hline[tikz=very thick]
+		0 &
+			1 &
+			\multicolumn{5}{c}{Number of bytes in frame, 1..25} &
+			\Block[fill=gray]{1-2}{} & \\
+	\end{NiceTabular}
+	\normalsize
 	\caption{Packet Metadata Field with EOF = 1}
 \end{table}
 
@@ -1133,30 +1142,23 @@ The destination address used by a client may simply be a callsign or reflector d
 
 \paragraph{TYPE field}
 
-The TYPE field contains information about the frames to follow LSF.
+The TYPE field contains information about the frames to follow LSF. For full definition see Section \ref{lsftype}.
 
 \begin{table}[H]
 	\centering
 	\begin{tblr}{ll}
 		\hline
-		Bits & Meaning \\
+		Packet/Stream & 1 = Stream Mode \\
 		\hline
-		0 & Packet/Stream indicator \\
-		& 1 = Stream Mode \\
+		Data Type & $10_2$ = Voice only (3200 bps) \\
 		\hline
-		1..2 & Data type indicator \\
-		& $10_2$ = Voice only (3200 bps) \\
-		\hline
-		3..4 & Encryption type \\
-		& $00_2$ = None \\
+		Encryption Type & $00_2$ = None \\
 		& $01_2$ = Scrambling \\
 		& $10_2$ = AES \\
 		\hline
-		5..6 & Encryption subtype \\
+		Encryption Subtype & Depends on Encryption Type \\
 		\hline
-		7..10 & Channel Access Number (CAN) \\
-		\hline
-		11..15 & Reserved (don't care) \\
+		Channel Access Number (CAN) & 0..15 \\
 		\hline[2px]
 	\end{tblr}
 	\caption{M17 Voice LSF TYPE definition}
