@@ -84,7 +84,7 @@ draw=black]
 	\textbf{\LARGE M17 Protocol Specification} \\
 	\today
 	\vfill
-	{\large Version 1.4}
+	{\large Version 1.5}
 	\vfill
 	\LaTeX version compiled by Steve Miller KC1AWV
 \end{titlepage}
@@ -175,9 +175,13 @@ Forward Error Correction
 
 The individual components of a stream, each of which contains payload data interleaved with frame signalling.
 
+\paragraph{Link Setyo Data (LSD)}
+
+The SRC and DST callsign address fields, TYPE field and the META data.
+
 \paragraph{Link Setup Frame (LSF)}
 
-The first data frame of any transmission. It contains full link information data.
+The first data frame of any transmission. It contains an LSD and a CRC.
 
 \paragraph{LICH}
 
@@ -294,7 +298,7 @@ Payload shall be transmitted in multiples of 2 bits (1 symbol).
 
 To avoid transmitting long sequences of constant symbols (e.g.~+3, +3, +3, \ldots), a simple randomizing algorithm is used. At the transmitter, all payload bits shall be XORed with a pseudorandom predefined sequence before being converted to symbols. At the receiver, the randomized payload symbols are converted to bits and are again passed through the same XOR algorithm to obtain the original payload bits.
 
-The pseudorandom sequence is composed of the 46 bytes (368 bits) found in the appendix Randomizer Sequence.
+The pseudorandom sequence is composed of the 46 bytes (368 bits) found in the Randomizer appendix table \ref{randomizer}.
 
 Before each bit of payload is converted to symbols for transmission, it is XORed with a bit from the pseudorandom sequence. The first payload bit is XORed with most significant bit (bit 7) of sequence byte 0 \texttt{(0$\times$D6)}, second payload bit with bit 6 of sequence byte 0, continuing to the eighth payload bit and bit 0 of sequence byte 0. The ninth payload bit is XORed with bit 7 of sequence byte 1 \texttt{(0$\times$B5)}, tenth payload bit with bit 6 of sequence byte 1, etc.
 
@@ -377,7 +381,7 @@ utilized will be indicated for each frame type.
 		\hline
 		Type 1 & Data link layer content bits \\
 		Type 2 & Bits after appropriate encoding \\
-		Type 3 & Bits after puncturing \\
+		Type 3 & Bits after puncturing. described in \autoref{puncturing} \\
 		Type 4 & Interleaved (re-ordered) bits \\
 		\hline[2px]
 	\end{tblr}
@@ -461,11 +465,11 @@ Multiple Stream or Packet Sync Bursts may be present during a Transmission, depe
 	\caption{Frame Specific Sync Bursts}
 \end{table}
 
-\section{Link Setup Frame (LSF)}
+\section{Link Setup Data and Frame (LSD and LSF)}
 
-The LSF is the initial frame for both Stream and Packet Modes and contains information needed to establish a link.
+The Link Setup Data, LSD, is a data structure that is common to both streaming and packet mode and contains information needed to establish a link. This data is a fundamental part of both RF streams and internet protocol packets.
 
-\begin{table}[H]
+\begin{table}[H] \label{lsd}
 	\centering
 	\begin{tblr}{
 		colspec={lcX},
@@ -473,23 +477,42 @@ The LSF is the initial frame for both Stream and Packet Modes and contains infor
 		\hline
 		Field & Length & Description \\
 		\hline
-		DST & 48 bits & Destination address - Encoded callsign or a special number (eg. a group) \\
-		SRC & 48 bits & Source address - Encoded callsign of the originator or a special number (eg. a group) \\
-		TYPE & 16 bits & Information about the incoming data stream \\
-		META & 112 bits & Metadata field, suitable for cryptographic metadata like IVs or single-use numbers, or non-crypto metadata like the sender's GNSS position. \\
+		DST & 6 bytes & Destination address - Encoded callsign or a special number (eg. a group) \\
+		SRC & 6 bytes & Source address - Encoded callsign of the originator or a special number (eg. a group) \\
+		TYPE & 2 bytes & Information about the incoming data \\
+		META & 14 bytes & Metadata field, suitable for cryptographic metadata like IVs or single-use numbers, or non-crypto metadata like the sender's GNSS position. \\
+		\hline[2pt]
+	\end{tblr}
+	\caption{Link Setup Data Contents}
+\end{table}
+
+Total: 28 bytes, 224 Type 1 bits
+
+The link Setup Frame, LSF, is an LSD followed immediately by a 16 bit CRC.
+For details about how the CRC is calculated, see Section \ref{crc}.
+
+\begin{table}[H] \label{lsf}
+	\centering
+	\begin{tblr}{
+		colspec={lcX},
+		}
+		\hline
+		Field & Length & Description \\
+		\hline
+		LSD & 224 bits & Shown in the previous table \\
 		CRC & 16 bits & CRC for the link setup data \\
 		\hline[2pt]
 	\end{tblr}
 	\caption{Link Setup Frame Contents}
 \end{table}
 
-Total: 240 Type 1 bits
+Total: 30 bytes, 240 Type 1 bits
 
-\subsection{LSF DST and SRC}
+\subsection{DST and SRC}
 
-Destination and source addresses may be encoded amateur radio callsigns, or special numbers. See the Address Encoding Appendix for details.
+Destination and source addresses may be encoded amateur radio callsigns, or special numbers. see \autoref{address_encoding} for details.
 
-\subsection{LSF TYPE} \label{lsftype}
+\subsection{TYPE} \label{lsftype}
 
 The TYPE field contains information about the frames to follow LSF. The Packet/Stream indicator bit determines which mode (Packet or Stream) will be used during the transmission. The remaining field meanings are defined by the specific mode and application.
 
@@ -585,11 +608,11 @@ For the encryption subtype, meaning of values depends on encryption type.
 	\caption{Key lengths for encryption subtypes}
 \end{table}
 
-\subsection{LSF META}
+\subsection{META}
 
 The LSF META field is defined by the specific application.
 
-\subsection{LSF CRC}
+\subsection{CRC} \label{crc}
 
 M17 uses a non-standard version of 16-bit CRC with polynomial $x^{16} + x^{14} + x^{12} + x^{11} + x^8 + x^5 + x^4 + x^2 + 1$ or \texttt{0$\times$5935} and initial value of \texttt{0$\times$FFFF}. This polynomial allows for detecting all errors up to hamming distance of 5 with payloads up to 241 bits, which is less than the amount of data in each frame.
 
@@ -620,7 +643,7 @@ The 240 Type 1 bits of the Link Setup Frame Contents along with 4 flush bits are
 
 Type 3 bits are computed by $P_1$ puncturing the Type 2 bits, resulting in 368 Type 3 bits.
 
-Interleaving the Type 3 bits produces 368 Type 4 bits that are ready to be passed to the Physical Layer.
+Interleaving the Type 3 bits produces 368 Type 4 bits that are ready to be passed to the Physical Layer. Interleaving is described in \autoref{interleaving}.
 
 Within the Physical Layer, the 368 Type 4 bits are randomized and combined with the 16-bit LSF Sync Burst, which results in a complete frame of 384 bits (384 bits / 9600bps = 40 ms).
 
@@ -656,6 +679,8 @@ Within the Physical Layer, the 368 Type 4 bits are randomized and combined with 
 	\end{tikzpicture}
 	\caption{LSF Construction}
 \end{figure}
+
+Details of the convolutional encoder are in \autoref{convolutional_encoder}
 
 \section{Stream Mode}
 
@@ -878,7 +903,7 @@ In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data 
 	\caption{Single Packet}
 \end{table}
 
-n is the number of bytes of the Application Packet Data. The CRC calculation used here is the same as described for LSF CRC.
+n is the number of bytes of the Application Packet Data. The CRC calculation used here is our non-standard CRC described in Section \ref{crc}.
 
 Packet Mode shall always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode). Following the LSF, 1 to 33 Packet Frames may be sent.
 
@@ -1042,7 +1067,7 @@ BERT Frames contain BERT Contents after ECC/FEC is applied.
 
 The BERT Contents consists of 197 bits from a \href{https://en.wikipedia.org/wiki/Pseudorandom_binary_sequence}{PRBS9} generator. This is 24 bytes and 5 bits of data. The next BERT Contents starts with the 198th bit from the PRBS9 generator. The same generator is used for each subsequent BERT Contents without being reset. The number of bits pulled from the generator, 197, is a prime number. This will produce a reasonably large number of unique frames even with a PRBS generator with a relatively short period.
 
-See the Appendix for BERT generation and reception details.
+See \autoref{bert_details} for BERT generation and reception details.
 
 \begin{table}[H]
 	\centering
@@ -1127,6 +1152,7 @@ A Stream Mode Transmission begins with an Link Setup Frame, LSF.
 		SRC & 48 bits & Source address \\
 		TYPE & 16 bits & Information about the incoming data stream \\
 		META & 112 bits & Metadata field \\
+		CRC & 16 bits & Our non-standard CRC, see Section \ref{crc} \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Link Setup Frame Contents}
@@ -1134,7 +1160,7 @@ A Stream Mode Transmission begins with an Link Setup Frame, LSF.
 
 \paragraph{Address fields}
 
-Destination (DST) and source (SRC) addresses may be encoded amateur radio callsigns, or special identifiers. See the Address Encoding Appendix for details on how up to 9 characters of text can be encoded into the 6-byte address value.
+Destination (DST) and source (SRC) addresses may be encoded amateur radio callsigns, or special identifiers. See the Address Encoding \autoref{address_encoding} for details on how up to 9 characters of text can be encoded into the 6-byte address value.
 
 The source address is always the callsign of the station transmitting, be it a client, repeater, or gateway. This is not a problem for a client, but for a repeater/gateway this raises issues about identifying the original source of a transmission. Having a repeater/gateway always use its own callsign for the source field does ensure that there are no issues with licensing authorities. To retain identification of the original source for a voice stream, an extended callsign data field will be encoded in the LSF META field.
 
@@ -1450,9 +1476,9 @@ At the receiver-side, the 512-bit signature is retrieved from the last 4 frames'
 
 \section{Packet Application}
 
-\begin{quote}
-	\textbf{ATTENTION} This is work in progress.
-\end{quote}
+%\begin{quote}
+%	\textbf{ATTENTION} This is work in progress.
+%\end{quote}
 
 A single packet of up to 823 bytes of data may be sent in one transmission.
 
@@ -1496,7 +1522,11 @@ In competing radio protocols, a repeater or some other RF to IP bridge is requir
 
 \section{Standard IP Framing}
 
-M17 over IP is big endian, consistent with other IP protocols. We have standardized on UDP port 17000, this port is recommended but not required. Later specifications may require this port.
+Data in IP frames are big endian, consistent with other IP protocols.
+
+\subsection{Streaming Mode IP Packets}
+
+We have standardized on UDP port 17000, this port is recommended but not required.
 
 \begin{table}[H]
 	\centering
@@ -1506,21 +1536,46 @@ M17 over IP is big endian, consistent with other IP protocols. We have standardi
 		\hline
 		Field & Size & Description \\
 		\hline
-		MAGIC & 32 bits & Magic bytes 0x4d313720 (``M17 '') \\
-		StreamID (SID) & 16 bits & Random bits, changed for each PTT or stream, but consistent from frame to frame within a stream \\
-		LICH & 224 bits & The meaningful contents of a LICH frame (dst, src, streamtype, META field) as defined earlier. \\
+		MAGIC & 4 bytes & Magic bytes 0x4d313720 (``M17 '') \\
+		StreamID (SID) & 2 bytes & Random bits, changed for each PTT or stream, but consistent from frame to frame within a stream \\
+		LSD & 28 bytes & The Link Setup Data (dst, src, streamtype, META field) as defined in Table \ref{lsd}. \\
 		FN & 16 bits & Frame number (exactly as would be transmitted as an RF stream frame, including the last frame indicator at (FN \& 0x8000) \\
-		Payload & 128 bits & Payload (exactly as would be transmitted in an RF stream frame) \\
-		CRC16 & 16 bits & CRC for the entire packet, as defined earlier CRC definition \\
+		Payload & 16 bytes & Payload (exactly as would be transmitted in an RF stream frame) \\
+		CRC16 & 2 bytes & CRC for the entire packet, as defined in Section \ref{crc} \\
 		\hline[2pt]
 	\end{tblr}
 \end{table}
 
-The CRC checksum must be recomputed after modification or re-assembly of the packet, such as when translating from RF to IP framing.
+The CRC checksum must be recomputed after modification or re-assembly of the packet, such as when IP routing or translating from RF to IP framing.
+
+\subsection{Packet Mode IP Packets}
+
+UDP port 17007 is recommended, but not required.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={llX},
+		}
+		\hline
+		Field & Size & Description \\
+		\hline
+		MAGIC & 4 bytes & Magic bytes 0x4d313750 (``M17P'') \\
+		LSF & 30 bytes & The Link Setup Frame(dst, src, streamtype, META field, CRC) as defined in Table \ref{lsf}. \\
+		Payload & variable & This includes a type specifer, the user data, and a CRC \\
+		\hline[2pt]
+	\end{tblr}
+\end{table}
+
+The Payload CRC is computed from the type specifer and the user data.
+The minimum size of a payload is 4 bytes, which includes a one byte type specifer, one byte of user data and a two byte CRC.
+The maximum size is 825 bytes and contains a type specifier, data and a CRC. Data integrety is validated by the MAGIC value, the LSF CRC and the Payload CRC. Only the LSF CRC must be recomputed if any of its components are changed.
 
 \appendix
 
-\chapter{Address Encoding}
+\chapter{Address Encoding} \label{address_encoding}
+
+\section{The M17 aphabet}
 
 M17 uses a 48-bit (6-byte) address to represent the characters that define a source and destination.
 M17 uses a 40-character alphabet. Encoded, up to nine characters can be used to encode a source or destination address that will still fit in a 48-bit address field.
@@ -1691,7 +1746,7 @@ see \href{https://github.com/M17-Project/libm17}{https://github.com/M17-Project/
 
 \chapter{Randomizer Sequence}
 
-\begin{table}[H]
+\begin{table}[H] \label{randomizer}
 	\centering
 	\begin{tblr}{
 		colspec={lXlX},
@@ -1727,7 +1782,7 @@ see \href{https://github.com/M17-Project/libm17}{https://github.com/M17-Project/
 	\caption{Randomizer values}
 \end{table}
 
-\chapter{Convolutional Encoder}
+\chapter{Convolutional Encoder} \label{convolutional_encoder}
 
 The convolutional code shall encode the input bit sequence after
 appending 4 tail bits at the end of the sequence. Rate of the coder is
@@ -1828,7 +1883,7 @@ Sample MATLAB/Octave code snippet for generating $G$ and $H$ matrices is shown b
 	H = [transpose([G_P P.']) I_K];
 \end{lstlisting}
 
-\chapter{Code Puncturing}
+\chapter{Code Puncturing} \label{puncturing}
 
 Removing some of the bits from the convolutional coder's output is
 called code puncturing. The nominal coding rate of the encoder used in
@@ -1897,7 +1952,7 @@ The linearized representation is:
 	P3 = [1, 1, 1, 1, 1, 1, 1, 0]
 \end{verbatim}
 
-\chapter{Interleaving}
+\chapter{Interleaving} \label{interleaving}
 
 For interleaving a Quadratic Permutation Polynomial (QPP) is used. The polynomial
 
@@ -2036,7 +2091,7 @@ is used for a 368 bit interleaving pattern QPP.
 	\href{https://arxiv.org/abs/1103.3794}{Trifina Lucian, Tarniceriu 	Daniela, Munteanu Valeriu. ``Improved QPP Interleavers for LTE 	Standard.'' ISSCS 2011 - International Symposium on Signals, Circuits 	and Systems (2011)}
 \end{itemize}
 
-\chapter{BERT Details}
+\chapter{BERT Details} \label{bert_details}
 
 \section{PRBS Generation}
 
