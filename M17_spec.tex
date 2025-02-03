@@ -175,7 +175,7 @@ Forward Error Correction
 
 The individual components of a stream, each of which contains payload data interleaved with frame signalling.
 
-\paragraph{Link Setyo Data (LSD)}
+\paragraph{Link Setup Data (LSD)}
 
 The SRC and DST callsign address fields, TYPE field and the META data.
 
@@ -193,8 +193,7 @@ A single burst of data transmitted in packet mode.
 
 \paragraph{Superframe}
 
-A set of six consecutive frames which collectively contain full LICH
-data are grouped into a superframe.
+A set of six consecutive frames in the stream mode which collectively contain full LSD are grouped into a superframe.
 
 \mainmatter
 \chapter{Physical Layer}
@@ -477,8 +476,8 @@ The Link Setup Data, LSD, is a data structure that is common to both streaming a
 		\hline
 		Field & Length & Description \\
 		\hline
-		DST & 6 bytes & Destination address - Encoded callsign or a special number (eg. a group) \\
-		SRC & 6 bytes & Source address - Encoded callsign of the originator or a special number (eg. a group) \\
+		DST & 6 bytes & Destination address - Encoded callsign or a special value (eg. a group) \\
+		SRC & 6 bytes & Source address - Encoded callsign of the originator or a special value (eg. a group) \\
 		TYPE & 2 bytes & Information about the incoming data \\
 		META & 14 bytes & Metadata field, suitable for cryptographic metadata like IVs or single-use numbers, or non-crypto metadata like the sender's GNSS position. \\
 		\hline[2pt]
@@ -503,7 +502,7 @@ For details about how the CRC is calculated, see Section \ref{crc}.
 		CRC & 16 bits & CRC for the link setup data \\
 		\hline[2pt]
 	\end{tblr}
-	\caption{Link Setup Frame Contents}
+	\caption{Link Setup Frame contents}
 \end{table}
 
 Total: 30 bytes, 240 Type 1 bits
@@ -886,7 +885,7 @@ Stream Frames are grouped into Stream Superframes, which is the group of 6 frame
 
 \section{Packet Mode}
 
-In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data along with an appended two byte CRC may be sent over the physical layer during one Transmission. The total number of bytes is 825 (33*25).
+In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data along with an appended two byte CRC may be sent over the physical layer during one Transmission. The total number of bytes ranges from 25 to 825 (33*25) bytes in 25 byte increments.
 
 \begin{table}[H]
 	\centering
@@ -906,8 +905,6 @@ In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data 
 n is the number of bytes of the Application Packet Data. The CRC calculation used here is our non-standard CRC described in Section \ref{crc}.
 
 Packet Mode shall always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode). Following the LSF, 1 to 33 Packet Frames may be sent.
-
-Packet Mode achieves a base throughput of 5 kbps, a net throughput of approximately 4.7 kbps for the largest data payload, and over 3 kbps for 100-byte payloads. Net throughput takes into account preamble and link setup overhead. (TODO: recompute this)
 
 \begin{table}[H]
 	\centering
@@ -1039,7 +1036,21 @@ Within the Physical Layer, the 368 Type 4 bits are randomized and combined with 
 
 \subsection{Packet Superframes}
 
-A Packet Superframe consists of up to the 33 Packet Frames used to reconstruct the original Single Packet.
+A Packet Superframe consists of at least 1 and up to the 33 Packet Frames to reconstruct the original Single Packet.
+
+\clearpage
+
+\subsection{Net Throughput}
+
+Packet Mode achieves a base throughput of 5 kbps, and a net throughput of over 4.5 kbps can be achieved for large payloads.
+
+Below is a graph of the net throughput in bits/second \textit{vs.} payload size in bytes.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.7]{img/pm_thruput.png}
+	\caption{Packet Mode Net Throughput}
+\end{figure}
 
 \section{BERT Mode}
 
@@ -1538,7 +1549,7 @@ We have standardized on UDP port 17000, this port is recommended but not require
 		\hline
 		MAGIC & 4 bytes & Magic bytes 0x4d313720 (``M17 '') \\
 		StreamID (SID) & 2 bytes & Random bits, changed for each PTT or stream, but consistent from frame to frame within a stream \\
-		LSD & 28 bytes & The Link Setup Data (dst, src, streamtype, META field) as defined in Table \ref{lsd}. \\
+		LSD & 28 bytes & The Link Setup Data (DST, SRC, TYPE, META field) as defined in Table \ref{lsd}. \\
 		FN & 16 bits & Frame number (exactly as would be transmitted as an RF stream frame, including the last frame indicator at (FN \& 0x8000) \\
 		Payload & 16 bytes & Payload (exactly as would be transmitted in an RF stream frame) \\
 		CRC16 & 2 bytes & CRC for the entire packet, as defined in Section \ref{crc} \\
@@ -1561,7 +1572,7 @@ UDP port 17007 is recommended, but not required.
 		Field & Size & Description \\
 		\hline
 		MAGIC & 4 bytes & Magic bytes 0x4d313750 (``M17P'') \\
-		LSF & 30 bytes & The Link Setup Frame(dst, src, streamtype, META field, CRC) as defined in Table \ref{lsf}. \\
+		LSF & 30 bytes & The Link Setup Frame(DST, SRC, TYPE, META field, CRC) as defined in Table \ref{lsf}. \\
 		Payload & variable & This includes a type specifer, the user data, and a CRC \\
 		\hline[2pt]
 	\end{tblr}
@@ -1570,6 +1581,133 @@ UDP port 17007 is recommended, but not required.
 The Payload CRC is computed from the type specifer and the user data.
 The minimum size of a payload is 4 bytes, which includes a one byte type specifer, one byte of user data and a two byte CRC.
 The maximum size is 825 bytes and contains a type specifier, data and a CRC. Data integrety is validated by the MAGIC value, the LSF CRC and the Payload CRC. Only the LSF CRC must be recomputed if any of its components are changed.
+
+\section{Relaying Packets over IP}
+
+Relaying packets over an IP network is the preferred method of connecting M17 user together. This provide a one-to-many connection where one transmitter is sending data to many other receivers. It is possible to build relay stations that can handle either Stream or Packet Mode data, or both. These relay appliances can have a number of different channels and they can also be interlinked so that very large groups of hams can share information.
+
+Existing relay systems, sometimes called a ``reflector'', use a few different types of control packets which are used to connect and disconnect and do other fuctions. These control packets are identified by their magic:
+
+\begin{itemize}
+	\item
+	CONN - Connect to a reflector
+	\item
+	ACKN - acknowledge connection
+	\item
+	NACK - deny connection
+	\item
+	PING - keepalive for the connection from the reflector to the client
+	\item
+	PONG - keepalive response from the client to the reflector
+	\item
+	DISC - Disconnect (client-\textgreater reflector or
+	reflector-\textgreater client)
+\end{itemize}
+
+These control packets are described below.
+
+\subsection{CONN}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lX},
+		}
+		\hline
+		Bytes & Purpose \\
+		\hline
+		0..3 & Magic - ASCII ``CONN'' \\
+		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
+		10 & Module to connect to - single ASCII byte A-Z \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Bytes of CONN Packet}
+\end{table}
+
+A client sends this to a reflector to initiate a connection. The reflector replies with ACKN on successful linking, or NACK on failure.
+
+\subsection{ACKN}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lX},
+		}
+		\hline
+		Bytes & Purpose \\
+		\hline
+		0..3 & Magic - ASCII ``ACKN'' \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Bytes of ACKN Packet}
+\end{table}
+
+\subsection{NACK}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lX},
+		}
+		\hline
+		Bytes & Purpose \\
+		\hline
+		0..3 & Magic - ASCII ``NACK'' \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Bytes of NACK Packet}
+\end{table}
+
+\subsection{PING}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lX},
+		}
+		\hline
+		Bytes & Purpose \\
+		\hline
+		0..3 & Magic - ASCII ``PING'' \\
+		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Bytes of PING Packet}
+\end{table}
+
+\subsection{PONG}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+			colspec={lX},
+		}
+		\hline
+		Bytes & Purpose \\
+		\hline
+		0..3 & Magic - ASCII ``PONG'' \\
+		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Bytes of PONG Packet}
+\end{table}
+
+\subsection{DISC}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lX},
+		}
+		\hline
+		Bytes & Purpose \\
+		\hline
+		0..3 & Magic - ASCII ``DISC'' \\
+		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Bytes of DISC Packet}
+\end{table}
 
 \appendix
 
