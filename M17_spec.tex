@@ -854,7 +854,29 @@ Stream Frames are grouped into Stream Superframes, which is the group of 6 frame
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth]{img/M17_stream}
+	\begin{NiceTabular}{cc|c|c|}
+	\cline{3-4}
+	& & PREAMBLE & $\geq$ 40 ms \\ \cline{3-4}
+	& \Block{2-1}{LINK SETUP} & LSF\_SYNC & \Block{2-1}{40 ms} \\ \cline{3-3}
+	& & LSF & \\ \cline{3-4}
+	\Block{12-1}{SUPERFRAME 1} & \Block{2-1}{FRAME 0} & FRAME\_SYNC & \Block{2-1}{40 ms} \\ \cline{3-3}
+	& & FRAME\_DATA & \\ \cline{3-4}
+	& \Block{2-1}{FRAME 1} & FRAME\_SYNC & \Block{2-1}{40 ms} \\ \cline{3-3}
+	& & FRAME\_DATA & \\ \cline{3-4}
+	& \Block{2-1}{FRAME 2} & FRAME\_SYNC & \Block{2-1}{40 ms} \\ \cline{3-3}
+	& & FRAME\_DATA & \\ \cline{3-4}
+	& \Block{2-1}{FRAME 3} & FRAME\_SYNC & \Block{2-1}{40 ms} \\ \cline{3-3}
+	& & FRAME\_DATA & \\ \cline{3-4}
+	& \Block{2-1}{FRAME 4} & FRAME\_SYNC & \Block{2-1}{40 ms} \\ \cline{3-3}
+	& & FRAME\_DATA & \\ \cline{3-4}
+	& \Block{2-1}{FRAME 5} & FRAME\_SYNC & \Block{2-1}{40 ms} \\ \cline{3-3}
+	& & FRAME\_DATA & \\ \cline{3-4}
+	& \Block{2-1}{FRAME 6} & FRAME\_SYNC & \Block{2-1}{40 ms} \\ \cline{3-3}
+	& & FRAME\_DATA & \\ \cline{3-4}
+	& \ldots & \ldots & \ldots \\ \cline{3-4}
+	\CodeAfter
+		\SubMatrix{\{}{4-2}{15-2}{.}
+	\end{NiceTabular}
 	\caption{Stream Superframes}
 	\label{fig:m17stream}
 \end{figure}
