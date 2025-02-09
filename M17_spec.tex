@@ -1542,8 +1542,6 @@ Packets are sent using Packet Mode.
 
 Packets are composed of a 1..n byte data type specifier and up to $823-n$ bytes of payload data. The data type specifier is a variable-length encoding using the same format as UTF-8. The data type specifier must be between $0$ and $2^{21}-1$ which will occupy between 1 and 4 bytes when encoded. Values from 0 to 127 are identical to their encoded form.
 
-Packets are composed of a 1..n byte data type specifier and up to $823-n$ bytes of payload data. The data type specifier is a variable-length encoding using the same format as UTF-8. The data type specifier must be between $0$ and $2^{21}-1$ which will occupy between 1 and 4 bytes when encoded. Values from 0 to 127 are identical to their encoded form.
-
 The data type specifier can also be used as a protocol specifier. For example, the following protocol identifiers are reserved in the M17 packet spec:
 
 \begin{table}[H]
