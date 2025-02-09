@@ -101,7 +101,7 @@ draw=black]
 
 \paragraph{M17 Protocol Specification}
 
-Copyright \copyright{}  2023-2024  M17 Project. \\
+Copyright \copyright{}  2023-2025  M17 Project. \\
 
 Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License'' or at the following web page: \href{https://www.gnu.org/licenses/fdl-1.3.en.html}{https://www.gnu.org/licenses/fdl-1.3.en.html}
 
@@ -466,20 +466,20 @@ Multiple Stream or Packet Sync Bursts may be present during a Transmission, depe
 
 \section{Link Setup Data and Frame (LSD and LSF)}
 
-The Link Setup Data, LSD, is a data structure that is common to both streaming and packet mode and contains information needed to establish a link. This data is a fundamental part of both RF streams and internet protocol packets.
+\subsection{Link Setup Data}
+
+The Link Setup Data, LSD, is a data structure that is common to both streaming and packet mode and contains information needed to establish a link. This data is a fundamental part of both RF data streams and and any kind of internet protocol packets.
 
 \begin{table}[H] \label{lsd}
 	\centering
-	\begin{tblr}{
-		colspec={lcX},
-		}
+	\begin{tblr}{lcl}
 		\hline
 		Field & Length & Description \\
 		\hline
-		DST & 6 bytes & Destination address - Encoded callsign or a special value (eg. a group) \\
-		SRC & 6 bytes & Source address - Encoded callsign of the originator or a special value (eg. a group) \\
-		TYPE & 2 bytes & Information about the incoming data \\
-		META & 14 bytes & Metadata field, suitable for cryptographic metadata like IVs or single-use numbers, or non-crypto metadata like the sender's GNSS position. \\
+		DST & 48 bits & An encoded destination \\
+		SRC & 48 bits & An encoded source \\
+		TYPE & 16 bits & Specifies all characteristic of the payload \\
+		META & 112 bits & Meta data \\
 		\hline[2pt]
 	\end{tblr}
 	\caption{Link Setup Data Contents}
@@ -487,14 +487,19 @@ The Link Setup Data, LSD, is a data structure that is common to both streaming a
 
 Total: 28 bytes, 224 Type 1 bits
 
-The link Setup Frame, LSF, is an LSD followed immediately by a 16 bit CRC.
-For details about how the CRC is calculated, see Section \ref{crc}.
+\begin{itemize}
+	\item DST and SRC and typically encoded radio amateur callsigns or special identifiers.
+	\item TYPE specifies all the characteristics of the payload.
+	\item META data is suitable for cryptographic metadata like IVs or single-use numbers, or non-crypto metadata like the sender's GNSS position.
+\end{itemize}
+
+\subsection{Link Setup Frame}
+
+The link Setup Frame, LSF, is an LSD followed immediately by a 16 bit cyclic redundancy check, CRC. The LSF is the first data frame in a Stream Mode or Packet Mode transmission.
 
 \begin{table}[H] \label{lsf}
 	\centering
-	\begin{tblr}{
-		colspec={lcX},
-		}
+	\begin{tblr}{lcl}
 		\hline
 		Field & Length & Description \\
 		\hline
@@ -507,111 +512,9 @@ For details about how the CRC is calculated, see Section \ref{crc}.
 
 Total: 30 bytes, 240 Type 1 bits
 
-\subsection{DST and SRC}
+The CRC can be used to validate the integrity of the contained LSD and is described below.
 
-Destination and source addresses may be encoded amateur radio callsigns, or special numbers. see \autoref{address_encoding} for details.
-
-\subsection{TYPE} \label{lsftype}
-
-The TYPE field contains information about the frames to follow LSF. The Packet/Stream indicator bit determines which mode (Packet or Stream) will be used during the transmission. The remaining field meanings are defined by the specific mode and application.
-
-\begin{table}[H]
-	\centering
-	\small
-	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|}
-		\hline
-		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
-		\Hline[tikz=very thick]
-		0 &
-			\multicolumn{4}{c}{\textit{Reserved}} &
-			\parbox{3em}{\centering Signed Stream} &
-			\multicolumn{3}{c}{Channel Access Number\ldots} \\
-		\hline
-		1 &
-			\ldots &
-			\multicolumn{2}{c}{\parbox{6em}{\centering Encryption Subtype}} &
-			\multicolumn{2}{c}{\parbox{6em}{\centering Encryption Type}} &
-			\multicolumn{2}{c}{\parbox{6em}{\centering Data Type}} &
-			\parbox{3em}{\centering Packet/ Stream} \\
-		\hline
-	\end{NiceTabular}
-	\normalsize
-	\caption{LSF TYPE layout}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Value & Mode \\
-		\hline
-		0 & Packet mode \\
-		1 & Stream mode \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Packet/Stream indicator}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Value & Content \\
-		\hline
-		$00_2$ & Reserved \\
-		$01_2$ & Data \\
-		$10_2$ & Voice \\
-		$11_2$ & Voice+Data \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Data type}
-\end{table}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Value & Encryption \\
-		\hline
-		$00_2$ & None \\
-		$01_2$ & Scrambler \\
-		$10_2$ & AES \\
-		$11_2$ & Other/reserved \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Encryption type}
-\end{table}
-
-For the encryption subtype, meaning of values depends on encryption type.
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lXX},
-		}
-		\hline
-		Value & Scrambler & AES \\
-		\hline
-		$00_2$ & 8-bit & 128-bit \\
-		$01_2$ & 16-bit & 192-bit \\
-		$10_2$ & 24-bit & 256-bit \\
-		$11_2$ & reserved & reserved \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Key lengths for encryption subtypes}
-\end{table}
-
-\subsection{META}
-
-The LSF META field is defined by the specific application.
-
-\subsection{CRC} \label{crc}
+\section{CRC} \label{crc}
 
 M17 uses a non-standard version of 16-bit CRC with polynomial $x^{16} + x^{14} + x^{12} + x^{11} + x^8 + x^5 + x^4 + x^2 + 1$ or \texttt{0$\times$5935} and initial value of \texttt{0$\times$FFFF}. This polynomial allows for detecting all errors up to hamming distance of 5 with payloads up to 241 bits, which is less than the amount of data in each frame.
 
@@ -636,7 +539,7 @@ The test vectors in the following table are calculated by feeding the given mess
 	\caption{CRC Test Vectors}
 \end{table}
 
-\subsection{LSF Contents ECC/FEC}
+\section{LSF Contents ECC/FEC}
 
 The 240 Type 1 bits of the Link Setup Frame Contents along with 4 flush bits are convolutionally coded using a rate 1/2 coder with constraint K=5. 244 bits total are encoded resulting in 488 Type 2 bits.
 
@@ -754,6 +657,10 @@ The 40-bit chunks start from the beginning of the LSF.
 \paragraph{LICH Contents ECC/FEC}
 
 The 48-bit LICH Contents is partitioned into 4 12-bit parts and encoded using Golay (24, 12) code. This produces 96 encoded Type 2 bits that are fed into the Frame Combiner.
+
+\paragraph{Stream Contents}
+
+While LICH contains the previously transmitted LSF, the stream frames also contain the stream contents that has two fields that will change with every frame.
 
 \begin{table}[H]
 	\centering
@@ -940,7 +847,7 @@ Packet Mode shall always start with an LSF that has the LSF TYPE Packet/Stream i
 	\caption{Packet Mode}
 \end{table}
 
-\subsection{Packet Frames}
+\subsection{Packet Frames} \label{packet_frames}
 
 Packet Frames contain Packet Contents after ECC/FEC is applied.
 
@@ -1199,7 +1106,102 @@ The destination address used by a client may simply be a callsign or reflector d
 
 \paragraph{TYPE field}
 
-The TYPE field contains information about the frames to follow LSF. For full definition see Section \ref{lsftype}.
+
+\subsection{TYPE} \label{lsftype}
+
+The TYPE field contains information about the frames to follow LSF. The Packet/Stream indicator bit determines which mode (Packet or Stream) will be used during the transmission. The remaining field meanings are defined by the specific mode and application.
+
+\begin{table}[H]
+	\centering
+	\small
+	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|}
+		\hline
+		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
+		\Hline[tikz=very thick]
+		0 &
+			\multicolumn{4}{c}{\textit{Reserved}} &
+			\parbox{3em}{\centering Signed Stream} &
+			\multicolumn{3}{c}{Channel Access Number\ldots} \\
+		\hline
+		1 &
+			\ldots &
+			\multicolumn{2}{c}{\parbox{6em}{\centering Encryption Subtype}} &
+			\multicolumn{2}{c}{\parbox{6em}{\centering Encryption Type}} &
+			\multicolumn{2}{c}{\parbox{6em}{\centering Data Type}} &
+			\parbox{3em}{\centering Packet/ Stream} \\
+		\hline
+	\end{NiceTabular}
+	\normalsize
+	\caption{LSF TYPE layout}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lX},
+		}
+		\hline
+		Value & Mode \\
+		\hline
+		0 & Packet mode \\
+		1 & Stream mode \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Packet/Stream indicator}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lX},
+		}
+		\hline
+		Value & Content \\
+		\hline
+		$00_2$ & Reserved \\
+		$01_2$ & Data \\
+		$10_2$ & Voice \\
+		$11_2$ & Voice+Data \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Data type}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lX},
+		}
+		\hline
+		Value & Encryption \\
+		\hline
+		$00_2$ & None \\
+		$01_2$ & Scrambler \\
+		$10_2$ & AES \\
+		$11_2$ & Other/reserved \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Encryption type}
+\end{table}
+
+For the encryption subtype, meaning of values depends on encryption type.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lXX},
+		}
+		\hline
+		Value & Scrambler & AES \\
+		\hline
+		$00_2$ & 8-bit & 128-bit \\
+		$01_2$ & 16-bit & 192-bit \\
+		$10_2$ & 24-bit & 256-bit \\
+		$11_2$ & reserved & reserved \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Key lengths for encryption subtypes}
+\end{table}
 
 \begin{table}[H]
 	\centering
@@ -1507,17 +1509,40 @@ At the receiver-side, the 512-bit signature is retrieved from the last 4 frames'
 
 \section{Packet Application}
 
-%\begin{quote}
-%	\textbf{ATTENTION} This is work in progress.
-%\end{quote}
+\subsection{Packet Mode LSF TYPE}
+
+The TYPE field only defines the stream/packet bit, called ``P/S'' in the table below and the CAN bits. All other bits are reserved.
+
+\begin{table}[H]
+	\centering
+	\small
+	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|}
+		\hline
+		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
+		\Hline[tikz=very thick]
+		0 &
+			\multicolumn{5}{c}{\textit{Reserved}} &
+			\multicolumn{3}{c}{Channel Access Number\ldots} \\
+		\hline
+		1 &
+			\ldots &
+			\multicolumn{6}{c}{\textit{Reserved}} &
+			\parbox{3em}{\centering P/S} \\
+		\hline
+	\end{NiceTabular}
+	\normalsize
+	\caption{LSF TYPE layout}
+\end{table}
+
+\subsection{Packet Data}
 
 A single packet of up to 823 bytes of data may be sent in one transmission.
 
 Packets are sent using Packet Mode.
 
-A Stream Mode Transmission begins with an LSF.
+Packets are composed of a 1..n byte data type specifier and up to $823-n$ bytes of payload data. The data type specifier is a variable-length encoding using the same format as UTF-8. The data type specifier must be between $0$ and $2^{21}-1$ which will occupy between 1 and 4 bytes when encoded. Values from 0 to 127 are identical to their encoded form.
 
-Packets are composed of a 1..n byte data type specifier and up to $823-n$ bytes of payload data. The data type specifier is encoded in the same way as UTF-8. It provides efficient coding of common data types. And it can be extended to include a very large number of distinct packet data type codes.
+A Packet Mode Transmission begins with an LSF, followed by one or more Packet Data Frames to contain the packet. Packet Data Frames are described in Section \ref{packet_frames}.
 
 The data type specifier can also be used as a protocol specifier. For example, the following protocol identifiers are reserved in the M17 packet spec:
 
@@ -1541,23 +1566,20 @@ The data type specifier can also be used as a protocol specifier. For example, t
 
 The data type specifier is used to compute the CRC, along with the payload.
 
-\chapter{IP Networking}
+\section{IP Packet}
 
-Digital modes are commonly networked together through linked repeaters using IP networking.
-
-For commercial protocols like DMR, this is meant for linking metropolitan and state networks together and allows for easy interoperability between radio users. Amateur Radio uses this capability for creating global communications networks for all imaginable purposes, and makes `working the world' with an HT possible.
-
-M17 is designed with this use in mind, and has native IP framing to support it.
-
-In competing radio protocols, a repeater or some other RF to IP bridge is required for linking, leading to the use of hotspots (tiny simplex RF bridges).
-
-\section{Standard IP Framing}
-
-Data in IP frames are big endian, consistent with other IP protocols.
+In all cases, data in IP frames are big endian, consistent with other IP protocols.
 
 \subsection{Streaming Mode IP Packets}
 
-We have standardized on UDP port 17000, this port is recommended but not required.
+Stream Mode may be packetized using two different methods.
+
+\paragraph{Single Packet Method}
+
+The first method combines the LSF with the payload to produce an all-in-one 54 byte packet.
+Within a stream, the LSF data would be identical within superframes.
+This would allow late listeners to open a packet stream upon the receipt of any packet.
+A Superframe would take 6 packets for a total of 326 bytes.
 
 \begin{table}[H]
 	\centering
@@ -1570,18 +1592,63 @@ We have standardized on UDP port 17000, this port is recommended but not require
 		MAGIC & 4 bytes & Magic bytes 0x4d313720 (``M17 '') \\
 		StreamID (SID) & 2 bytes & Random bits, changed for each PTT or stream, but consistent from frame to frame within a stream \\
 		LSD & 28 bytes & The Link Setup Data (DST, SRC, TYPE, META field) as defined in Table \ref{lsd}. \\
-		FN & 16 bits & Frame number (exactly as would be transmitted as an RF stream frame, including the last frame indicator at (FN \& 0x8000) \\
+		FN & 2 bytes & Frame number exactly as would be transmitted as an RF stream frame, including the last frame indicator at (FN \& 0x8000) \\
 		Payload & 16 bytes & Payload (exactly as would be transmitted in an RF stream frame) \\
 		CRC16 & 2 bytes & CRC for the entire packet, as defined in Section \ref{crc} \\
 		\hline[2pt]
 	\end{tblr}
+	\caption{Steaming Mode IP Packet, Single Packet Method}
 \end{table}
 
-The CRC checksum must be recomputed after modification or re-assembly of the packet, such as when IP routing or translating from RF to IP framing.
+\paragraph{Two Packets Method}
 
-\subsection{Packet Mode IP Packets}
+The second method uses two packets, a ``header'' packet for the LSD and a ``data'' packet for the payload.
+This method uses seven packet to send a superframe.
+This method is more efficient than the Single Packet Method. late listeners can open a packet stream to when they have received a header packet.
+Both types of packets would have the same SID within a transmission.
 
-UDP port 17007 is recommended, but not required.
+The first 36 byte header packet contains the LSD and SID and would be sent after the LSF RF Frame is received and when ever the LICH channel successfully produces an LSF.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={llX},
+		}
+		\hline
+		Field & Size & Description \\
+		\hline
+		MAGIC & 4 bytes & Magic bytes 0x4d313748 (``M17H'') \\
+		StreamID (SID) & 2 bytes & Random bits, changed for each PTT or stream, but consistent from frame to frame within a stream \\
+		LSD & 28 bytes & The Link Setup Data (DST, SRC, TYPE, META field) as defined in Table \ref{lsd}. \\
+		CRC16 & 2 bytes & CRC for the entire packet, as defined in Section \ref{crc} \\
+		\hline[2pt]
+	\end{tblr}
+	\caption{Streaming Mode IP Packet, Two Packet Method, Header}
+\end{table}
+
+The second 26 byte data packet contains the SID, FN and Payload.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={llX},
+		}
+		\hline
+		Field & Size & Description \\
+		\hline
+		MAGIC & 4 bytes & Magic bytes 0x4d313744 (``M17D'') \\
+		StreamID (SID) & 2 bytes & Random bits, changed for each PTT or stream, but consistent from frame to frame within a stream \\
+		FN & 2 bytes & Frame number exactly as would be transmitted as an RF stream frame, including the last frame indicator at (FN \& 0x8000) \\
+		Payload & 16 bytes & Payload (exactly as would be transmitted in an RF stream frame) \\
+		CRC16 & 2 bytes & CRC for the entire packet, as defined in Section \ref{crc} \\
+		\hline[2pt]
+	\end{tblr}
+	\caption{Streaming Mode IP Packet, Two Packet Method, Data}
+\end{table}
+
+A Superframe would take 7 packets, one header and six data, totaling 192 bytes.
+
+\subsection{Packet Mode IP Packet}
 
 \begin{table}[H]
 	\centering
@@ -1593,141 +1660,15 @@ UDP port 17007 is recommended, but not required.
 		\hline
 		MAGIC & 4 bytes & Magic bytes 0x4d313750 (``M17P'') \\
 		LSF & 30 bytes & The Link Setup Frame(DST, SRC, TYPE, META field, CRC) as defined in Table \ref{lsf}. \\
-		Payload & variable & This includes a type specifer, the user data, and a CRC \\
+		Payload & 4..825 bytes & This includes a type specifer, the user data, and a CRC \\
 		\hline[2pt]
 	\end{tblr}
+	\caption{Packet Mode IP Packet}
 \end{table}
 
 The Payload CRC is computed from the type specifer and the user data.
-The minimum size of a payload is 4 bytes, which includes a one byte type specifer, one byte of user data and a two byte CRC.
-The maximum size is 825 bytes and contains a type specifier, data and a CRC. Data integrity is validated by the MAGIC value, the LSF CRC and the Payload CRC.
-
-\section{Relaying Packets over IP}
-
-Relaying packets over an IP network is the preferred method of connecting M17 user together. This provide a one-to-many connection where one transmitter is sending data to many other receivers. It is possible to build relay stations that can handle either Stream or Packet Mode data, or both. These relay appliances can have a number of different channels and they can also be interlinked so that very large groups of hams can share information.
-
-Existing relay systems, sometimes called a ``reflector'', use a few different types of control packets which are used to connect and disconnect and do other fuctions. These control packets are identified by their magic:
-
-\begin{itemize}
-	\item
-	CONN - Connect to a reflector
-	\item
-	ACKN - acknowledge connection
-	\item
-	NACK - deny connection
-	\item
-	PING - keepalive for the connection from the reflector to the client
-	\item
-	PONG - keepalive response from the client to the reflector
-	\item
-	DISC - Disconnect (client-\textgreater reflector or
-	reflector-\textgreater client)
-\end{itemize}
-
-These control packets are described below.
-
-\subsection{CONN}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``CONN'' \\
-		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
-		10 & Module to connect to - single ASCII byte A-Z \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of CONN Packet}
-\end{table}
-
-A client sends this to a reflector to initiate a connection. The reflector replies with ACKN on successful linking, or NACK on failure.
-
-\subsection{ACKN}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``ACKN'' \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of ACKN Packet}
-\end{table}
-
-\subsection{NACK}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``NACK'' \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of NACK Packet}
-\end{table}
-
-\subsection{PING}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``PING'' \\
-		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of PING Packet}
-\end{table}
-
-\subsection{PONG}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-			colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``PONG'' \\
-		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of PONG Packet}
-\end{table}
-
-\subsection{DISC}
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lX},
-		}
-		\hline
-		Bytes & Purpose \\
-		\hline
-		0..3 & Magic - ASCII ``DISC'' \\
-		4..9 & 6-byte `From' callsign including module in last character (e.g.~``A1BCD D'') encoded as per Address Encoding \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Bytes of DISC Packet}
-\end{table}
+The size of a payload must be at least 4, but no more than 825 bytes. Payload includes a one (to four) byte type specifier, user data and a two byte CRC.
+Packet integrity is validated by the MAGIC value, the LSF CRC and the Payload CRC.
 
 \appendix
 
@@ -2399,127 +2340,6 @@ Bits received and errors which occur during resynchronization are not counted to
 	\href{http://www.pldworld.com/_hdl/5/-thorsten-gaertner.de/vhdl/PRBS.pdf}{PRBS
 	(according ITU-T O.150) and Bit-Sequence Tester : VHDL-Modules}
 \end{itemize}
-
-\chapter{File Formats}
-
-This appendix documents the file formats used for testing various M17
-layers.
-
-\section{Glossary}
-
-\subsection{Bit numbering, Bit order, Most significant bit (MSB), Least significant bit (LSB)}
-
-\href{https://en.wikipedia.org/wiki/Bit_numbering}{Bit numbering} is how bit positions are identified in a binary number. The least significant bit (LSB) is the bit position representing a value of 1. The most significant bit (MSB) is the bit position representing the highest value position. Bit order refers to the order in which bits are extracted from a binary number. This is important especially when sending binary values one bit at a time, or when constructing multiple-bit symbols. LSB first means the extraction happens from the least significant position first. MSB first means extraction happens from the most significant position first.
-
-\subsection{Deviation, Frequency Deviation}
-
-In this context, deviation how far from the center frequency a carrier is shifted. This can be positive or negative. For M17, the frequency deviation of the four symbols are shown in Physical Layer Table 1.
-
-\subsection{Deviation Function (Transmit)}
-
-A function used to convert symbol values to frequency deviation in RF hardware. This can be used to set hardware registers, create voltages, etc. depending on the hardware used.
-
-\subsection{Deviation Function (Receive)}
-
-A function used to convert frequency deviation in RF hardware to symbol values. This can be used when reading hardware registers, sampling voltages, etc. depending on the hardware used.
-
-\subsection{Dibit}
-
-Two bits used to represent a symbol, as shown in Physical Layer Table 1.
-
-\subsection{Endianness, Byte order, Big-endian (BE), Little-endian (LE)}
-
-\href{https://en.wikipedia.org/wiki/Endianness}{Endianness} is the order of the bytes in a word of digital data. In this document, we will refer to big-endian (BE) and little-endian (LE). BE means that the most significant byte of a word is at the lowest memory location, while LE means that the least significant byte is at the lowest memory location.
-
-\subsection{RF Sample Rate}
-
-The rate at which deviation values are updated. This will vary depending on the hardware. M17 test software commonly uses 48000 samples per second.
-
-\subsection{Root-raised-cosine (RRC) Filter}
-
-A filter used to in digital communications to help reduce intersymbol interference. The M17 Physical Layer specifies a root-raised-cosine (RRC) filter with alpha = 0.5 \href{https://en.wikipedia.org/wiki/Root-raised-cosine_filter}{Root
-Raised Cosine}
-
-\subsection{Symbol}
-
-An M17 Physical Layer symbol of +3, +1, -1, and -3.
-
-\subsection{Symbol Rate}
-
-The rate at which new symbols are generated. For M17, this is 4800 symbols per second.
-
-\section{File Extensions}
-
-Multiple files are used when testing the different elements of the M17 protocol. File extensions (the three characters after a period in a complete file name) are defined to standardize formats and usage.
-
-\begin{table}[H]
-	\begin{tblr}{
-		colspec={lXlX},
-		}
-		\hline
-		Extension & Description & Data Format &	Data Rate \\
-		\hline
-		aud & Mono audio & Signed 16-bit LE & 8000 samples per second \\
-		sym & M17 symbols & Signed 8-bit & 4800 symbols per second \\
-		bin & Packed M17 Dibits & MSB first, Unsigned 8-bit & 4800 symbols per
-		second (1200 bytes per second) \\
-		rrc & RRC filtered and Scaled M17 symbols & Signed 16-bit LE & 48000
-		samples per second \\
-		dev & Deviation values & Varies & Varies \\
-		\hline[2px]
-	\end{tblr}
-	\caption{File extensions}
-\end{table}
-
-\subsection{aud}
-
-Mono audio of signed 16-bit LE at a rate of 8000 samples per second. This is often referred to as a ``raw'' audio file and contains no embedded header information.
-
-\subsection{sym}
-
-M17 symbols (+3, +1, -1, -3) encoded as signed 8-bit values at rate of 4800 symbols per second.
-
-\subsection{bin}
-
-M17 symbols packed 2 bits per symbol (dibits), 4 symbols per byte (+3 = 01, +1 = 00, -1 = 10, -3 = 11) with the MSB first. These are unsigned 8-bit values at 4800 symbols per second, which is 4 symbols per byte at 1200 bytes per second.
-
-\subsection{rrc}
-
-RRC filtered and scaled M17 symbols. In order to generate a reasonable RRC waveform, the symbol rate (4800 symbols per second) is upsampled by a factor of 10 to an RRC sample rate of 48000 samples per second. Then the upsampled symbols are passed through the RRC filter. The output samples of the RRC filter are multiplied by 7168 to fit within a signed 16-bit LE representation (e.g.~a +3 value would be +21504).
-
-\subsection{dev}
-
-Hardware specific deviation values. These would be obtained by passing RRC filtered values through a deviation function. Since these are device specific, it is recommended to use an underscore plus device type as part of the filename. For example, the Semtech SX1276 uses a deviation step size of 61 Hz per bit. An M17 1600 Hz frequency step is equivalent to an SX1276 deviation value change of 26. Since the SX1276 only accepts positive deviation steps, the deviation function for the SX1276 would be (rrc value + 3.0) x 13. The .dev file specific for the SX1276 would contain those values, and could have a name such as m17test\_sx1276.dev
-
-\section{Example file flows}
-
-These show the file types in order of processing for transmit and receive flows. Each ``-\textgreater{}'' symbolizes processing required to move from one file type to the next.
-
-\subsection{Transmit}
-
-aud -\textgreater{} sym -\textgreater{} rrc -\textgreater{} dev
-
-aud -\textgreater{} bin -\textgreater{} rrc -\textgreater{} dev
-
-\subsection{Receive}
-
-dev -\textgreater{} rrc -\textgreater{} sym -\textgreater{} aud
-
-dev -\textgreater{} rrc -\textgreater{} bin -\textgreater{} aud
-
-\section{To-Do}
-
-File formats for packet and voice + data streams.
-
-
-\section{References}
-
-\href{https://en.wikipedia.org/wiki/Bit_numbering}{Bit numbering}
-
-\href{https://en.wikipedia.org/wiki/Endianness}{Endianness}
-
-\href{https://en.wikipedia.org/wiki/Root-raised-cosine_filter}{Root
-Raised Cosine}
 
 \chapter{GNU Free Documentation License}
 \phantomsection  % so hyperref creates bookmarks
