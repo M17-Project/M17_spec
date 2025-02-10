@@ -1564,19 +1564,19 @@ The data type specifier can also be used as a protocol specifier. For example, t
 
 The data type specifier is used to compute the CRC, along with the payload.
 
-\section{IP Packet}
+\section{Useful Internet Packets}
 
-In all cases, data in IP frames are big endian, consistent with other IP protocols.
+In all cases, data in these packets are big endian, consistent with other IP protocols. They should packed structures with no added nulls between data members sometimes used to make the members start on a word boundry.
 
-\subsection{Stream Mode IP Packets}
+\subsection{Stream Mode Packets}
 
 Stream Mode may be packetized using two different methods.
 
 \paragraph{Single Packet Method}
 
 The first method combines the LSF with the payload to produce an all-in-one 54 byte packet.
-Within a stream, the LSF data would be identical within superframes.
-This would allow late listeners to open a packet stream upon the receipt of any packet.
+Within a stream, the LSF data will be identical within superframes.
+This would allow late joiners to open a packet stream upon the receipt of any packet.
 A Superframe would take 6 packets for a total of 326 bytes.
 
 \begin{table}[H]
@@ -1602,7 +1602,7 @@ A Superframe would take 6 packets for a total of 326 bytes.
 
 The second method uses two packets, a ``header'' packet for the LSD and a ``data'' packet for the payload.
 This method uses seven packet to send a superframe.
-This method is more efficient than the Single Packet Method. late listeners can open a packet stream to when they have received a header packet.
+This method is more efficient than the Single Packet Method. Late joiners can open a packet stream when they have received a header packet.
 Both types of packets would have the same SID within a transmission.
 
 The first 36 byte header packet contains the LSD and SID and would be sent after the LSF RF Frame is received and when ever the LICH channel successfully produces an LSF.
