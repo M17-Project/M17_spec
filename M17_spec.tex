@@ -189,7 +189,7 @@ Link Information Channel. The LICH carries all information of an M17 link. The f
 
 \paragraph{Packet}
 
-A single burst of data transmitted in packet mode.
+A single burst of data transmitted in Packet Mode.
 
 \paragraph{Superframe}
 
@@ -468,7 +468,7 @@ Multiple Stream or Packet Sync Bursts may be present during a Transmission, depe
 
 \subsection{Link Setup Data}
 
-The Link Setup Data, LSD, is a data structure that is common to both streaming and packet mode and contains information needed to establish a link. This data is a fundamental part of both RF data streams and and any kind of internet protocol packets.
+The Link Setup Data, LSD, is a data structure that is common to both Stream and Packet Mode and contains information needed to establish a link. This data is a fundamental part of both RF data streams and and any kind of internet protocol packets.
 
 \begin{table}[H] \label{lsd}
 	\centering
@@ -1568,7 +1568,7 @@ The data type specifier is used to compute the CRC, along with the payload.
 
 In all cases, data in IP frames are big endian, consistent with other IP protocols.
 
-\subsection{Streaming Mode IP Packets}
+\subsection{Stream Mode IP Packets}
 
 Stream Mode may be packetized using two different methods.
 
@@ -1621,7 +1621,7 @@ The first 36 byte header packet contains the LSD and SID and would be sent after
 		CRC16 & 2 bytes & CRC for the entire packet, as defined in Section \ref{crc} \\
 		\hline[2pt]
 	\end{tblr}
-	\caption{Streaming Mode IP Packet, Two Packet Method, Header}
+	\caption{Stream Mode IP Packet, Two Packet Method, Header}
 \end{table}
 
 The second 26 byte data packet contains the SID, FN and Payload.
@@ -1641,7 +1641,7 @@ The second 26 byte data packet contains the SID, FN and Payload.
 		CRC16 & 2 bytes & CRC for the entire packet, as defined in Section \ref{crc} \\
 		\hline[2pt]
 	\end{tblr}
-	\caption{Streaming Mode IP Packet, Two Packet Method, Data}
+	\caption{Stream Mode IP Packet, Two Packet Method, Data}
 \end{table}
 
 A Superframe would take 7 packets, one header and six data, totaling 192 bytes.
@@ -2034,7 +2034,7 @@ The linearized representations are:
 	P2 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
 \end{verbatim}
 
-One additional puncturing scheme $P_3$ is used in the packet mode. The puncturing scheme is defined by its puncturing matrix:
+One additional puncturing scheme $P_3$ is used in the Packet Mode. The puncturing scheme is defined by its puncturing matrix:
 
 \begin{align}
 	P_3 = & \begin{bmatrix}
