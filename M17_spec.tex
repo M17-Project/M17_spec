@@ -660,7 +660,7 @@ The 48-bit LICH Contents is partitioned into 4 12-bit parts and encoded using Go
 
 \paragraph{Stream Contents}
 
-While LICH contains the previously transmitted LSF, the stream frames also contain the stream contents that has two fields that will change with every frame.
+The LSD META field can change during a transmission and this will affect bits 112:239 of the LSF, resulting in changes in the LICH channel with LICH\_CNT 2 through 5. In addition, the stream frames also contain the stream contents that has two fields that will change with every frame.
 
 \begin{table}[H]
 	\centering
@@ -831,7 +831,7 @@ In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data 
 	\caption{Single Packet}
 \end{table}
 
-n is the number of bytes of the Application Packet Data. The CRC calculation used here is our non-standard CRC described in Section \ref{crc}.
+n is the number of bytes of the Application Packet Data. The CRC calculation used here is described in Section \ref{crc}.
 
 Packet Mode shall always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode). Following the LSF, 1 to 33 Packet Frames may be sent.
 
@@ -875,7 +875,7 @@ Total: 206 Type 1 bits
 
 The packet metadata field contains the 1-bit End of Frame (EOF) indicator, and the 5-bit Packet Frame/Byte Counter. This is \textit{NOT} to be confused with the LSF's 112-bit metadata field.
 
-Data starting with the first byte of the Packet Data, and  ending with 2 computed and appended CRC bytes (big-endian) is split in groups of 25 bytes (chunks). The CRC value is calculated over the whole Packet Data, including the terminating null-byte in the case of text. Each Packet Frame payload contains up to a 25-byte chunk of the Data. If fewer than 25 bytes can be extracted from the Data (i.e.~for the last Packet Frame), the Data chunk is padded with zero bytes (after the terminating CRC) to reach 25 bytes total.
+Data starting with the first byte of the Packet Data, and  ending with 2 computed and appended CRC bytes (big-endian) is split in groups of 25 bytes (chunks). The CRC value is calculated over the whole Packet Data, including the terminating null-byte in the case of text. Each Packet Frame payload contains up to a 25-byte chunk of the Data. If fewer than 25 bytes can be extracted from the Data (i.e.~for the last Packet Frame), the Data chunk is padded with null bytes (after the terminating CRC) to reach 25 bytes total.
 
 The Packet Frame Counter is reset to zero at the start of Packet Mode. For each Packet Frame where there is at least 1 byte remaining in the Packet Data after removing a 25-byte chunk, the EOF metadata bit is set to zero, the Packet Frame Counter value is inserted into the Packet Frame/Byte Counter metadata field, and the Packet Frame Counter is incremented afterwards.
 
@@ -1090,7 +1090,7 @@ A Stream Mode Transmission begins with an Link Setup Frame, LSF.
 		SRC & 48 bits & Source address \\
 		TYPE & 16 bits & Information about the incoming data stream \\
 		META & 112 bits & Metadata field \\
-		CRC & 16 bits & Our non-standard CRC, see Section \ref{crc} \\
+		CRC & 16 bits & For a description, see Section \ref{crc} \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Link Setup Frame Contents}
@@ -1566,7 +1566,7 @@ The data type specifier is used to compute the CRC, along with the payload.
 
 \section{Useful Internet Packets}
 
-In all cases, data in these packets are big endian, consistent with other IP protocols. They should packed structures with no added nulls between data members sometimes used to make the members start on a word boundry.
+In all cases, data in these packets are big endian, consistent with other IP protocols. They should \textit{NOT} contain added null bytes between data members sometimes used to make individual members start on a word boundary.
 
 \subsection{Stream Mode Packets}
 
