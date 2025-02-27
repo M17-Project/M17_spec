@@ -11,6 +11,7 @@
 \usepackage{multirow}
 \usepackage{float}
 \usepackage{nicematrix}
+\usepackage[tocentry, owncaptions]{vhistory}
 \NiceMatrixOptions{cell-space-top-limit=4pt, cell-space-bottom-limit=4pt}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta}
@@ -84,7 +85,7 @@ draw=black]
 	\textbf{\LARGE M17 Protocol Specification} \\
 	\today
 	\vfill
-	{\large Version 1.5}
+	{\large Version \vhCurrentVersion}
 	\vfill
 	\LaTeX version compiled by Steve Miller KC1AWV
 \end{titlepage}
@@ -96,6 +97,16 @@ draw=black]
 \listoftables
 
 \listoffigures
+
+\begin{versionhistory}
+	\renewcommand{\vhversionname}{Rev}
+	\renewcommand \vhAuthorColWidth{.3\hsize}
+	\renewcommand \vhChangeColWidth{1.7\hsize}
+	\vhEntry{1.2}{09 Sep 2024}{N7TAE|SP5WWP}{Removed Definitions and Control Packets sections, rewrote Callsign Encoding appendix using examples in C.}
+	\vhEntry{1.3}{17 Oct 2024}{N7TAE|SP5WWP}{Introduced new LSD data type to clarify and correct discussion around LICH, and LSF.}
+	\vhEntry{1.4}{01 Jan 2025}{SP5WWP}{Removed the KISS appendix and created a separate KISS specification document.}
+	\vhEntry{1.5}{11 Feb 2025}{N7TAE|VK7XT}{Rearranged the Data Link and Application Layer chapters for better flow, removed IP Network chapter and File Type appendix, added more details to Packet Mode, 3 new IP packets defined, and added new clarifying bit tables.}
+\end{versionhistory}
 
 \chapter{Licenses}
 
