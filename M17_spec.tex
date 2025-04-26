@@ -164,7 +164,7 @@ like a network:
 	Application Layer: Accomplishing activities. Voice and data streams, control packets, beacons, etc.
 \end{enumerate}
 
-This document attempts to document these layers.
+This document will introduce, define and discuss these layers in detail.
 
 \chapter{Glossary}
 
@@ -1081,15 +1081,13 @@ Within the Physical Layer, the 368 Type 4 bits are randomized and combined with 
 
 \chapter{Application Layer}
 
-\section{M17 Amateur Radio Voice Application}
+Stream mode is primarily for an audio stream containing low bit rate speech encoded using the open source \href{http://rowetel.com/codec2.html}{Codec 2} codec. One of two different Codec 2 rates can be used in M17, and so Stream mode can be used in a voice-only mode using the higher bit rate codec, and voice+data mode using a lower bit rate codec which leave room for a parallel data stream, and a data only stream mode where arbitrarily large data objects can be streamed. Stream mode is intended to be used over the air by amateur radio operators worldwide. Implementation details for M17 clients, repeaters, and gateways ensure that an M17 Amateur Radio Voice Application is legal under all licensing regimes.
 
-This section defines the application layer parameters for an audio stream containing low bit rate speech encoded using the open source \href{http://rowetel.com/codec2.html}{Codec 2} codec. It is intended to be used over the air by amateur radio operators worldwide. Implementation details for M17 clients, repeaters, and gateways ensure that an M17 Amateur Radio Voice Application is legal under all licensing regimes.
+Packet mode is a one-shot method to send a small data packet over the air. It is intended primarily for text messaging, but other small binary objects can also be sent.
 
-There are many applications and devices provided by various developers that support M17: clients, repeaters and hot-spots, and reflectors. An updated list of third-party applications is \href{https://m17project.org/get-started/software}{available here}. The use of these applications are not discussed in this document but can be found in various manuals and README files of those applications.
+Both Stream and Packet mode begins with an Link Setup Frame, LSF.
 
-A Stream Mode Transmission begins with an Link Setup Frame, LSF.
-
-\subsection{LSF}
+\section{LSF}
 
 \begin{table}[H]
 	\centering
@@ -1107,7 +1105,7 @@ A Stream Mode Transmission begins with an Link Setup Frame, LSF.
 	\caption{Link Setup Frame Contents}
 \end{table}
 
-\paragraph{Address fields}
+\subsection{Address fields}
 
 Destination (DST) and source (SRC) addresses may be encoded amateur radio callsigns, or special identifiers. See the Address Encoding \autoref{address_encoding} for details on how up to 9 characters of text can be encoded into the 6-byte address value.
 
@@ -1115,12 +1113,23 @@ The source address is always the callsign of the station transmitting, be it a c
 
 The destination address used by a client may simply be a callsign or reflector designation for a point to point contact, or may be a special identifier. Special identifiers are 6-byte addresses than can't be encoded in the standard way. For an explanation, see the Address Encoding Appendix.
 
-\paragraph{TYPE field}
+\subsection{TYPE}
 
+The 2-byte TYPE field contains information about the frames to follow LSF. The Packet/Stream indicator bit determines which mode (Packet or Stream) will be used during the transmission. The remaining field meanings are defined by the specific mode and application.
 
-\subsection{TYPE} \label{lsftype}
+\subsection{META}
 
-The TYPE field contains information about the frames to follow LSF. The Packet/Stream indicator bit determines which mode (Packet or Stream) will be used during the transmission. The remaining field meanings are defined by the specific mode and application.
+The 14-byte META field can and will contain a variety of data. In Stream mode, the META data will change as the stream evolves. The first meta field is available in the LSF frame but subsequent data/voice frames will potentially carry different META data in each superframe that follows. In Packet mode, one META field is available in the LSF frame. Different META data is described later in this chapter.
+
+\subsection{CRC}
+
+The last 2 bytes of the 30-byte LSF is a 16-bit CRC as described in Section \ref{crc}.
+
+\section{Stream Mode}
+
+\subsection{TYPE Field}
+
+The TYPE field contains all inforamation need to properly interpret the stream frames.
 
 \begin{table}[H]
 	\centering
@@ -1267,7 +1276,9 @@ The ``Encryption subtype'' bits in the Stream Type field indicate what extended 
 	\caption{Null encryption subtype bits}
 \end{table}
 
-\paragraph{Text Data}
+\subparagraph{Text Data}
+
+Encryption subtype = $00_2$
 
 The first byte of the Text Data is a Control Byte. To maintain backward compatibility, a Control Byte of 0x00 indicates that no Text Data is included.
 
@@ -1279,7 +1290,9 @@ The least significant four bits indicate which of the Text Data blocks this text
 
 It is up to the receiver to decide how to display this message. It may choose to wait for all of the Text Data to be received, or display the parts as they are received. It is not expected that the data in the text field changes during the course of a transmission.
 
-\paragraph{GNSS Data}
+\subparagraph{GNSS Data}
+
+Encryption subtype = $01_2$
 
 Unlike Text and Extended Callsign Data, GNSS data is expected to be dynamic during the course of a transmission and to be transmitted quickly after the GNSS data becomes available. To stop the LSF/LICH data stream from being overrun with GNSS data relative to other data types, a throttle on the amount of GNSS data transmitted is needed. It is recommended that GNSS data be sent at an update rate no faster than once every five seconds.
 
@@ -1354,7 +1367,9 @@ GNSS Position Data stores the 112 bit META field as follows:
 	\caption{GNSS Data encoding}
 \end{table}
 
-\paragraph{Extended Callsign Data}
+\subparagraph{Extended Callsign Data}
+
+Encryption subtype = $10_2$
 
 This is only transmitted from repeaters/gateways and not from clients, who only receive and display this data. These fields should not appear over M17 Internet links as they should only be used over the air from a repeater/gateway.
 
@@ -1518,7 +1533,7 @@ At the receiver-side, the 512-bit signature is retrieved from the last 4 frames'
 	\textbf{NOTE} The verification process will work if and only if all the data is received successfully (without transmission errors or dropped frames).
 \end{quote}
 
-\section{Packet Application}
+\section{Packet Mode}
 
 \subsection{Packet Mode LSF TYPE}
 
@@ -1767,7 +1782,7 @@ Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can
 	\caption{M17 Addresses}
 \end{table}
 
-The BROADCAST address should only be used in an RF transmission. As a destination address, it means that the RF stream is intended for any capable RF receivers.
+The BROADCAST address should only be used as a destination address. It means that the M17 stream or packet is intended for any capable M17 receivers.
 
 The Uncodable addresses can be used by applications for their own purposes and encoding/decoding algorithms for these addresses are left to the developer.
 
