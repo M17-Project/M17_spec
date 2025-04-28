@@ -14,6 +14,7 @@
 *.glg
 *.glo
 *.gls
+*.hst
 *.idx
 *.ilg
 *.ind
@@ -37,6 +38,7 @@
 *.tex~
 *.thm
 *.toc
+*.ver
 *.vrb
 *.xdy
 *.xml
