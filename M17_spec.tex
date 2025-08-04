@@ -83,6 +83,7 @@ draw=black]
 	{\Large Wojciech Kaczmarski SP5WWP et al.} \\
 	\vspace*{0.167\textheight}
 	\textbf{\LARGE M17 Protocol Specification} \\
+	\textbf{\LARGE Part I - Air Interface} \\
 	\today
 	\vfill
 	{\large Version \vhCurrentVersion}
@@ -1259,7 +1260,7 @@ Encryption type = $00_2$
 
 When no encryption is used, the 14-byte (112-bit) META field of the LSF and corresponding LICH of the stream can be used for transmitting relatively small amounts of extended data without affecting the bandwidth available for the audio. The full 14 bytes of META extended data is potentially decodable every six stream frames, at a 240 ms update rate. The extended data is transmitted in a simple round robin manner, with the only exception being GPS data which should be transmitted as soon as possible after the GPS data is received from its source.
 
-The ``Encryption subtype'' bits in the Stream Type field indicate what extended data is stored in the META field.
+The "Encryption subtype" bits in the Stream Type field indicate what extended data is stored in the META field.
 
 \begin{table}[H]
 	\centering
@@ -1289,6 +1290,8 @@ The Control Byte is split into two 4-bit fields. The most significant four bits 
 The least significant four bits indicate which of the Text Data blocks this text corresponds to. It is $0001_2$ for the first, $0010_2$ for the second, $0100_2$ for the third, and $1000_2$ for the fourth. Any received Control Byte is OR-ed together by the receiving station, and once the most significant and least significant four bits are the same, a complete message has been received.
 
 It is up to the receiver to decide how to display this message. It may choose to wait for all of the Text Data to be received, or display the parts as they are received. It is not expected that the data in the text field changes during the course of a transmission.
+
+If there is no data to be transferred, the Control Byte should be set to zero.
 
 \subparagraph{GNSS Data}
 
@@ -1333,14 +1336,13 @@ GNSS Position Data stores the 112 bit META field as follows:
 			8 & unsigned integer & Whole number absolute value of degrees
 			latitude \\
 			\midrule
-			16 & unsigned integer & Decimal degrees of latitude multiplied by 65535,
+			16 & unsigned integer & Decimal degrees of latitude (0 to 65535 range),
 			MSB first \\
 			\midrule
 			8 & unsigned integer & Whole number absolute value of degrees
 			longitude \\
 			\midrule
-			16 & unsigned integer & Decimal degrees of longitude multiplied by
-			65535, MSB first \\
+			16 & unsigned integer & Decimal degrees of longitude (0 to 65535 range), MSB first \\
 			\midrule
 			8 & unsigned integer & Latitude N/S, Longitude E/W, Altitude, Speed and
 			Bearing bit fields \\
