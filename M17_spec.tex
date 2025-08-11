@@ -107,6 +107,8 @@ draw=black]
 	\vhEntry{1.3}{17 Oct 2024}{N7TAE|SP5WWP}{Introduced new LSD data type to clarify and correct discussion around LICH, and LSF.}
 	\vhEntry{1.4}{01 Jan 2025}{SP5WWP}{Removed the KISS appendix and created a separate KISS specification document.}
 	\vhEntry{1.5}{11 Feb 2025}{N7TAE|VK7XT}{Rearranged the Data Link and Application Layer chapters for better flow, removed IP Network chapter and File Type appendix, added more details to Packet Mode, 3 new IP packets defined, and added new clarifying bit tables.}
+	\vhEntry{1.6}{08 Aug 2025}{SP5WWP}{Section 3.4 was moved to Part II.}
+	\vhEntry{2.0}{10 Aug 2025}{N7TAE|N7ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -1301,73 +1303,87 @@ Unlike Text and Extended Callsign Data, GNSS data is expected to be dynamic duri
 
 The GNSS data fits within one 14-byte META field, which equates to six audio frames, and takes 240ms to transmit. This is a simple format of the GNSS data which does not require too much work to convert into, and provides enough flexibility for most cases. This has been tested on-air and successfully gated to APRS-IS, showing a location very close to the position reported by the GPS receiver.
 
-GNSS Position Data stores the 112 bit META field as follows:
+The GNSS data includes eight numeric values using from $3$ bits to $23$ bits. All numeric fields are in order from most significant to least significant bit. There is also one $4$ bit and two single bit fields that indicate how or if a numeric field is used or interpreted.
+
+GNSS Position Data stores the 112 bit (14 byte) META field as follows:
 
 \begin{table}[H]
-	\begin{small}
-		\begin{longtable}[]{@{}
-				>{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1165}}
-				>{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1650}}
-				>{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.7184}}@{}}
-			\toprule
-			\begin{minipage}[b]{\linewidth}\raggedright
-				Size in bits
-			\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-				Format
-			\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-				Contents
-			\end{minipage} \\
-			\midrule
-			\endhead
-			8 & unsigned integer & Data Source \\
-			& & Used to modify the message added to the APRS message sent to
-			APRS-IS \\
-			& & 0x00 : M17 Client \\
-			& & 0x01 : OpenRTX \\
-			& & 0x02..0xFE : reserved \\
-			& & 0xFF : other data source \\
-			\midrule
-			8 & unsigned integer & Station Type \\
-			& & Translated into suitable APRS symbols when gated to APRS-IS \\
-			& & 0x00 : Fixed Station \\
-			& & 0x01 : Mobile Station \\
-			& & 0x02 : Handheld \\
-			\midrule
-			8 & unsigned integer & Whole number absolute value of degrees
-			latitude \\
-			\midrule
-			16 & unsigned integer & Decimal degrees of latitude (0 to 65535 range),
-			MSB first \\
-			\midrule
-			8 & unsigned integer & Whole number absolute value of degrees
-			longitude \\
-			\midrule
-			16 & unsigned integer & Decimal degrees of longitude (0 to 65535 range), MSB first \\
-			\midrule
-			8 & unsigned integer & Latitude N/S, Longitude E/W, Altitude, Speed and
-			Bearing bit fields \\
-			& & $xxxxxxx0_2$ North Latitude \\
-			& & $xxxxxxx1_2$ South Latitude \\
-			& & $xxxxxx0x_2$ East Longitude \\
-			& & $xxxxxx1x_2$ West Longitude \\
-			& & $xxxxx0xx_2$ Altitude data invalid \\
-			& & $xxxxx1xx_2$ Altitude data valid \\
-			& & $xxxx0xxx_2$ Speed and Bearing data invalid \\
-			& & $xxxx1xxx_2$ Speed and Bearing data valid \\
-			\midrule
-			16 & unsigned integer & Altitude above sea level in feet + 1500 (if
-			valid), MSB first \\
-			\midrule
-			16 & unsigned integer & Whole number of bearing in degrees between 0 and
-			360 (if valid), MSB first \\
-			\midrule
-			8 & unsigned integer & Whole number of speed in miles per hour (if
-			valid) \\
-			\bottomrule
-		\end{longtable}
-	\end{small}
+	\centering
+	\small
+	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|}
+		\hline
+		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
+		\Hline[tikz=very thick]
+		0 &
+			\multicolumn{8}{c}{\parbox{24em}{\centering \textit{Reserved} \ldots}} \\
+		\hline
+		1 &
+			\multicolumn{4}{c}{\parbox{12em}{\centering \ldots}} &
+			\multicolumn{4}{c}{\parbox{12em}{\centering Data Source}} \\
+		\hline
+		2 &
+			\multicolumn{4}{c}{\parbox{12em}{\centering Station Type}} &
+			\multicolumn{4}{c}{\parbox{12em}{\centering Validity}} \\
+		\Hline[tikz=very thick]
+		3 &
+			\parbox{3em}{\centering N/S} &
+			\multicolumn{7}{c}{\parbox{21em}{\centering Latitude \ldots}} \\
+		\hline
+		4 &
+			\multicolumn{8}{c}{\parbox{24em}{\centering \ldots}} \\
+		\hline
+		5 &
+			\multicolumn{8}{c}{\parbox{24em}{\centering \ldots}} \\
+		\Hline[tikz=very thick]
+		6 &
+			\parbox{3em}{\centering E/W} &
+			\multicolumn{7}{c}{\parbox{21em}{\centering Longitude \ldots}} \\
+		\hline
+		7 &
+			\multicolumn{8}{c}{\parbox{24em}{\centering \ldots}} \\
+		\hline
+		8 &
+			\multicolumn{8}{c}{\parbox{24em}{\centering \ldots}} \\
+		\Hline[tikz=very thick]
+		9 &
+			\multicolumn{8}{c}{\parbox{24em}{\centering Altitude \ldots}} \\
+		\hline
+		10 &
+			\multicolumn{8}{c}{\parbox{24em}{\centering \ldots}} \\
+		\Hline[tikz=very thick]
+		11 &
+			\multicolumn{8}{c}{\parbox{24em}{\centering Speed \ldots}} \\
+		\hline
+		12 &
+			\multicolumn{4}{c}{\parbox{12em}{\centering \ldots}} &
+			\multicolumn{4}{c}{\parbox{12em}{\centering Bearing \ldots}} \\
+		\hline
+		13 &
+			\multicolumn{5}{c}{\parbox{15em}{\centering \ldots}} &
+			\multicolumn{3}{c}{\parbox{9em}{\centering Radius}} \\
+		\Hline[tikz=very thick]
+	\end{NiceTabular}
+	\normalsize
 	\caption{GNSS Data encoding}
 \end{table}
+
+The first $12$ bits,$1.5$ bytes, of the GNSS data are reserved. Immediately following this is a $4$ bit \textbf{Data Source} numeric field where: $0$ is an M17 client, $1$ is OpenRTX and $15$ is "other" while values $2..14$ are reserved.
+
+Beginning the third byte of the GNSS data is another $4$ bit numeric field, \textbf{Station Type}, where $0$ is a fixed station, $1$ is a mobile station, $2$ is a handheld and $15$ is "other". Values $3..14$ are reserved. 
+
+The least significant $4$ bits of the third byte is a \textbf{Validity} bit field. Bit $1000_2$ is set if the latitude/longitude is valid. Bit $0100_2$ is set if the \textbf{Altitude} data is valid. Bit $0010_2$ is set if the velocity data is valid. Velocity data includes both \textbf{Bearing} and \textbf{Speed} data. Finally, bit $0001_2$ is set if the \textbf{Radius} data is valid. If any of these validity bits are set to zero, all the corresponding GNSS data fields should be zeroed-out by the transmitter and regarded as invalid and ignored by the receiver.
+
+The \textbf{Latitude} is specifed in the next three bytes (fourth through sixth). The first bit is a direction: clear is North and set is South. The remaining $23$ bit numeric field is the binary fraction of $90$ degrees, where the value $0$ represents $0$ degrees latitude, \textit{i.e.}, the equator, and $8388607$, $2^{23}-1$, represents $90$ degrees, \textit{i.e.}, the poles. With $23$ bits, this is a resolution of a little more than $0.00001$ degrees.
+
+The \textbf{Longitude} follows in the seventh through ninth byte. The first bit is a direction: clear is East and set is West. The remaining $23$ bits is the binary fraction of $180$ degrees, where the value $0$ represents $0$ degrees longitude, \textit{i.e.}, the prime meridian, and $8388607$ represents $180$ degrees. With $23$ bits, this is a resolution of a little more than $0.00002$ degrees.
+
+A $16$ bit numeric \textbf{Alitude} field is in the tenth and eleventh bytes and decodes in $0.5$ meter steps, offset by $500$ meters. A value of $0$ is an altitude of $-500.0$ meters, while the largest value of $65535$ is an altitude of $31767.5$ meters.
+
+A $12$ bit \textbf{Speed} numeric field, $0..495$ is in the twelfth byte and the $4$ most significant bits of the thirteen byte. The decoded values range from 0.0 to 2047.5 km/hr in 0.5 km/hr steps.
+
+A $9$ bit \textbf{Bearing} numeric field is in the least significant $4$ bits of the thirteenth and the $5$ most significant bits of the fourteenth byte. This is the heading direction for the velocity data in degrees and should never contain a value greater than 359. Zero is due north and 90 is due east, \textit{etc}.
+
+Finally, a $3$ bit \textbf{Radius} numeric field is in the least significant bits of the fourteenth byte of the GNSS data. This radius is an estimate of positional uncertainty and is is based on the NMEA HDOP (horizontal dillution of precision) value which is calculated based the number of received satellites and their geometic position relative to the gps receiver. The encoded $3$ bit value is the log base 2 of the estimated radius. The decoded values run from $1$ ($2^0$) to $128$ ($2^7$) meters. As the decoded radius increases, the accuracy of the estimate decreases.
 
 \subparagraph{Extended Callsign Data}
 
