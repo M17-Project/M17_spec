@@ -1371,7 +1371,10 @@ The first byte contains two $4$ bit numeric fields. The first is the \textbf{Dat
 
 The second byte starts with a $4$ bit \textbf{Validity} field. Bit $1000_2$ is set if the latitude/longitude is valid. Bit $0100_2$ is set if the \textbf{Altitude} data is valid. Bit $0010_2$ is set if the velocity data is valid. Velocity data includes both \textbf{Bearing} and \textbf{Speed} data. Finally, bit $0001_2$ is set if the \textbf{Radius} data is valid. If any of these validity bits are set to zero, all the corresponding GNSS data fields should be zeroed-out by the transmitter and regarded as invalid and ignored by the receiver.
 
-The next three bits of the second byte is the numeric \textbf{Radius} field. This radius is an estimate of lateral position uncertainty and is based on the horizontal dilution of precision (HDOP) value provided by the GNSS module. HDOP measure is based on the number of received satellites and their geometric position relative to the receiver. Note: the HDOP value (and therefore radius) is only a coarse estimate and in some cases might not reflect the actual uncertainty metric.
+The next three bits of the second byte is the numeric \textbf{Radius} field. This radius is an estimate of lateral position uncertainty and is based on the horizontal dilution of precision (HDOP) value provided by the GNSS module. HDOP measure is based on the number of received satellites and their geometric position relative to the receiver.
+\begin{quote}
+	\textbf{NOTE} The HDOP value (and therefore radius) is only a coarse estimate and in some cases might not reflect the actual uncertainty metric.
+\end{quote}
 
 The last bit of the second byte is the most significant bit of the $9$ bit \textbf{Bearing} numeric field. This bit is combined with the third byte and contains the bearing value. This is the heading direction for the velocity data in degrees and should never contain a value greater than 359. Zero is due north and 90 is due east, \textit{etc}.
 
