@@ -1303,7 +1303,7 @@ Unlike Text and Extended Callsign Data, GNSS data is expected to be dynamic duri
 
 The GNSS data fits within one 14-byte META field, which equates to six audio frames, and takes 240ms to transmit. This is a simple format of the GNSS data which does not require too much work to convert into, and provides enough flexibility for most cases. This has been tested on-air and successfully gated to APRS-IS, showing a location very close to the position reported by the GPS receiver.
 
-The GNSS data includes eight numeric values using from $3$ bits to $23$ bits. All numeric fields are in order from most significant to least significant bit. There is also one $4$ bit validity field that used to indicate which numeric fields are valid and two sign bits that indicate in which hemisphere a latitude or longitude is. North and East are $0$ and South and West are $1$.
+The GNSS data includes eight numeric values using from $3$ bits to $24$ bits. The two largest $24$ bit values are signed, two's complement values. The other six are unsigned values. All numeric fields are in order from most significant to least significant bit. There is also one $4$ bit validity field that used to indicate which numeric fields are valid.
 
 GNSS Position Data uses the 112 bit (14 byte) META field as follows:
 
@@ -1327,8 +1327,7 @@ GNSS Position Data uses the 112 bit (14 byte) META field as follows:
 			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
 		\Hline[tikz=very thick]
 		3 &
-			\parbox{3em}{\centering Sign} &
-			\multicolumn{7}{c}{\parbox{23em}{\centering Latitude\ldots}} \\
+			\multicolumn{8}{c}{\parbox{23em}{\centering Latitude\ldots}} \\
 		\hline
 		4 &
 			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
@@ -1337,8 +1336,7 @@ GNSS Position Data uses the 112 bit (14 byte) META field as follows:
 			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
 		\Hline[tikz=very thick]
 		6 &
-			\parbox{3em}{\centering Sign} &
-			\multicolumn{7}{c}{\parbox{23em}{\centering Longitude\ldots}} \\
+			\multicolumn{8}{c}{\parbox{23em}{\centering Longitude\ldots}} \\
 		\hline
 		7 &
 			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
@@ -1367,7 +1365,7 @@ GNSS Position Data uses the 112 bit (14 byte) META field as follows:
 	\caption{GNSS Data encoding}
 \end{table}
 
-The first byte contains two $4$ bit numeric fields. The first is the \textbf{Data Source} where: $0$ is an M17 client, $1$ is OpenRTX and $15$ is "other" while values $2..14$ are reserved. The second $4$ field is \textbf{Station Type}, where $0$ is a fixed station, $1$ is a mobile station, $2$ is a handheld and $15$ is "other". Values $3..14$ are reserved. 
+The first byte contains two $4$ bit numeric fields. The first is the \textbf{Data Source} where: $0$ is an M17 client, $1$ is OpenRTX and $15$ is "other", while values $2..14$ are reserved. The second $4$ bit field is \textbf{Station Type}, where $0$ is a fixed station, $1$ is a mobile station, $2$ is a handheld and $15$ is "other", values $3..14$ are reserved. 
 
 The second byte starts with a $4$ bit \textbf{Validity} field. Bit $1000_2$ is set if the latitude/longitude is valid. Bit $0100_2$ is set if the \textbf{Altitude} data is valid. Bit $0010_2$ is set if the velocity data is valid. Velocity data includes both \textbf{Bearing} and \textbf{Speed} data. Finally, bit $0001_2$ is set if the \textbf{Radius} data is valid. If any of these validity bits are set to zero, all the corresponding GNSS data fields should be zeroed-out by the transmitter and regarded as invalid and ignored by the receiver.
 
@@ -1378,9 +1376,11 @@ The next three bits of the second byte is the numeric \textbf{Radius} field. Thi
 
 The last bit of the second byte is the most significant bit of the $9$ bit \textbf{Bearing} numeric field. This bit is combined with the third byte and contains the bearing value. This is the heading direction for the velocity data in degrees and should never contain a value greater than 359. Zero is due north and 90 is due east, \textit{etc}.
 
-The $24$ bit \textbf{Latitude} is specified in the next three bytes (fourth through sixth). After the sign bit, the remaining $23$ bit numeric field is the binary fraction of $90$ degrees in two's complement format, where the value $0$ represents $0$ degrees latitude, \textit{i.e.}, the equator, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm90$ degrees, \textit{i.e.}, the poles. With $23$ bits, this is a resolution of approximately 39 milliseconds of arc ($\sim$1.2m).
+The $24$ bit, two's complement \textbf{Latitude} and \textbf{Longitude} are encoded into the next six bytes. The encoded values range from $+2^{23}-1$ to $-(2^{23}-1)$. Note that the largest negative two's complement value, $-2^{23}$ is never used.
 
-The $24$ bit \textbf{Longitude} follows in the seventh through ninth byte. After the sign bit, the remaining $23$ bits is the binary fraction of $180$ degrees in two's complement format, where the value $0$ represents $0$ degrees longitude, \textit{i.e.}, the prime meridian, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm180$ degrees. With $23$ bits, this is a resolution of approximately 77 milliseconds of arc ($\sim$2.4m at the equator).
+The \textbf{Latitude} is specified in the fourth through sixth bytes. The value is the binary fraction of $90$ degrees, where the value $0$ represents zero degrees latitude, \textit{i.e.}, the equator, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm90$ degrees, \textit{i.e.}, the poles. A positive value is north and negative is south. This results in a resolution of approximately 39 milliseconds of arc ($\sim$1.2m).
+
+The $24$ \textbf{Longitude} follows in the seventh through ninth bytes. The value is the binary fraction of $180$ degrees, where the value $0$ represents zero degrees longitude, \textit{i.e.}, the prime meridian, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm180$ degrees. A positve value is east and a negative value is west. This results in a resolution of approximately 77 milliseconds of arc ($\sim$2.4m at the equator).
 
 A $16$ bit numeric \textbf{Alitude} field is in the tenth and eleventh bytes and decodes in $0.5$ meter steps, offset by $500$ meters. A value of $0$ is an altitude of $-500.0$ meters, while the largest value of $65535$ is an altitude of $31767.5$ meters.
 
