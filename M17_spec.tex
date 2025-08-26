@@ -1382,7 +1382,7 @@ The \textbf{Latitude} is specified in the fourth through sixth bytes. The value 
 
 The $24$ \textbf{Longitude} follows in the seventh through ninth bytes. The value is the binary fraction of $180$ degrees, where the value $0$ represents zero degrees longitude, \textit{i.e.}, the prime meridian, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm180$ degrees. A positve value is east and a negative value is west. This results in a resolution of approximately 77 milliseconds of arc ($\sim$2.4m at the equator).
 
-A $16$ bit numeric \textbf{Alitude} field is in the tenth and eleventh bytes and decodes in $0.5$ meter steps, offset by $500$ meters. A value of $0$ is an altitude of $-500.0$ meters, while the largest value of $65535$ is an altitude of $31767.5$ meters.
+A $16$ bit numeric \textbf{Altitude} field is in the tenth and eleventh bytes and decodes in $0.5$ meter steps, offset by $500$ meters. A value of $0$ is an altitude of $-500.0$ meters, while the largest value of $65535$ is an altitude of $31767.5$ meters.
 
 A $12$ bit \textbf{Speed} numeric field is in the twelfth byte and the $4$ most significant bits of the thirteen byte. The decoded values range from 0.0 to 2047.5 km/h in 0.5 km/h steps.
 
