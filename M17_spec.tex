@@ -1285,7 +1285,7 @@ Encryption subtype = $00_2$
 
 The first byte of the Text Data is a Control Byte. To maintain backward compatibility, a Control Byte of 0x00 indicates that no Text Data is included.
 
-Up to four Text Data blocks compose a complete message with a maximum length of 52 bytes. Each block may contain up to 13 bytes of UTF-8 encoded text, and is padded with space characters to fill any unused space at the end of the last used Text Data block.
+Up to four Text Data blocks compose a complete message with a maximum length of 52 bytes. Each block may contain up to 13 bytes of UTF-8 encoded text, and is padded with null characters to fill any unused space at the end of the last used Text Data block.
 
 The Control Byte is split into two 4-bit fields. The most significant four bits are a bit map of the message length indicating how many Text Data blocks are required for a complete message. There is one bit per used Text Data block, with $0001_2$ used for one block, $0011_2$ for the two, $0111_2$ for three, and $1111_2$ for four.
 
