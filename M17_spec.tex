@@ -102,15 +102,15 @@ draw=black]
 	\renewcommand{\vhversionname}{Rev}
 	\renewcommand \vhAuthorColWidth{.3\hsize}
 	\renewcommand \vhChangeColWidth{1.7\hsize}
-	\vhEntry{1.0}{08 Dec 2019}{SP5WWP|N6MTS}{Formal specification repository created.}
-	\vhEntry{1.1}{25 Jan 2021}{KC1AWV}{Initial \LaTeX conversion from Sphinx.}
-	\vhEntry{1.2}{09 Sep 2024}{N7TAE|SP5WWP}{Removed Definitions and Control Packets sections, rewrote Callsign Encoding appendix using examples in C.}
-	\vhEntry{1.3}{17 Oct 2024}{N7TAE|SP5WWP}{Introduced new LSD data type to clarify and correct discussion around LICH, and LSF.}
-	\vhEntry{1.4}{01 Jan 2025}{SP5WWP}{Removed the KISS appendix and created a separate KISS specification document.}
-	\vhEntry{1.5}{11 Feb 2025}{N7TAE|VK7XT}{Rearranged the Data Link and Application Layer chapters for better flow, removed IP Network chapter and File Type appendix, added more details to Packet Mode, 3 new IP packets defined, and added new clarifying bit tables.}
-	\vhEntry{1.6}{08 Aug 2025}{SP5WWP}{Section 3.4 was moved to Part II.}
-	\vhEntry{2.0}{12 Aug 2025}{N7TAE|N7ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
-	\vhEntry{2.1}{23 Sep 2025}{K6OF}{Copyedit to CCSDS A20.0-Y-4 style and clarify use of UTC.}
+	\vhEntry{1.0.0}{08 Dec 2019}{SP5WWP|N6MTS}{Formal specification repository created.}
+	\vhEntry{1.1.0}{25 Jan 2021}{KC1AWV}{Initial \LaTeX conversion from Sphinx.}
+	\vhEntry{1.2.0}{09 Sep 2024}{N7TAE|SP5WWP}{Removed Definitions and Control Packets sections, rewrote Callsign Encoding appendix using examples in C.}
+	\vhEntry{1.3.0}{17 Oct 2024}{N7TAE|SP5WWP}{Introduced new LSD data type to clarify and correct discussion around LICH, and LSF.}
+	\vhEntry{1.4.0}{01 Jan 2025}{SP5WWP}{Removed the KISS appendix and created a separate KISS specification document.}
+	\vhEntry{1.5.0}{11 Feb 2025}{N7TAE|VK7XT}{Rearranged the Data Link and Application Layer chapters for better flow, removed IP Network chapter and File Type appendix, added more details to Packet Mode, 3 new IP packets defined, and added new clarifying bit tables.}
+	\vhEntry{1.6.0}{08 Aug 2025}{SP5WWP}{Section 3.4 was moved to Part II.}
+	\vhEntry{2.0.0}{12 Aug 2025}{N7TAE|N7ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
+	\vhEntry{2.0.1}{23 Sep 2025}{K6OF}{Implement CCSDS A20.0-Y-4 style guide and clarify use of UTC.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -285,8 +285,9 @@ A complete transmission shall consist of a Preamble, a Synchronization Burst, Pa
 		hlines,
 	}
 		PREAMBLE & SYNC BURST & PAYLOAD & EoT \\
-		40 ms & 16 bits & Multiples of 2 bits (multiples of 1 symbol) & 40 ms \\
-		(192 symbols) & (8 symbols) & (variable length) & (192 symbols) \\
+		384 bits & 16 bits & multiples of 2 bits & 384 bits \\
+		192 symbols & 8 symbols & multiples of 1 symbol & 192 symbols \\
+		40 ms & & & 40 ms \\
 	\end{tblr}
 	\caption{Physical Layer Transmission Structure}
 \end{table}
@@ -379,13 +380,13 @@ There are four frame types each with their own specific Sync Burst: Link Setup F
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={|c|c|c|c|},
+		colspec={|c|c|},
 		rows={m},
 		hlines,
 	}
 		SYNC BURST & PAYLOAD \\
 		16 bits & 368 bits \\
-		(8 symbols) & (184 symbols) \\
+		8 symbols & 184 symbols \\
 	\end{tblr}
 	\caption{Frame Structure}
 \end{table}
