@@ -84,11 +84,10 @@ draw=black]
 	\vspace*{0.167\textheight}
 	\textbf{\LARGE M17 Protocol Specification} \\
 	\textbf{\LARGE Part I - Air Interface} \\
-	\today
 	\vfill
 	{\large Version \vhCurrentVersion}
 	\vfill
-	\LaTeX version compiled by Steve Miller KC1AWV
+	\today
 \end{titlepage}
 
 \frontmatter
@@ -103,12 +102,15 @@ draw=black]
 	\renewcommand{\vhversionname}{Rev}
 	\renewcommand \vhAuthorColWidth{.3\hsize}
 	\renewcommand \vhChangeColWidth{1.7\hsize}
-	\vhEntry{1.2}{09 Sep 2024}{N7TAE|SP5WWP}{Removed Definitions and Control Packets sections, rewrote Callsign Encoding appendix using examples in C.}
-	\vhEntry{1.3}{17 Oct 2024}{N7TAE|SP5WWP}{Introduced new LSD data type to clarify and correct discussion around LICH, and LSF.}
-	\vhEntry{1.4}{01 Jan 2025}{SP5WWP}{Removed the KISS appendix and created a separate KISS specification document.}
-	\vhEntry{1.5}{11 Feb 2025}{N7TAE|VK7XT}{Rearranged the Data Link and Application Layer chapters for better flow, removed IP Network chapter and File Type appendix, added more details to Packet Mode, 3 new IP packets defined, and added new clarifying bit tables.}
-	\vhEntry{1.6}{08 Aug 2025}{SP5WWP}{Section 3.4 was moved to Part II.}
-	\vhEntry{2.0}{12 Aug 2025}{N7TAE|N7ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
+	\vhEntry{1.0.0}{08 Dec 2019}{SP5WWP|N6MTS}{Formal specification repository created.}
+	\vhEntry{1.1.0}{25 Jan 2021}{KC1AWV}{Initial \LaTeX conversion from Sphinx.}
+	\vhEntry{1.2.0}{09 Sep 2024}{N7TAE|SP5WWP}{Removed Definitions and Control Packets sections, rewrote Callsign Encoding appendix using examples in C.}
+	\vhEntry{1.3.0}{17 Oct 2024}{N7TAE|SP5WWP}{Introduced new LSD data type to clarify and correct discussion around LICH, and LSF.}
+	\vhEntry{1.4.0}{01 Jan 2025}{SP5WWP}{Removed the KISS appendix and created a separate KISS specification document.}
+	\vhEntry{1.5.0}{11 Feb 2025}{N7TAE|VK7XT}{Rearranged the Data Link and Application Layer chapters for better flow, removed IP Network chapter and File Type appendix, added more details to Packet Mode, 3 new IP packets defined, and added new clarifying bit tables.}
+	\vhEntry{1.6.0}{08 Aug 2025}{SP5WWP}{Section 3.4 was moved to Part II.}
+	\vhEntry{2.0.0}{12 Aug 2025}{N7TAE|N7ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
+	\vhEntry{2.0.1}{23 Sep 2025}{K6OF}{Implement CCSDS A20.0-Y-4 style guide and clarify use of UTC.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -215,16 +217,16 @@ A set of six consecutive frames in the stream mode which collectively contain fu
 This section describes the M17 standard radio physical layer suitable
 for use where a transmission bandwidth of 9 kHz is permitted.
 
-\section{4-level Frequency-shift Keying Modulation (4FSK)}
+\section{4-level Frequency-shift Keying Modulation}
 
-The M17 standard uses 4FSK at 4800 symbols/s (9600 bits/s) with a deviation index h=1/3 for transmission in a 9 kHz channel bandwidth. Minimum channel spacing is 12.5 kHz.
+The M17 standard uses 4-level Frequency-shift Keying Modulation (4FSK) at 4800 symbols/s (9600 bits/s) with a deviation index h=1/3 for transmission in a 9 kHz channel bandwidth. Minimum channel spacing is 12.5 kHz.
 
 \section{Dibit, Symbol, and Frequency-shift}
 
-Each of the 4-level frequency-shifts can be represented by dibits (2-bit values) or symbols, as shown in Table 1 below.
+Each of the 4-level frequency-shifts can be represented by dibits (2-bit values) or symbols, as shown in Table~\ref{tab:dibit_symbol_mapping}.
 
 In the case of dibits, the most significant bit is sent first. When four dibits are grouped into a byte, the most significant dibit of the byte
-is sent first. For example, the four dibits contained in the byte \texttt{0xB4} (0b 10 11 01 00) would be sent as the symbols (-1, -3, +3, +1).
+is sent first. For example, the four dibits contained in the byte \texttt{0xB4} (\texttt{10 11 01 00}) would be sent as the symbols (-1, -3, +3, +1).
 
 \begin{table}[H]
 	\centering
@@ -239,7 +241,8 @@ is sent first. For example, the four dibits contained in the byte \texttt{0xB4} 
 		1 & 1 & -3 & -2.4 kHz \\
 		\hline
 	\end{tabular}
-	\caption{Dibit symbol mapping to 4FSK deviation}
+	\caption{Dibit Symbol Mapping to 4FSK Deviation}
+	\label{tab:dibit_symbol_mapping}
 \end{table}
 
 \section{4FSK Generation}
@@ -276,12 +279,17 @@ A complete transmission shall consist of a Preamble, a Synchronization Burst, Pa
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{cccc}
-		\hline
-		\multicolumn{1}{|c|}{PREAMBLE} & \multicolumn{1}{c|}{SYNC BURST} & \multicolumn{1}{c|}{PAYLOAD} & \multicolumn{1}{c|}{EoT} \\ \hline
-		\begin{tabular}[c]{@{}c@{}}40ms\\ (192 symbols)\end{tabular} & \begin{tabular}[c]{@{}c@{}}16 bits\\ (8 symbols)\end{tabular} & \begin{tabular}[c]{@{}c@{}}Multiples of 2 bits\\ (multiples of 1 symbol)\end{tabular} & \begin{tabular}[c]{@{}c@{}}40ms\\ (192 symbols)\end{tabular}
-	\end{tabular}
-	\caption{Physical Layer Transmission}
+	\begin{tblr}{
+		colspec={|c|c|c|c|},
+		rows={m},
+		hlines,
+	}
+		PREAMBLE & SYNC BURST & PAYLOAD & EoT \\
+		384 bits & 16 bits & multiples of 2 bits & 384 bits \\
+		192 symbols & 8 symbols & multiples of 1 symbol & 192 symbols \\
+		40 ms & & & 40 ms \\
+	\end{tblr}
+	\caption{Physical Layer Transmission Structure}
 \end{table}
 
 Transmissions may include more than one synchronization burst followed by a payload.
@@ -299,9 +307,9 @@ Transmissions may include more than one synchronization burst followed by a payl
 
 Every transmission shall start with a preamble, which shall consist of 40 ms (192 symbols) of alternating outer symbols (+3, -3) or (-3, +3), see \autoref{sec:sync_burst} for details. To ensure a zero crossing prior to a synchronization burst, the last symbol transmitted within the preamble shall be opposite the first symbol transmitted in the synchronization burst.
 
-\subsection{Synchronization Burst (Sync Burst)}
+\subsection{Synchronization Burst}
 
-A sync burst of 16 bits (8 symbols) shall be sent immediately after the preamble. The sync burst is constructed using only outer symbols, with codings based on \href{https://en.wikipedia.org/wiki/Barker_code}{Barker codes}. Properly chosen sync burst coding assists in symbol clocking and alignment. Different sync burst codes may also be used by the Data Link Layer to identify the type of payload to follow.
+A synchronization burst (Sync Burst) of 16 bits (8 symbols) shall be sent immediately after the preamble. The sync burst is constructed using only outer symbols, with codings based on \href{https://en.wikipedia.org/wiki/Barker_code}{Barker codes}. Properly chosen sync burst coding assists in symbol clocking and alignment. Different sync burst codes may also be used by the Data Link Layer to identify the type of payload to follow.
 
 \subsection{Payload}
 
@@ -311,7 +319,7 @@ Payload shall be transmitted in multiples of 2 bits (1 symbol).
 
 To avoid transmitting long sequences of constant symbols (e.g.~+3, +3, +3, \ldots), a simple randomizing algorithm is used. At the transmitter, all payload bits shall be XORed with a pseudorandom predefined sequence before being converted to symbols. At the receiver, the randomized payload symbols are converted to bits and are again passed through the same XOR algorithm to obtain the original payload bits.
 
-The pseudorandom sequence is composed of the 46 bytes (368 bits) found in the Randomizer appendix table \ref{randomizer}.
+The pseudorandom sequence is composed of the 46 bytes (368 bits) found in the Randomizer appendix Table \ref{tab:randomizer}.
 
 Before each bit of payload is converted to symbols for transmission, it is XORed with a bit from the pseudorandom sequence. The first payload bit is XORed with most significant bit (bit 7) of sequence byte 0 \texttt{(0$\times$D6)}, second payload bit with bit 6 of sequence byte 0, continuing to the eighth payload bit and bit 0 of sequence byte 0. The ninth payload bit is XORed with bit 7 of sequence byte 1 \texttt{(0$\times$B5)}, tenth payload bit with bit 6 of sequence byte 1, etc.
 
@@ -320,13 +328,13 @@ When payload bits have XORed through sequence byte 45 \texttt{(0$\times$C3)}, th
 On the receive side, symbols are converted to randomized payload bits. Each randomized payload bit is converted back to a payload bit by once
 again XORing each randomized bit with the corresponding pseudorandom sequence bit.
 
-\subsection{End of Transmission marker (EoT)}
+\subsection{End of Transmission Marker}
 
-Every transmission ends with a distinct symbol stream, which shall consist of 40 ms (192 symbols) of a repeating \texttt{(0$\times$55)} \texttt{(0$\times$5D)} (+3, +3, +3, +3, +3, +3, -3, +3) pattern.
+Every transmission ends with an End of Transmission (EoT) marker, a distinct symbol stream, which shall consist of 40 ms (192 symbols) of a repeating \texttt{0x555D} (+3, +3, +3, +3, +3, +3, -3, +3) pattern.
 
-\subsection{Carrier-sense Multiple Access (CSMA)}
+\subsection{Carrier-sense Multiple Access}
 
-CSMA may be used to minimize collisions on a shared radio frequency by having the sender ensure the frequency is clear before transmitting. Higher layers (Data Link and Application) may require the use of CSMA, and may specify parameters other than the defaults.
+Carrier-sense Multiple Access (CSMA) may be used to minimize collisions on a shared radio frequency by having the sender ensure the frequency is clear before transmitting. Higher layers (Data Link and Application) may require the use of CSMA, and may specify parameters other than the defaults.
 
 \href{https://en.wikipedia.org/wiki/Carrier-sense_multiple_access}{P-persistent} access is used with a default probability of p = 0.25 and default slot time of 40 ms.
 
@@ -371,19 +379,23 @@ There are four frame types each with their own specific Sync Burst: Link Setup F
 
 \begin{table}[H]
 	\centering
-	\begin{tabular}{cc}
-		\hline
-		\multicolumn{1}{|c|}{SYNC BURST} & \multicolumn{1}{c|}{PAYLOAD} \\ \hline
-		\begin{tabular}[c]{@{}c@{}}16 bits\\ (8 symbols)\end{tabular} & \begin{tabular}[c]{@{}c@{}}368 bits\\ (184 symbols)\end{tabular}
-	\end{tabular}
-	\caption{Frame}
+	\begin{tblr}{
+		colspec={|c|c|},
+		rows={m},
+		hlines,
+	}
+		SYNC BURST & PAYLOAD \\
+		16 bits & 368 bits \\
+		8 symbols & 184 symbols \\
+	\end{tblr}
+	\caption{Frame Structure}
 \end{table}
 
-\section{Forward Error Correction (FEC)}
+\section{Forward Error Correction}
 
 The Data Link Layer Contents of a specific frame are modified using various Error Correction Code (ECC) methods. Applying these codes at the transmitter allows the receiver to correct some amount of induced errors in a Forward Error Correction (FEC) process. It is this ECC/FEC data that is inserted into the Payload portion of the Frame. The exact ECC/FEC techniques used vary by frame type.
 
-Applying ECC/FEC may be a multi-step process. To distinguish data bits at the various stages of the process, Bit Types are defined as shown in the following table. It is important to note that not all ECC/FEC processes utilize both Type 2 and Type 3 bits. Prior to decoding Data Link Layer contents, a receiver would need to convert incoming bits from Type 4 back to Type 1 bits, which may also include conversion through Type 3 and/or Type 2 bits. The exact ECC/FEC methods and Bit Types
+Applying ECC/FEC may be a multi-step process. To distinguish data bits at the various stages of the process, Bit Types are defined as shown in Table~\ref{tab:bit_types}. It is important to note that not all ECC/FEC processes utilize both Type 2 and Type 3 bits. Prior to decoding Data Link Layer contents, a receiver would need to convert incoming bits from Type 4 back to Type 1 bits, which may also include conversion through Type 3 and/or Type 2 bits. The exact ECC/FEC methods and Bit Types
 utilized will be indicated for each frame type.
 
 \begin{table}[H]
@@ -399,6 +411,7 @@ utilized will be indicated for each frame type.
 		\hline[2px]
 	\end{tblr}
 	\caption{Bit Types}
+	\label{tab:bit_types}
 \end{table}
 
 \begin{figure}[H]
@@ -447,13 +460,12 @@ The Data Link layer shall operate in one of three modes during a Transmission.
 	NOTE As is the convention with other networking protocols, all values and data structures are encoded in big endian byte order.
 \end{quote}
 
-\section{Synchronization Burst (Sync Burst)}
+\section{Synchronization Burst}
 \label{sec:sync_burst}
 
-All frames shall be preceded by 16 bits (8 symbols) of
-Sync Burst. The Sync Burst definition straddles both the Physical Layer and the Data Link Layer.
+All frames shall be preceded by 16 bits (8 symbols) of a Synchronization Burst (Sync Burst). The Sync Burst definition straddles both the Physical Layer and the Data Link Layer.
 
-Only LSF and BERT Sync Bursts may immediately follow the Preamble, and each requires a different Preamble symbol pattern as shown in the table below.
+Only LSF and BERT Sync Bursts may immediately follow the Preamble, and each requires a different Preamble symbol pattern as shown in Table~\ref{tab:frame_specific_sync_bursts}.
 
 During a Transmission, only one LSF Sync Burst may be present, and if present, it shall immediately follow the Preamble.
 
@@ -464,25 +476,26 @@ Multiple Stream or Packet Sync Bursts may be present during a Transmission, depe
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={lccX},
+		colspec={lccr},
 		}
 		\hline
 		Frame Type & Preamble & Sync Burst Bytes & Sync Burst Symbols \\
 		\hline
-		LSF & +3, -3 & 0x55 0xF7 & +3, +3, +3, +3, -3, -3, +3, -3 \\
-		BERT & -3, +3 & 0xDF 0x55 & -3, +3, -3, -3, +3, +3, +3, +3 \\
-		Stream & None & 0xFF 0x5D & -3, -3, -3, -3, +3, +3, -3, +3 \\
-		Packet & None & 0x75 0xFF & +3, -3, +3, +3, -3, -3, -3, -3 \\
+		LSF & +3, -3 & \texttt{0x55F7} & +3, +3, +3, +3, -3, -3, +3, -3 \\
+		BERT & -3, +3 & \texttt{0xDF55} & -3, +3, -3, -3, +3, +3, +3, +3 \\
+		Stream & None & \texttt{0xFF5D} & -3, -3, -3, -3, +3, +3, -3, +3 \\
+		Packet & None & \texttt{0x75FF} & +3, -3, +3, +3, -3, -3, -3, -3 \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Frame Specific Sync Bursts}
+	\label{tab:frame_specific_sync_bursts}
 \end{table}
 
-\section{Link Setup Data and Frame (LSD and LSF)}
+\section{Link Setup}
 
 \subsection{Link Setup Data}
 
-The Link Setup Data, LSD, is a data structure that is common to both Stream and Packet Mode and contains information needed to establish a link. This data is a fundamental part of both RF data streams and and any kind of internet protocol packets.
+The Link Setup Data (LSD) is a data structure that is common to both Stream and Packet Mode and contains information needed to establish a link. This data is a fundamental part of both RF data streams and and any kind of internet protocol packets.
 
 \begin{table}[H] \label{lsd}
 	\centering
@@ -497,6 +510,7 @@ The Link Setup Data, LSD, is a data structure that is common to both Stream and 
 		\hline[2pt]
 	\end{tblr}
 	\caption{Link Setup Data Contents}
+	\label{tab:lsd_contents}
 \end{table}
 
 Total: 28 bytes, 224 Type 1 bits
@@ -509,7 +523,7 @@ Total: 28 bytes, 224 Type 1 bits
 
 \subsection{Link Setup Frame}
 
-The link Setup Frame, LSF, is an LSD followed immediately by a 16 bit cyclic redundancy check, CRC. The LSF is the first data frame in a Stream Mode or Packet Mode transmission.
+The link Setup Frame (LSF) is an LSD followed immediately by a 16 bit cyclic redundancy check (CRC). The LSF is the first data frame in a Stream Mode or Packet Mode transmission.
 
 \begin{table}[H] \label{lsf}
 	\centering
@@ -517,11 +531,11 @@ The link Setup Frame, LSF, is an LSD followed immediately by a 16 bit cyclic red
 		\hline
 		Field & Length & Description \\
 		\hline
-		LSD & 224 bits & Shown in the previous table \\
+		LSD & 224 bits & Shown in Table~\ref{tab:lsd_contents} \\
 		CRC & 16 bits & CRC for the link setup data \\
 		\hline[2pt]
 	\end{tblr}
-	\caption{Link Setup Frame contents}
+	\caption{Link Setup Frame Contents}
 \end{table}
 
 Total: 30 bytes, 240 Type 1 bits
@@ -536,7 +550,7 @@ As M17's native bit order is most significant bit first, neither the input nor t
 
 The CRC field enables verification of the other 28 bytes forming the LSF: 6-byte DST, 6-byte SRC, 2-byte TYPE, and 14-byte META fields. Data integrity of an LSF frame is established by computing the CRC of the first 28 bytes and storing the resulting checksum in the trailing 2-byte CRC field, which can be compared by a recipient after repeating the same checksum process. Alternatively, a CRC computed over the entire 30-byte LSF frame, including a valid CRC field, will always equal zero.
 
-The test vectors in the following table are calculated by feeding the given message to the CRC algorithm.
+The test vectors in the Table~\ref{tab:crc_test_vectors} are calculated by feeding the given message to the CRC algorithm.
 
 \begin{table}[H]
 	\centering
@@ -544,13 +558,14 @@ The test vectors in the following table are calculated by feeding the given mess
 		\hline
 		Message & CRC Output \\
 		\hline
-		(empty string) & 0xFFFF \\
-		ASCII string ``A'' & 0x206E \\
-		ASCII string ``123456789'' & 0x772B \\
-		Bytes 0x00 to 0xFF & 0x1C31 \\
+		(empty string) & \texttt{0xFFFF} \\
+		ASCII string ``A'' & \texttt{0x206E} \\
+		ASCII string ``123456789'' & \texttt{0x772B} \\
+		Bytes \texttt{0x00} to \texttt{0xFF} & \texttt{0x1C31} \\
 		\hline[2px]
 	\end{tblr}
 	\caption{CRC Test Vectors}
+	\label{tab:crc_test_vectors}
 \end{table}
 
 \section{LSF Contents ECC/FEC}
@@ -596,7 +611,7 @@ Within the Physical Layer, the 368 Type 4 bits are randomized and combined with 
 	\caption{LSF Construction}
 \end{figure}
 
-Details of the convolutional encoder are in \autoref{convolutional_encoder}
+Details of the convolutional encoder are in \autoref{convolutional_encoder}.
 
 \section{Stream Mode}
 
@@ -642,7 +657,7 @@ Each Stream Frame contains a 48-bit Link Information Channel (LICH). Each LICH w
 		5 & \multicolumn{3}{c}{LICH\_CNT} & \multicolumn{5}{c}{\textit{Reserved}} \\
 	\end{NiceTabular}
 	\normalsize
-	\caption{Link Information Channel Contents}
+	\caption{Link Information Channel Layout}
 \end{table}
 
 Total: 48 bits
@@ -652,7 +667,7 @@ The 40-bit chunks start from the beginning of the LSF.
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={lX},
+		colspec={ll},
 		}
 		\hline
 		LICH\_CNT & LSF bits \\
@@ -665,7 +680,7 @@ The 40-bit chunks start from the beginning of the LSF.
 		5 & 200:239 \\
 		\hline[2px]
 	\end{tblr}
-	\caption{LICH\_CNT and LSF bits}
+	\caption{LICH\_CNT and LSF Bits}
 \end{table}
 
 \paragraph{LICH Contents ECC/FEC}
@@ -679,7 +694,7 @@ The LSD META field can change during a transmission and this will affect bits 11
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={lcX},
+		colspec={lll},
 		}
 		\hline
 		Field & Length & Description \\
@@ -833,7 +848,7 @@ In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data 
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={lX},
+		colspec={ll},
 		}
 		\hline
 		Bytes & Meaning \\
@@ -882,7 +897,7 @@ Packet Frames contain Packet Contents after ECC/FEC is applied.
 			\Block[fill=gray]{1-2}{} & \\
 	\end{NiceTabular}
 	\normalsize
-	\caption{Packet Contents}
+	\caption{Packet Layout}
 \end{table}
 
 Total: 206 Type 1 bits
@@ -1102,7 +1117,7 @@ Both Stream and Packet mode begins with an Link Setup Frame, LSF.
 		SRC & 48 bits & Source address \\
 		TYPE & 16 bits & Information about the incoming data stream \\
 		META & 112 bits & Metadata field \\
-		CRC & 16 bits & For a description, see Section \ref{crc} \\
+		CRC & 16 bits & Detailed in Section \ref{crc} \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Link Setup Frame Contents}
@@ -1110,11 +1125,11 @@ Both Stream and Packet mode begins with an Link Setup Frame, LSF.
 
 \subsection{Address fields}
 
-Destination (DST) and source (SRC) addresses may be encoded amateur radio callsigns, or special identifiers. See the Address Encoding \autoref{address_encoding} for details on how up to 9 characters of text can be encoded into the 6-byte address value.
+Destination (DST) and source (SRC) addresses may be encoded amateur radio callsigns, or special identifiers. See Address Encoding \autoref{address_encoding} for details on how up to 9 characters of text can be encoded into the 6-byte address value.
 
 The source address is always the callsign of the station transmitting, be it a client, repeater, or gateway. This is not a problem for a client, but for a repeater/gateway this raises issues about identifying the original source of a transmission. Having a repeater/gateway always use its own callsign for the source field does ensure that there are no issues with licensing authorities. To retain identification of the original source for a voice stream, an extended callsign data field will be encoded in the LSF META field.
 
-The destination address used by a client may simply be a callsign or reflector designation for a point to point contact, or may be a special identifier. Special identifiers are 6-byte addresses than can't be encoded in the standard way. For an explanation, see the Address Encoding Appendix.
+The destination address used by a client may simply be a callsign or reflector designation for a point to point contact, or may be a special identifier. Special identifiers are 6-byte addresses than can't be encoded in the standard way. For an explanation, see the Address Encoding \autoref{address_encoding}.
 
 \subsection{TYPE}
 
@@ -1155,13 +1170,13 @@ The TYPE field contains all information need to properly interpret the stream fr
 		\hline
 	\end{NiceTabular}
 	\normalsize
-	\caption{LSF TYPE layout}
+	\caption{Stream LSF TYPE Layout}
 \end{table}
 
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={lX},
+		colspec={ll},
 		}
 		\hline
 		Value & Mode \\
@@ -1170,13 +1185,13 @@ The TYPE field contains all information need to properly interpret the stream fr
 		1 & Stream mode \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Packet/Stream indicator}
+	\caption{Packet/Stream Indicator}
 \end{table}
 
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={lX},
+		colspec={ll},
 		}
 		\hline
 		Value & Content \\
@@ -1187,13 +1202,13 @@ The TYPE field contains all information need to properly interpret the stream fr
 		$11_2$ & Voice+Data \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Data type}
+	\caption{Data Type}
 \end{table}
 
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={lX},
+		colspec={ll},
 		}
 		\hline
 		Value & Encryption \\
@@ -1204,7 +1219,7 @@ The TYPE field contains all information need to properly interpret the stream fr
 		$11_2$ & Other/reserved \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Encryption type}
+	\caption{Encryption Type}
 \end{table}
 
 For the encryption subtype, meaning of values depends on encryption type.
@@ -1212,7 +1227,7 @@ For the encryption subtype, meaning of values depends on encryption type.
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={lXX},
+		colspec={lll},
 		}
 		\hline
 		Value & Scrambler & AES \\
@@ -1223,7 +1238,7 @@ For the encryption subtype, meaning of values depends on encryption type.
 		$11_2$ & reserved & reserved \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Key lengths for encryption subtypes}
+	\caption{Key Lengths for Encryption Subtypes}
 \end{table}
 
 \begin{table}[H]
@@ -1243,7 +1258,7 @@ For the encryption subtype, meaning of values depends on encryption type.
 		Channel Access Number (CAN) & 0..15 \\
 		\hline[2px]
 	\end{tblr}
-	\caption{M17 Voice LSF TYPE definition}
+	\caption{Voice LSF TYPE Definition}
 \end{table}
 
 This application requires Stream Mode.
@@ -1276,14 +1291,14 @@ The "Encryption subtype" bits in the Stream Type field indicate what extended da
 		$11_2$ & Reserved \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Null encryption subtype bits}
+	\caption{Null Encryption Subtype Bits}
 \end{table}
 
 \subparagraph{Text Data}
 
 Encryption subtype = $00_2$
 
-The first byte of the Text Data is a Control Byte. To maintain backward compatibility, a Control Byte of 0x00 indicates that no Text Data is included.
+The first byte of the Text Data is a Control Byte. To maintain backward compatibility, a Control Byte of \texttt{0x00} indicates that no Text Data is included.
 
 Up to four Text Data blocks compose a complete message with a maximum length of 52 bytes. Each block may contain up to 13 bytes of UTF-8 encoded text, and is padded with space characters to fill any unused space at the end of the last used Text Data block.
 
@@ -1362,10 +1377,10 @@ GNSS Position Data uses the 112 bit (14 byte) META field as follows:
 		\Hline[tikz=very thick]
 	\end{NiceTabular}
 	\normalsize
-	\caption{GNSS Data encoding}
+	\caption{GNSS Data Layout}
 \end{table}
 
-The first byte contains two $4$ bit numeric fields. The first is the \textbf{Data Source} where: $0$ is an M17 client, $1$ is OpenRTX and $15$ is "other", while values $2..14$ are reserved. The second $4$ bit field is \textbf{Station Type}, where $0$ is a fixed station, $1$ is a mobile station, $2$ is a handheld and $15$ is "other", values $3..14$ are reserved. 
+The first byte contains two $4$ bit numeric fields. The first is the \textbf{Data Source} where: $0$ is an M17 client, $1$ is OpenRTX and $15$ is "other", while values $2..14$ are reserved. The second $4$ bit field is \textbf{Station Type}, where $0$ is a fixed station, $1$ is a mobile station, $2$ is a handheld and $15$ is "other", values $3..14$ are reserved.
 
 The second byte starts with a $4$ bit \textbf{Validity} field. Bit $1000_2$ is set if the latitude/longitude is valid. Bit $0100_2$ is set if the \textbf{Altitude} data is valid. Bit $0010_2$ is set if the velocity data is valid. Velocity data includes both \textbf{Bearing} and \textbf{Speed} data. Finally, bit $0001_2$ is set if the \textbf{Radius} data is valid. If any of these validity bits are set to zero, all the corresponding GNSS data fields should be zeroed-out by the transmitter and regarded as invalid and ignored by the receiver.
 
@@ -1386,7 +1401,7 @@ A $16$ bit numeric \textbf{Altitude} field is in the tenth and eleventh bytes an
 
 A $12$ bit \textbf{Speed} numeric field is in the twelfth byte and the $4$ most significant bits of the thirteen byte. The decoded values range from 0.0 to 2047.5 km/h in 0.5 km/h steps.
 
-Finally, the remaining $4$ bits of the thirteenth byte and the fourteenth byte are reserved and should be set to zero. 
+Finally, the remaining $4$ bits of the thirteenth byte and the fourteenth byte are reserved and should be set to zero.
 
 \subparagraph{Extended Callsign Data}
 
@@ -1394,14 +1409,14 @@ Encryption subtype = $10_2$
 
 This is only transmitted from repeaters/gateways and not from clients, who only receive and display this data. These fields should not appear over M17 Internet links as they should only be used over the air from a repeater/gateway.
 
-The META field is split into two callsign fields. The first is always present, and the second is optional. The callsign data is encoded using the standard M17 callsign Address Encoding which takes six bytes to encode a nine character callsign. Any unused space in the META field contains 0x00 bytes. The first callsign field starts at offset zero in the META field, and the second callsign if present starts immediately after the first. There are two unused bytes at the end of the META field.
+The META field is split into two callsign fields. The first is always present, and the second is optional. The callsign data is encoded using the standard M17 callsign Address Encoding which takes six bytes to encode a nine character callsign. Any unused space in the META field contains \texttt{0x00} bytes. The first callsign field starts at offset zero in the META field, and the second callsign if present starts immediately after the first. There are two unused bytes at the end of the META field.
 
 The use of these two callsign fields is as follows:
 
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={lcX},
+		colspec={lll},
 		}
 		\hline
 		Source & Callsign Field 1 & Callsign Field 2 \\
@@ -1411,7 +1426,7 @@ The use of these two callsign fields is as follows:
 		Reflector Traffic & Originator & Reflector Name \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Extended Callsign Data encoding}
+	\caption{Extended Callsign Data Encoding}
 \end{table}
 
 The extended callsign data is not used under any other circumstances than the above currently.
@@ -1424,7 +1439,7 @@ Encryption type = $01_2$
 
 Scrambling is an encryption by bit inversion using a bitwise exclusive-or (XOR) operation between the bit sequence of data and a pseudorandom bit sequence.
 
-Pseudorandom bit sequence is generated using a Fibonacci-topology Linear- Feedback Shift Register (LFSR). Three different LFSR sizes are available: 8, 16 and 24-bit. Each shift register has an associated polynomial. The polynomials are listed in Table 7. The LFSR is initialized with a seed value of the same length as the shift register. The seed value acts as an encryption key for the scrambler algorithm. Figures 16 to 18 show block diagrams of the algorithm.
+Pseudorandom bit sequence is generated using a Fibonacci-topology Linear-Feedback Shift Register (LFSR). Three different LFSR sizes are available: 8, 16 and 24-bit. Each shift register has an associated polynomial. The polynomials are listed in Table~\ref{tab:scrambling}. The LFSR is initialized with a seed value of the same length as the shift register. The seed value acts as an encryption key for the scrambler algorithm. See Figures~\ref{fig:lfsr8}, \ref{fig:lfsr16}, and \ref{fig:lfsr24} for block diagrams of the algorithm.
 
 \begin{table}[H]
 	\centering
@@ -1440,27 +1455,28 @@ Pseudorandom bit sequence is generated using a Fibonacci-topology Linear- Feedba
 		16,777,215 \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Scrambling}
+	\caption{Scrambling Subtypes}
+	\label{tab:scrambling}
 \end{table}
 
 \begin{figure}[H]
 	\centering
 	\scalebox{0.5}{\includegraphics{img/LFSR_8}}
-	\caption{8-bit LFSR taps}
+	\caption{8-bit LFSR Taps}
 	\label{fig:lfsr8}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics{img/LFSR_16}
-	\caption{16-bit LFSR taps}
+	\caption{16-bit LFSR Taps}
 	\label{fig:lfsr16}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics{img/LFSR_24}
-	\caption{24-bit LFSR taps}
+	\caption{24-bit LFSR Taps}
 	\label{fig:lfsr24}
 \end{figure}
 
@@ -1475,7 +1491,7 @@ Key length is defined by the encryption subtype field.
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={XX},
+		colspec={ll},
 		}
 		\hline
 		Encryption subtype & Key length \\
@@ -1486,7 +1502,7 @@ Key length is defined by the encryption subtype field.
 		$11_2$ & reserved \\
 		\hline[2px]
 	\end{tblr}
-	\caption{AES key lengths}
+	\caption{AES Key Lengths}
 \end{table}
 
 The 112-bit nonce value is stored in the META field. The FN (Frame Number) value is then used to fill out the remaining 16 bits of the counter, totalling to 128 bits, and always starts from 0 (zero) in a new voice stream.
@@ -1496,8 +1512,7 @@ The 112-bit nonce value is stored in the META field. The FN (Frame Number) value
 \end{quote}
 
 The random part of the nonce value should be generated with a hardware random number generator or any other cryptographicaly secure method of generating random values.
-
-To combat replay attacks, a 32-bit timestamp shall be embedded into the cryptographic nonce field. The field structure of the 128 bit counter is shown in Table 9. Timestamp is the number of seconds that elapsed since January 1, 2020, 00:00:00 UTC, minus leap seconds.
+To prevent replay attacks, a 32-bit timestamp is included in the cryptographic nonce field. The structure of the 128-bit counter is shown in Table~\ref{tab:aes_counter}. The timestamp represents the number of seconds since 2020-01-01T00:00:00Z (midnight UTC, January 1, 2020).
 
 \paragraph{128 bit counter structure}
 
@@ -1506,22 +1521,25 @@ FN field sets the most significant 16 bits of the counter, with the 32-bit least
 \begin{table}[h]
 	\centering
 	\begin{tblr}{
-		colspec={XXX},
+		colspec={lcl},
 		}
 		\hline
-		Timestamp & Random Data & FN \\
+		Field & Length & Description \\
 		\hline
-		32 & 80 & 16 \\
+		Timestamp & 32 bits & Seconds since 2020-01-01T00:00:00Z \\
+		Random Data & 80 bits & Random data \\
+		Frame Number & 16 bits & Incrementing Frame Number \\
 		\hline[2px]
 	\end{tblr}
-	\caption{AES counter}
+	\caption{AES Counter Contents}
+	\label{tab:aes_counter}
 \end{table}
 
 \begin{quote}
 	\textbf{WARNING} In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received messages are proven to be exactly as-sent by the sender should use an appropriate digital signature algorithm, as described below.
 \end{quote}
 
-\subsection{Channel Access Number (CAN)}
+\subsection{Channel Access Number}
 
 The Channel Access Number (CAN) is a four bit code that may be used to filter received audio, text, and GNSS data. A receiver may optionally allow reception from sources only if their transmitted CAN value matches the receiver's own specified CAN value.
 
@@ -1558,7 +1576,7 @@ At the receiver-side, the 512-bit signature is retrieved from the last 4 frames'
 
 \subsection{Packet Mode LSF TYPE}
 
-The TYPE field only defines the stream/packet bit, called ``P/S'' in the table below and the CAN bits. All other bits are reserved.
+The TYPE field only defines the stream/packet bit, called ``P/S'' in Table~\ref{tab:packet_lsf_type} and the Channel Access Number (CAN) bits. All other bits are reserved.
 
 \begin{table}[H]
 	\centering
@@ -1578,7 +1596,8 @@ The TYPE field only defines the stream/packet bit, called ``P/S'' in the table b
 		\hline
 	\end{NiceTabular}
 	\normalsize
-	\caption{LSF TYPE layout}
+	\caption{Packet LSF TYPE Layout}
+	\label{tab:packet_lsf_type}
 \end{table}
 
 \subsection{Packet Data}
@@ -1589,7 +1608,7 @@ Packets are sent using Packet Mode.
 
 Packets are composed of a 1..n byte data type specifier and up to $823-n$ bytes of payload data. The data type specifier is a variable-length encoding using the same format as UTF-8. The data type specifier must be between $0$ and $2^{21}-1$ which will occupy between 1 and 4 bytes when encoded. Values from 0 to 127 are identical to their encoded form.
 
-The data type specifier can also be used as a protocol specifier. For example, the following protocol identifiers are reserved in the M17 packet spec:
+The data type specifier can also be used as a protocol specifier. Table~\ref{tab:reserved_packet_protocols} lists the reserved protocol identifiers.
 
 \begin{table}[H]
 	\centering
@@ -1597,16 +1616,17 @@ The data type specifier can also be used as a protocol specifier. For example, t
 		\hline
 		Identifier & Protocol \\
 		\hline
-		0x00 & RAW \\
-		0x01 & AX.25 \\
-		0x02 & APRS \\
-		0x03 & 6LoWPAN \\
-		0x04 & IPv4 \\
-		0x05 & SMS (null-terminated, UTF-8 encoded string) \\
-		0x06 & Winlink \\
+		\texttt{0x00} & RAW \\
+		\texttt{0x01} & AX.25 \\
+		\texttt{0x02} & APRS \\
+		\texttt{0x03} & 6LoWPAN \\
+		\texttt{0x04} & IPv4 \\
+		\texttt{0x05} & SMS (null-terminated, UTF-8 encoded string) \\
+		\texttt{0x06} & Winlink \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Packet protocol identifiers}
+	\caption{Reserved Packet Protocol Identifiers}
+	\label{tab:reserved_packet_protocols}
 \end{table}
 
 The data type specifier is used to compute the CRC, along with the payload.
@@ -1633,15 +1653,15 @@ In order to define how encoding and decoding are done, here are 40 characters us
 		\hline
 		Value & Character & Name & ASCII & Note \\
 		\hline
-		0 & '\texttt{~}' & Space  & 0x20& Also, any invalid character \\
-		1 - 26 & '\texttt{A}' - '\texttt{Z}' & Letter & 0x41 - 0x5A & Uppercase \\
-		27 - 36 & '\texttt{0}' - '\texttt{9}' & Digit & 0x30 - 0x39 & Decimal \\
-		37 & '\texttt{-}' & Hyphen & 0x2D & Dash \\
-		38 & '\texttt{/}' & Slash & 0x3F & Forward slash & \\
-		39 & '\texttt{.}' & Dot & 0x3E & Period \\
+		0 & '\texttt{~}' & Space  & \texttt{0x20} & Also, any invalid character \\
+		1 - 26 & '\texttt{A}' - '\texttt{Z}' & Letter & \texttt{0x41} - \texttt{0x5A} & Uppercase \\
+		27 - 36 & '\texttt{0}' - '\texttt{9}' & Digit & \texttt{0x30} - \texttt{0x39} & Decimal \\
+		37 & '\texttt{-}' & Hyphen & \texttt{0x2D} & Dash \\
+		38 & '\texttt{/}' & Slash & \texttt{0x3F} & Forward slash & \\
+		39 & '\texttt{.}' & Dot & \texttt{0x3E} & Period \\
 		\hline[2px]
 	\end{tblr}
-	\caption{M17 Callsign Alphabet}
+	\caption{Callsign Alphabet}
 \end{table}
 
 \section{Callsign Encoding}
@@ -1696,7 +1716,7 @@ Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can
 		\texttt{0xFFFFFFFFFFFF} & BROADCAST & \texttt{1} & valid only for a destination \\
 		\hline[2pt]
 	\end{tblr}
-	\caption{M17 Addresses}
+	\caption{Address Space}
 \end{table}
 
 The BROADCAST address should only be used as a destination address. It means that the M17 stream or packet is intended for any capable M17 receivers.
@@ -1786,7 +1806,7 @@ see \href{https://github.com/M17-Project/libm17}{https://github.com/M17-Project/
 
 \chapter{Randomizer Sequence}
 
-\begin{table}[H] \label{randomizer}
+\begin{table}[H]
 	\centering
 	\begin{tblr}{
 		colspec={lXlX},
@@ -1794,32 +1814,33 @@ see \href{https://github.com/M17-Project/libm17}{https://github.com/M17-Project/
 		\hline
 		Seq. number & Value & Seq. number & Value \\
 		\hline
-		00 & 0xD6 & 23 & 0x6E \\
-		01 & 0xB5 & 24 & 0x68 \\
-		02 & 0xE2 & 25 & 0x2F \\
-		03 & 0x30 & 26 & 0x35 \\
-		04 & 0x82 & 27 & 0xDA \\
-		05 & 0xFF & 28 & 0x14 \\
-		06 & 0x84 & 29 & 0xEA \\
-		07 & 0x62 & 30 & 0xCD \\
-		08 & 0xBA & 31 & 0x76 \\
-		09 & 0x4E & 32 & 0x19 \\
-		10 & 0x96 & 33 & 0x8D \\
-		11 & 0x90 & 34 & 0xD5 \\
-		12 & 0xD8 & 35 & 0x80 \\
-		13 & 0x98 & 36 & 0xD1 \\
-		14 & 0xDD & 37 & 0x33 \\
-		15 & 0x5D & 38 & 0x87 \\
-		16 & 0x0C & 39 & 0x13 \\
-		17 & 0xC8 & 40 & 0x57 \\
-		18 & 0x52 & 41 & 0x18 \\
-		19 & 0x43 & 42 & 0x2D \\
-		20 & 0x91 & 43 & 0x29 \\
-		21 & 0x1D & 44 & 0x78 \\
-		22 & 0xF8 & 45 & 0xC3 \\
+		00 & \texttt{0xD6} & 23 & \texttt{0x6E} \\
+		01 & \texttt{0xB5} & 24 & \texttt{0x68} \\
+		02 & \texttt{0xE2} & 25 & \texttt{0x2F} \\
+		03 & \texttt{0x30} & 26 & \texttt{0x35} \\
+		04 & \texttt{0x82} & 27 & \texttt{0xDA} \\
+		05 & \texttt{0xFF} & 28 & \texttt{0x14} \\
+		06 & \texttt{0x84} & 29 & \texttt{0xEA} \\
+		07 & \texttt{0x62} & 30 & \texttt{0xCD} \\
+		08 & \texttt{0xBA} & 31 & \texttt{0x76} \\
+		09 & \texttt{0x4E} & 32 & \texttt{0x19} \\
+		10 & \texttt{0x96} & 33 & \texttt{0x8D} \\
+		11 & \texttt{0x90} & 34 & \texttt{0xD5} \\
+		12 & \texttt{0xD8} & 35 & \texttt{0x80} \\
+		13 & \texttt{0x98} & 36 & \texttt{0xD1} \\
+		14 & \texttt{0xDD} & 37 & \texttt{0x33} \\
+		15 & \texttt{0x5D} & 38 & \texttt{0x87} \\
+		16 & \texttt{0x0C} & 39 & \texttt{0x13} \\
+		17 & \texttt{0xC8} & 40 & \texttt{0x57} \\
+		18 & \texttt{0x52} & 41 & \texttt{0x18} \\
+		19 & \texttt{0x43} & 42 & \texttt{0x2D} \\
+		20 & \texttt{0x91} & 43 & \texttt{0x29} \\
+		21 & \texttt{0x1D} & 44 & \texttt{0x78} \\
+		22 & \texttt{0xF8} & 45 & \texttt{0xC3} \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Randomizer values}
+	\caption{Randomizer Values}
+	\label{tab:randomizer}
 \end{table}
 
 \chapter{Convolutional Encoder} \label{convolutional_encoder}
@@ -1839,7 +1860,7 @@ The output from the encoder must be read alternately.
 \begin{figure}[H]
 	\centering
 	\includegraphics{img/convolutional}
-	\caption{Convolutional encoder}
+	\caption{Convolutional Encoder}
 	\label{fig:convolutional}
 \end{figure}
 
@@ -1849,7 +1870,7 @@ The extended Golay(24,12) encoder uses generating polynomial \emph{g(x)} given b
 
 $g(x) = x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1$
 
-This is equivalent to 0xC75 in hexadecimal notation. Both the generating matrix $G$ and parity check matrix $H$ are shown below.
+This is equivalent to \texttt{0xC75} in hexadecimal notation. Both the generating matrix $G$ and parity check matrix $H$ are shown below.
 
 \begin{align}
 	G = [I_{12}|P] = \left[
@@ -1892,12 +1913,12 @@ This is equivalent to 0xC75 in hexadecimal notation. Both the generating matrix 
 	\right]
 \end{align}
 
-The output of the Golay encoder is shown in the table below.
+The output of the Golay encoder is shown in Table~\ref{tab:golay_encoder_output}.
 
 \begin{table}[H]
 	\centering
 	\begin{tblr}{
-		colspec={lllX},
+		colspec={llll},
 		}
 		\hline
 		Field & Data & Check bits & Parity \\
@@ -1906,12 +1927,13 @@ The output of the Golay encoder is shown in the table below.
 		Length & 12 & 11 & 1 \\
 		\hline
 	\end{tblr}
-	\caption{Golay encoder details}
+	\caption{Golay Encoder Output}
+	\label{tab:golay_encoder_output}
 \end{table}
 
 Four of these 24-bit blocks are used to reconstruct the LSF.
 
-Sample MATLAB/Octave code snippet for generating $G$ and $H$ matrices is shown below.
+Sample MATLAB code snippet for generating $G$ and $H$ matrices is shown below.
 
 \begin{lstlisting}[language=Matlab]
 	P = hex2poly('0xC75');
@@ -2001,30 +2023,30 @@ $\pi(x)=(45x+92x^2)\mod 368$
 is used for a 368 bit interleaving pattern QPP.
 
 \begin{longtable}[]{@{}
-		>{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1196}}
-		>{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1304}}
-		>{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1196}}
-		>{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1304}}
-		>{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1196}}
-		>{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1304}}
-		>{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1196}}
-		>{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1304}}@{}}
+		>{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1196}}
+		>{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1304}}
+		>{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1196}}
+		>{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1304}}
+		>{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1196}}
+		>{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1304}}
+		>{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1196}}
+		>{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1304}}@{}}
 	\toprule
-	\begin{minipage}[b]{\linewidth}\raggedright
+	\begin{minipage}[b]{\linewidth}\raggedleft
 		input index
-	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 		output index
-	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 		input index
-	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 		output index
-	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 		input index
-	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 		output index
-	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 		input index
-	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+	\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 		output index
 	\end{minipage} \\
 	\midrule
@@ -2143,7 +2165,7 @@ used to generate a pseudorandom binary sequence.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\linewidth]{img/m17-traditional-lfsr}
-	\caption{Traditional form LFSR}
+	\caption{Traditional LFSR}
 	\label{fig:m17-traditional-lfsr}
 \end{figure}
 
@@ -2208,7 +2230,7 @@ The receiver will synchronize the PRBS by first XORing the received bit with the
 During synchronization, bits received and bit errors are not counted
 towards the overall bit error rate.
 
-\begin{lstlisting}[language=C]
+\begin{lstlisting}[language=C,float=!htb]
 	class PRBS9 {
 		...
 		static constexpr uint8_t LOCK_COUNT = 18;   // 18 consecutive good bits.
@@ -3257,7 +3279,5 @@ into proprietary programs.  If your program is a subroutine library, you
 may consider it more useful to permit linking proprietary applications
 with the library.  If this is what you want to do, use the GNU Library
 General Public License instead of this License.
-
-\end{document}
 
 \end{document}
