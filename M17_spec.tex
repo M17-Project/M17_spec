@@ -111,6 +111,7 @@ draw=black]
 	\vhEntry{1.6.0}{08 Aug 2025}{SP5WWP}{Section 3.4 was moved to Part II.}
 	\vhEntry{2.0.0}{12 Aug 2025}{N7TAE|N7ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
 	\vhEntry{2.0.1}{23 Sep 2025}{K6OF}{Implement CCSDS A20.0-Y-4 style guide and clarify use of UTC.}
+	\vhEntry{2.0.2}{28 Sep 2025}{K0RET}{Fixed misspellings.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -1395,7 +1396,7 @@ The $24$ bit, two's complement \textbf{Latitude} and \textbf{Longitude} are enco
 
 The \textbf{Latitude} is specified in the fourth through sixth bytes. The value is the binary fraction of $90$ degrees, where the value $0$ represents zero degrees latitude, \textit{i.e.}, the equator, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm90$ degrees, \textit{i.e.}, the poles. A positive value is north and negative is south. This results in a resolution of approximately 39 milliseconds of arc ($\sim$1.2m).
 
-The $24$ \textbf{Longitude} follows in the seventh through ninth bytes. The value is the binary fraction of $180$ degrees, where the value $0$ represents zero degrees longitude, \textit{i.e.}, the prime meridian, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm180$ degrees. A positve value is east and a negative value is west. This results in a resolution of approximately 77 milliseconds of arc ($\sim$2.4m at the equator).
+The $24$ \textbf{Longitude} follows in the seventh through ninth bytes. The value is the binary fraction of $180$ degrees, where the value $0$ represents zero degrees longitude, \textit{i.e.}, the prime meridian, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm180$ degrees. A positive value is east and a negative value is west. This results in a resolution of approximately 77 milliseconds of arc ($\sim$2.4m at the equator).
 
 A $16$ bit numeric \textbf{Altitude} field is in the tenth and eleventh bytes and decodes in $0.5$ meter steps, offset by $500$ meters. A value of $0$ is an altitude of $-500.0$ meters, while the largest value of $65535$ is an altitude of $31767.5$ meters.
 
@@ -1511,7 +1512,7 @@ The 112-bit nonce value is stored in the META field. The FN (Frame Number) value
 	\textbf{NOTE} The effective capacity of the frame counter is 15 bits, as its most significant bit is used for transmission end signalling. At 25 frames per second and $2^{15}$ frames, the transmission can last up to $2^{15}$ frames / 25 frames per second = 1310 seconds, or almost 22 minutes, without rolling over the counter.
 \end{quote}
 
-The random part of the nonce value should be generated with a hardware random number generator or any other cryptographicaly secure method of generating random values.
+The random part of the nonce value should be generated with a hardware random number generator or any other cryptographically secure method of generating random values.
 To prevent replay attacks, a 32-bit timestamp is included in the cryptographic nonce field. The structure of the 128-bit counter is shown in Table~\ref{tab:aes_counter}. The timestamp represents the number of seconds since 2020-01-01T00:00:00Z (midnight UTC, January 1, 2020).
 
 \paragraph{128 bit counter structure}
@@ -1635,7 +1636,7 @@ The data type specifier is used to compute the CRC, along with the payload.
 
 \chapter{Address Encoding} \label{address_encoding}
 
-\section{The M17 aphabet}
+\section{The M17 alphabet}
 
 M17 uses a 48-bit (6-byte) address to represent the characters that define a source and destination.
 M17 uses a 40-character alphabet. Encoded, up to nine characters can be used to encode a source or destination address that will still fit in a 48-bit address field.
@@ -1672,7 +1673,7 @@ Here are some facts and rules about the encoding an address from a callsign:
 	\item
 		A callsign is encoded backwards, from the last character to the first character. This means that the first character of the callsign is in the least significant bits of the address, while the last character is encode into the most significant bits of the address.
 	\item
-		Since the space character has a value of zero, trailing spaces will not affect the encoded value. For example the calcuated address of \texttt{'ABC'} is the same as \texttt{'ABC~'}, or \texttt{'ABC~~~~~~'}.
+		Since the space character has a value of zero, trailing spaces will not affect the encoded value. For example the calculated address of \texttt{'ABC'} is the same as \texttt{'ABC~'}, or \texttt{'ABC~~~~~~'}.
 	\item
 		If an uncoded address represents an amateur radio callsign it should be left-justified. That means that the first character will always be a digit or letter.
 	\item
