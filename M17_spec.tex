@@ -112,6 +112,7 @@ draw=black]
 	\vhEntry{2.0.0}{12 Aug 2025}{N7TAE|N7ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
 	\vhEntry{2.0.1}{23 Sep 2025}{K6OF}{Implement CCSDS A20.0-Y-4 style guide and clarify use of UTC.}
 	\vhEntry{2.0.2}{28 Sep 2025}{K0RET}{Fixed misspellings.}
+	\vhEntry{2.0.3}{09 Oct 2025}{SP5WWP}{Fixed Golay matrices display.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -1874,9 +1875,11 @@ $g(x) = x^{11} + x^{10} + x^6 + x^5 + x^4 + x^2 + 1$
 This is equivalent to \texttt{0xC75} in hexadecimal notation. Both the generating matrix $G$ and parity check matrix $H$ are shown below.
 
 \begin{align}
-	G = [I_{12}|P] = \left[
-	\begin{array}{cr}
-		I_{12} \begin{matrix}
+	G = [I_{12} \mid P] = \left[
+	\begin{array}{c|c}
+		I_{12}
+		&
+		\begin{matrix}
 			1&1&0&0&0&1&1&1&0&1&0&1 \\
 			0&1&1&0&0&0&1&1&1&0&1&1 \\
 			1&1&1&1&0&1&1&0&1&0&0&0 \\
@@ -1894,8 +1897,8 @@ This is equivalent to \texttt{0xC75} in hexadecimal notation. Both the generatin
 	\right]
 \end{align}
 \begin{align}
-	H = [P^T|I_{12}] = \left[
-	\begin{array}{cr}
+	H = [P^T \mid I_{12}] = \left[
+	\begin{array}{c|c}
 		\begin{matrix}
 			1&0&1&0&0&1&0&0&1&1&1&1 \\
 			1&1&1&1&0&1&1&0&1&0&0&0 \\
@@ -1909,7 +1912,9 @@ This is equivalent to \texttt{0xC75} in hexadecimal notation. Both the generatin
 			1&0&0&1&0&0&1&1&1&1&1&0 \\
 			0&1&0&0&1&0&0&1&1&1&1&1 \\
 			1&1&0&0&0&1&1&1&0&1&0&1
-		\end{matrix} I_{12}
+		\end{matrix}
+		&
+		I_{12}
 	\end{array}
 	\right]
 \end{align}
