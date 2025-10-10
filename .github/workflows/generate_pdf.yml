@@ -1,45 +1,87 @@
 name: Generate PDF
 
 on:
-  # allows manual triggering of the workflow
+  # allows manual triggering
   workflow_dispatch:
-  # run on changes to main
   push:
     branches:
-      - main
-  # run on PRs to main
+      - '**'
   pull_request:
     branches:
-      - main
+      - '**'
 
 jobs:
-  build:
+
+  # runs on main branch pushes
+  build-and-deploy:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    # grant GITHUB_TOKEN permissions for pages deployment
     permissions:
+      contents: write
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Checkout
+      - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Build
-        # wraps a LaTeX build environment
+      - name: Build PDF
         uses: xu-cheng/latex-action@v4
         with:
           root_file: M17_spec.tex
 
-      - name: Upload
+      - name: Check PDF exists
+        run: |
+          if [ ! -f M17_spec.pdf ]; then
+            echo "PDF was not generated!" >&2
+            exit 1
+          fi
+      - name: Move PDF to public/
+        run: |
+          mkdir -p public
+          mv M17_spec.pdf public/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload PDF
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to Pages
+        uses: actions/deploy-pages@v4
+
+      - name: Post URL to Summary
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: echo "🚀 [View the latest PDF](https://m17-project.github.io/M17_spec/M17_spec.pdf)" >> $GITHUB_STEP_SUMMARY
+
+  # runs on PRs and non-main branch pushes
+  build-artifact-only:
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Build PDF
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: M17_spec.tex
+
+      - name: Check PDF exists
+        run: |
+          if [ ! -f M17_spec.pdf ]; then
+            echo "PDF was not generated!" >&2
+            exit 1
+          fi
+
+      - name: Upload PDF artifact for branch/PR
         uses: actions/upload-artifact@v4
         with:
-          name: Specification
+          name: M17_spec
           path: M17_spec.pdf
-
-      - name: Deploy
-        # only deploy on pushes to main, not on PRs
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/deploy-pages@v4
