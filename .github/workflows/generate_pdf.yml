@@ -55,7 +55,6 @@ jobs:
         uses: actions/deploy-pages@v4
 
       - name: Post URL to Summary
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: echo "🚀 [View the latest PDF](https://m17-project.github.io/M17_spec/M17_spec.pdf)" >> $GITHUB_STEP_SUMMARY
 
   # runs on PRs and non-main branch pushes
