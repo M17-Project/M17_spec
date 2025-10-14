@@ -109,10 +109,11 @@ draw=black]
 	\vhEntry{1.4.0}{01 Jan 2025}{SP5WWP}{Removed the KISS appendix and created a separate KISS specification document.}
 	\vhEntry{1.5.0}{11 Feb 2025}{N7TAE|VK7XT}{Rearranged the Data Link and Application Layer chapters for better flow, removed IP Network chapter and File Type appendix, added more details to Packet Mode, 3 new IP packets defined, and added new clarifying bit tables.}
 	\vhEntry{1.6.0}{08 Aug 2025}{SP5WWP}{Section 3.4 was moved to Part II.}
-	\vhEntry{2.0.0}{12 Aug 2025}{N7TAE|N7ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
+	\vhEntry{2.0.0}{12 Aug 2025}{N7TAE|N1ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
 	\vhEntry{2.0.1}{23 Sep 2025}{K6OF}{Implement CCSDS A20.0-Y-4 style guide and clarify use of UTC.}
 	\vhEntry{2.0.2}{28 Sep 2025}{K0RET}{Fixed misspellings.}
 	\vhEntry{2.0.3}{09 Oct 2025}{SP5WWP}{Fixed Golay matrices display.}
+	\vhEntry{3.0.0-draft}{14 Oct 2025}{SP5WWP|IU2KWO|N1ADJ|N7TAE}{Changed META text message padding (add more changes here).}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -1302,7 +1303,7 @@ Encryption subtype = $00_2$
 
 The first byte of the Text Data is a Control Byte. To maintain backward compatibility, a Control Byte of \texttt{0x00} indicates that no Text Data is included.
 
-Up to four Text Data blocks compose a complete message with a maximum length of 52 bytes. Each block may contain up to 13 bytes of UTF-8 encoded text, and is padded with space characters to fill any unused space at the end of the last used Text Data block.
+Up to four Text Data blocks compose a complete message with a maximum length of 52 bytes. Each block may contain up to 13 bytes of UTF-8 encoded text, and is padded with null characters to fill any unused space at the end of the last used Text Data block.
 
 The Control Byte is split into two 4-bit fields. The most significant four bits are a bit map of the message length indicating how many Text Data blocks are required for a complete message. There is one bit per used Text Data block, with $0001_2$ used for one block, $0011_2$ for the two, $0111_2$ for three, and $1111_2$ for four.
 
