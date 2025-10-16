@@ -1102,13 +1102,15 @@ Within the Physical Layer, the 368 Type 4 bits are randomized and combined with 
 
 \chapter{Application Layer}
 
-Stream mode is primarily for an audio stream containing low bit rate speech encoded using the open source \href{http://rowetel.com/codec2.html}{Codec 2} codec. One of two different Codec 2 rates can be used in M17, and so Stream mode can be used in a voice-only mode using the higher bit rate codec, and voice+data mode using a lower bit rate codec which leave room for a parallel data stream, and a data only stream mode where arbitrarily large data objects can be streamed. Stream mode is intended to be used over the air by amateur radio operators worldwide. Implementation details for M17 clients, repeaters, and gateways ensure that an M17 Amateur Radio Voice Application is legal under all licensing regimes.
+Implementation details for M17 clients, repeaters, and gateways ensure that an M17 Amateur Radio Voice Application is legal under all licensing regimes.
+
+\section{Two Operation Modes}
+
+Stream mode is primarily for an audio stream containing low bit rate speech encoded using the open source \href{http://rowetel.com/codec2.html}{Codec 2} codec. One of two different Codec 2 rates can be used in M17, and so Stream mode can be used in a voice-only mode using the higher bit rate codec, and voice+data mode using a lower bit rate codec which leave room for a parallel data stream, and a data only stream mode where arbitrarily large data objects can be streamed. Stream mode is intended to be used over the air by amateur radio operators worldwide. 
 
 Packet mode is a one-shot method to send a small data packet over the air. It is intended primarily for text messaging, but other small binary objects can also be sent.
 
 Both Stream and Packet mode begins with an Link Setup Frame, LSF.
-
-\section{LSF}
 
 \begin{table}[H]
 	\centering
@@ -1126,7 +1128,7 @@ Both Stream and Packet mode begins with an Link Setup Frame, LSF.
 	\caption{Link Setup Frame Contents}
 \end{table}
 
-\paragraph{Address fields}
+\paragraph{DST/SRC}
 
 Destination (DST) and source (SRC) addresses may be encoded amateur radio callsigns, or special identifiers. See Address Encoding \autoref{address_encoding} for details on how up to 9 characters of text can be encoded into the 6-byte address value.
 
@@ -1136,7 +1138,7 @@ The destination address used by a client may simply be a callsign or reflector d
 
 \paragraph{TYPE}
 
-The 2-byte TYPE field contains information about the frames to follow LSF. The Packet/Stream indicator bit determines which mode (Packet or Stream) will be used during the transmission. The remaining field meanings are defined by the specific mode and application.
+The 2-byte TYPE field contains information about the frames to follow LSF. There are five subfields contained in TYPE that are used to specify not only the characterisitics of the Stream Mode payload, but also contents of the Meta data. Details of TYPE will be discussed later in this chapter.
 
 \paragraph{META}
 
@@ -1158,7 +1160,7 @@ The TYPE field is 16 bits, 2 bytes, and contains all information need to properl
 		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
 		\Hline[tikz=very thick]
 		0 &
-			\multicolumn{4}{c}{Payload Type} &
+			\multicolumn{4}{c}{Payload} &
 			\multicolumn{3}{c}{Encryption} &
 			\parbox{3em}{Signed} \\
 		\hline
@@ -1183,7 +1185,7 @@ The first TYPE subfield is the 4 most significant bits of the first byte and spe
 		\hline
 		Value & Content \\
 		\hline
-		\texttt{0x0} & Never used \\
+		\texttt{0x0} & Reserved for Version detection \\
 		\texttt{0x1} & Data Only \\
 		\texttt{0x2} & 3200 bps Codec2 Voice Only \\
 		\texttt{0x3} & 1600 bps Codec2 Voice \textit{and} Data \\
@@ -1191,8 +1193,10 @@ The first TYPE subfield is the 4 most significant bits of the first byte and spe
 		\texttt{0xF} & Packet data \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Payload Type Subfield}
+	\caption{Payload Subfield}
 \end{table}
+
+The prior version of TYPE reserved the 4 most significant bits, so reserving \texttt{0x0} here provides a simple version detecting mechanism.
 
 \subsection{Encryption}
 
@@ -1222,291 +1226,34 @@ legally permissible.
 	\caption{Encryption Type Subfield}
 \end{table}
 
-\paragraph{Scrambling}
+For a complete discussion of the Scrambler and AES encryption method, see the Encryption \autoref{stream_encryption}.
 
-Scrambling is an encryption by bit inversion using a bitwise exclusive-or (XOR) operation between the bit sequence of data and a pseudorandom bit sequence.
+\subsection{Signed}
 
-Pseudorandom bit sequence is generated using a Fibonacci-topology Linear-Feedback Shift Register (LFSR). Three different LFSR sizes are available: 8, 16 and 24-bit. Each shift register has an associated polynomial. The polynomials are listed in Table~\ref{tab:scrambling}. The LFSR is initialized with a seed value of the same length as the shift register. The seed value acts as an encryption key for the scrambler algorithm. See Figures~\ref{fig:lfsr8}, \ref{fig:lfsr16}, and \ref{fig:lfsr24} for block diagrams of the algorithm.
+The least significant bit of the first byte of TYPE specifies if the payload data is digitally signed. If this bit is set, then the stream is digitally signed. Only Stream Mode payload data can be signed. Details of signing and verifying a stream payload are in the Digital Signature \autoref{digital_signature}.
 
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={llXX},
-		}
-		\hline
-		Encryption subtype & LFSR polynomial & Seed length & Sequence period \\
-		\hline
-		$00_2$ & $x^8 + x^6 + x^5 + x^4 + 1$ & 8 bits & 255 \\
-		$01_2$ & $x^{16} + x^{15} + x^{13} + x^4 + 1$ & 16 bits & 65,535 \\
-		$10_2$ & $x^{24} + x^{23} + x^{22} + x^{17} + 1$ & 24 bits &
-		16,777,215 \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Scrambling Subtypes}
-	\label{tab:scrambling}
-\end{table}
+\subsection{Meta}
 
-\begin{figure}[H]
-	\centering
-	\scalebox{0.5}{\includegraphics{img/LFSR_8}}
-	\caption{8-bit LFSR Taps}
-	\label{fig:lfsr8}
-\end{figure}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics{img/LFSR_16}
-	\caption{16-bit LFSR Taps}
-	\label{fig:lfsr16}
-\end{figure}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics{img/LFSR_24}
-	\caption{24-bit LFSR Taps}
-	\label{fig:lfsr24}
-\end{figure}
-
-\paragraph{Advanced Encryption Standard (AES)}
-
-This method uses AES block cipher in counter mode (AES-CTR), with a 112-bit nonce that should never be used for more than one stream (transmission) and a 16-bit counter.
-
-Key length is defined by the encryption subtype field.
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={ll},
-		}
-		\hline
-		Encryption subtype & Key length \\
-		\hline
-		$00_2$ & 128 bits \\
-		$01_2$ & 192 bits \\
-		$10_2$ & 256 bits \\
-		$11_2$ & reserved \\
-		\hline[2px]
-	\end{tblr}
-	\caption{AES Key Lengths}
-\end{table}
-
-The 112-bit nonce value is stored in the META field. The FN (Frame Number) value is then used to fill out the remaining 16 bits of the counter, totalling to 128 bits, and always starts from 0 (zero) in a new voice stream.
-
-\begin{quote}
-	\textbf{NOTE} The effective capacity of the frame counter is 15 bits, as its most significant bit is used for transmission end signalling. At 25 frames per second and $2^{15}$ frames, the transmission can last up to $2^{15}$ frames / 25 frames per second = 1310 seconds, or almost 22 minutes, without rolling over the counter.
-\end{quote}
-
-The random part of the nonce value should be generated with a hardware random number generator or any other cryptographically secure method of generating random values.
-To prevent replay attacks, a 32-bit timestamp is included in the cryptographic nonce field. The structure of the 128-bit counter is shown in Table~\ref{tab:aes_counter}. The timestamp represents the number of seconds since 2020-01-01T00:00:00Z (midnight UTC, January 1, 2020).
-
-\subparagraph{128 bit counter structure}
-
-FN field sets the most significant 16 bits of the counter, with the 32-bit least significant part holding the timestamp. The remaining 80-bit portion is filled with random data, re-generated per transmission.
-
-\begin{table}[h]
-	\centering
-	\begin{tblr}{
-		colspec={lcl},
-		}
-		\hline
-		Field & Length & Description \\
-		\hline
-		Timestamp & 32 bits & Seconds since 2020-01-01T00:00:00Z \\
-		Random Data & 80 bits & Random data \\
-		Frame Number & 16 bits & Incrementing Frame Number \\
-		\hline[2px]
-	\end{tblr}
-	\caption{AES Counter Contents}
-	\label{tab:aes_counter}
-\end{table}
-
-\begin{quote}
-	\textbf{WARNING} In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received messages are proven to be exactly as-sent by the sender should use an appropriate digital signature algorithm, as described below.
-\end{quote}
-
-\subsection{Digital Signature}
-
-The least significant bit of the first byte of TYPE specifies if the payload data is digitally siged. If this bit is set, then the stream is digitally signed. Only Stream Mode can be digitally signed.
-
-M17 protocol provides a stream authentication method through Elliptic Curve Digital Signature Algorithm (ECDSA). The curve used is $secp256r1$. Signature availability is signalled with a specific bit in the TYPE field. Signature use reduces the maximum length of the stream by 4 frames.
-
-\subsubsection{Message Digest Algorithm for Voice Streams}
-At the beginning of the transmission, a $digest$ byte array of size 16 is initialized with zeros. After every stream frame (starting at frame 0) an exclusive or (XOR) operation is performed over the contents of the $digest$ array and the frame's payload. The $digest$ array is then rotated left by 1 byte. The result shall be retained in the array.
-
-\begin{align*}
-	digest :=& digest \oplus payload \\
-	digest :=& rol(digest, 8)
-\end{align*}
-
-This process is repeated until there is no more data to transmit. In case there is any encryption enabled, the $payload$ input shall be the encrypted stream. This ensures the possibility of verification, even if the encryption details are not known to the receiving parties. Frame Numbers of the frames carrying the signature should follow a succession of $\{7FFC_{16}, 7FFD_{16}, 7FFE_{16}, FFFF_{16}\}$.
-\begin{quote}
-	\textbf{NOTE} The Frame Number's most significant bit of the last speech payload stream shall not be set, since it is not the last frame to be transmitted.
-\end{quote}
-
-\subsubsection{Signature Generation and Transmission}
-At the transmitter-side, the stream digest is signed with a 256-bit private key. The resulting 512-bit signature is split into 4 chunks and sent as additional payload at the end of the transmission. To keep the reassembled LSF data consistent, the LICH counter shall advance normally. The most significant bit of the Frame Number (signalling end of transmission) shall be set only in the last frame carrying the signature.
-
-\subsubsection{Signature Verification}
-At the receiver-side, the 512-bit signature is retrieved from the last 4 frames' contents, if the appropriate TYPE bit is set. The signature is then checked using a 512-bit public key.
-\begin{quote}
-	\textbf{NOTE} The verification process will work if and only if all the data is received successfully (without transmission errors or dropped frames).
-\end{quote}
-
-\subsection{Meta Data}
-
-The 14-byte (112-bit) META field of the LSF and corresponding LICH of the stream can be used for transmitting relatively small amounts of extended data without affecting the bandwidth available for the audio. The full 14 bytes of META extended data is potentially decodable every six stream frames, at a 240 ms update rate. The extended data is transmitted in a simple round robin manner, with the only exception being GPS data which should be transmitted as soon as possible after the GPS data is received from its source.
+The 14-byte (112-bit) META field of the LSF and corresponding LICH of the stream can be used for transmitting relatively small amounts of extended data without affecting the bandwidth available for the audio. The full 14 bytes of META extended data is potentially decodable every six stream frames, at a 240 ms update rate. The extended data is transmitted in a simple round robin manner, with the only exception being GNSS data which should be transmitted as soon as possible after the GNSS data is received from its source.
 
 The most significant 4 bits of the second byte of the TYPE specifies the contents of the Meta data.
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{ll}
+	\begin{tblr}{lll}
 		\hline
-		Encryption subtype bits & LSF META data contents \\
+		Encryption subtype bits & LSF META data contents & Details \\
 		\hline
-		\texttt{0x0} & None \\
-		\texttt{0x1} & GNSS Position Data \\
-		\texttt{0x2} & Extended Callsign Data \\
-		\texttt{0x3} & Text Data \\
-		\texttt{0x4..0xE} & Reserved \\
-		\texttt{0xF} & AES Encryption Initial Value (IV) \\
+		\texttt{0x0} & None & \\
+		\texttt{0x1} & GNSS Position Data & GNSS Data \autoref{gnss_data} \\
+		\texttt{0x2} & Extended Callsign Data & Extended Callsign \autoref{extended_callsign} \\
+		\texttt{0x3} & Text Data & Text Data \autoref{text_data} \\
+		\texttt{0x4..0xE} & Reserved & \\
+		\texttt{0xF} & AES Encryption IV & AES \autoref{aes} \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Meta Type Subfield}
 \end{table}
-
-\paragraph{GNSS Data}
-
-Unlike Text and Extended Callsign Data, GNSS data is expected to be dynamic during the course of a transmission and to be transmitted quickly after the GNSS data becomes available. To stop the LSF/LICH data stream from being overrun with GNSS data relative to other data types, a throttle on the amount of GNSS data transmitted is needed. It is recommended that GNSS data be sent at an update rate no faster than once every five seconds.
-
-The GNSS data fits within one 14-byte META field, which equates to six audio frames, and takes 240ms to transmit. This is a simple format of the GNSS data which does not require too much work to convert into, and provides enough flexibility for most cases. This has been tested on-air and successfully gated to APRS-IS, showing a location very close to the position reported by the GPS receiver.
-
-The GNSS data includes eight numeric values using from $3$ bits to $24$ bits. The two largest $24$ bit values are signed, two's complement values. The other six are unsigned values. All numeric fields are in order from most significant to least significant bit. There is also one $4$ bit validity field that used to indicate which numeric fields are valid.
-
-GNSS Position Data uses the 112 bit (14 byte) META field as follows:
-
-\begin{table}[H]
-	\centering
-	\small
-	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{5em}|}
-		\hline
-		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
-		\Hline[tikz=very thick]
-		0 &
-			\multicolumn{4}{c}{\parbox{12em}{\centering Data Source}} &
-			\multicolumn{4}{c}{\parbox{14em}{\centering Station Type}} \\
-		\hline
-		1 &
-			\multicolumn{4}{c}{\parbox{12em}{\centering Validity}} &
-			\multicolumn{3}{c}{\parbox{9em}{\centering Radius}} &
-			\parbox{5em}{\centering Bearing\ldots} \\
-		\hline
-		2 &
-			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
-		\Hline[tikz=very thick]
-		3 &
-			\multicolumn{8}{c}{\parbox{23em}{\centering Latitude\ldots}} \\
-		\hline
-		4 &
-			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
-		\hline
-		5 &
-			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
-		\Hline[tikz=very thick]
-		6 &
-			\multicolumn{8}{c}{\parbox{23em}{\centering Longitude\ldots}} \\
-		\hline
-		7 &
-			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
-		\hline
-		8 &
-			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
-		\Hline[tikz=very thick]
-		9 &
-			\multicolumn{8}{c}{\parbox{26em}{\centering Altitude\ldots}} \\
-		\hline
-		10 &
-			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
-		\Hline[tikz=very thick]
-		11 &
-			\multicolumn{8}{c}{\parbox{26em}{\centering Speed\ldots}} \\
-		\hline
-		12 &
-			\multicolumn{4}{c}{\parbox{12em}{\centering \ldots}} &
-			\multicolumn{4}{c}{\parbox{14em}{\centering \textit{Reserved}\ldots}} \\
-		\hline
-		13 &
-			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
-		\Hline[tikz=very thick]
-	\end{NiceTabular}
-	\normalsize
-	\caption{GNSS Data Layout}
-\end{table}
-
-The first byte contains two $4$ bit numeric fields. The first is the \textbf{Data Source} where: $0$ is an M17 client, $1$ is OpenRTX and $15$ is "other", while values $2..14$ are reserved. The second $4$ bit field is \textbf{Station Type}, where $0$ is a fixed station, $1$ is a mobile station, $2$ is a handheld and $15$ is "other", values $3..14$ are reserved.
-
-The second byte starts with a $4$ bit \textbf{Validity} field. Bit $1000_2$ is set if the latitude/longitude is valid. Bit $0100_2$ is set if the \textbf{Altitude} data is valid. Bit $0010_2$ is set if the velocity data is valid. Velocity data includes both \textbf{Bearing} and \textbf{Speed} data. Finally, bit $0001_2$ is set if the \textbf{Radius} data is valid. If any of these validity bits are set to zero, all the corresponding GNSS data fields should be zeroed-out by the transmitter and regarded as invalid and ignored by the receiver.
-
-The next three bits of the second byte is the numeric \textbf{Radius} field. This radius is an estimate of lateral position uncertainty and is based on the horizontal dilution of precision (HDOP) value provided by the GNSS module. HDOP measure is based on the number of received satellites and their geometric position relative to the receiver.
-\begin{quote}
-	\textbf{NOTE} The HDOP value (and therefore radius) is only a coarse estimate and in some cases might not reflect the actual uncertainty metric.
-\end{quote}
-
-The last bit of the second byte is the most significant bit of the $9$ bit \textbf{Bearing} numeric field. This bit is combined with the third byte and contains the bearing value. This is the heading direction for the velocity data in degrees and should never contain a value greater than 359. Zero is due north and 90 is due east, \textit{etc}.
-
-The $24$ bit, two's complement \textbf{Latitude} and \textbf{Longitude} are encoded into the next six bytes. The encoded values range from $+2^{23}-1$ to $-(2^{23}-1)$. Note that the largest negative two's complement value, $-2^{23}$ is never used.
-
-The \textbf{Latitude} is specified in the fourth through sixth bytes. The value is the binary fraction of $90$ degrees, where the value $0$ represents zero degrees latitude, \textit{i.e.}, the equator, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm90$ degrees, \textit{i.e.}, the poles. A positive value is north and negative is south. This results in a resolution of approximately 39 milliseconds of arc ($\sim$1.2m).
-
-The $24$ \textbf{Longitude} follows in the seventh through ninth bytes. The value is the binary fraction of $180$ degrees, where the value $0$ represents zero degrees longitude, \textit{i.e.}, the prime meridian, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm180$ degrees. A positive value is east and a negative value is west. This results in a resolution of approximately 77 milliseconds of arc ($\sim$2.4m at the equator).
-
-A $16$ bit numeric \textbf{Altitude} field is in the tenth and eleventh bytes and decodes in $0.5$ meter steps, offset by $500$ meters. A value of $0$ is an altitude of $-500.0$ meters, while the largest value of $65535$ is an altitude of $31767.5$ meters.
-
-A $12$ bit \textbf{Speed} numeric field is in the twelfth byte and the $4$ most significant bits of the thirteen byte. The decoded values range from 0.0 to 2047.5 km/h in 0.5 km/h steps.
-
-Finally, the remaining $4$ bits of the thirteenth byte and the fourteenth byte are reserved and should be set to zero.
-
-\paragraph{Extended Callsign Data}
-
-This is only transmitted from repeaters/gateways and not from clients, who only receive and display this data. These fields should not appear over M17 Internet links as they should only be used over the air from a repeater/gateway.
-
-The META field is split into two callsign fields. The first is always present, and the second is optional. The callsign data is encoded using the standard M17 callsign Address Encoding which takes six bytes to encode a nine character callsign. Any unused space in the META field contains \texttt{0x00} bytes. The first callsign field starts at offset zero in the META field, and the second callsign if present starts immediately after the first. There are two unused bytes at the end of the META field.
-
-The use of these two callsign fields is as follows:
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lll},
-		}
-		\hline
-		Source & Callsign Field 1 & Callsign Field 2 \\
-		\hline
-		Locally Repeated RF & Originator & Unused \\
-		ECHO Reply & Originator & Unused \\
-		Reflector Traffic & Originator & Reflector Name \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Extended Callsign Data Encoding}
-\end{table}
-
-The extended callsign data is not used under any other circumstances than the above currently.
-
-It is not expected that the data in the extra callsign fields change during the course of a transmission.
-
-\paragraph{Text Data}
-
-The first byte of the Text Data is a Control Byte. To maintain backward compatibility, a Control Byte of \texttt{0x00} indicates that no Text Data is included.
-
-Up to four Text Data blocks compose a complete message with a maximum length of 52 bytes. Each block may contain up to 13 bytes of UTF-8 encoded text, and is padded with null characters to fill any unused space at the end of the last used Text Data block.
-
-The Control Byte is split into two 4-bit fields. The most significant four bits are a bit map of the message length indicating how many Text Data blocks are required for a complete message. There is one bit per used Text Data block, with $0001_2$ used for one block, $0011_2$ for the two, $0111_2$ for three, and $1111_2$ for four.
-
-The least significant four bits indicate which of the Text Data blocks this text corresponds to. It is $0001_2$ for the first, $0010_2$ for the second, $0100_2$ for the third, and $1000_2$ for the fourth. Any received Control Byte is OR-ed together by the receiving station, and once the most significant and least significant four bits are the same, a complete message has been received.
-
-It is up to the receiver to decide how to display this message. It may choose to wait for all of the Text Data to be received, or display the parts as they are received. It is not expected that the data in the text field changes during the course of a transmission.
-
-If there is no data to be transferred, the Control Byte should be set to zero.
 
 \subsection{Channel Access Number}
 
@@ -1600,8 +1347,8 @@ In order to define how encoding and decoding are done, here are 40 characters us
 		1 - 26 & '\texttt{A}' - '\texttt{Z}' & Letter & \texttt{0x41} - \texttt{0x5A} & Uppercase \\
 		27 - 36 & '\texttt{0}' - '\texttt{9}' & Digit & \texttt{0x30} - \texttt{0x39} & Decimal \\
 		37 & '\texttt{-}' & Hyphen & \texttt{0x2D} & Dash \\
-		38 & '\texttt{/}' & Slash & \texttt{0x3F} & Forward slash & \\
-		39 & '\texttt{.}' & Dot & \texttt{0x3E} & Period \\
+		38 & '\texttt{/}' & Slash & \texttt{0x2E} & Forward slash & \\
+		39 & '\texttt{.}' & Dot & \texttt{0x2F} & Period \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Callsign Alphabet}
@@ -2250,6 +1997,258 @@ Bits received and errors which occur during resynchronization are not counted to
 	\href{http://www.pldworld.com/_hdl/5/-thorsten-gaertner.de/vhdl/PRBS.pdf}{PRBS
 	(according ITU-T O.150) and Bit-Sequence Tester : VHDL-Modules}
 \end{itemize}
+
+\chapter{Stream Enryption} \label{stream_encryption}
+
+\section{Scrambling}
+
+Scrambling is an encryption by bit inversion using a bitwise exclusive-or (XOR) operation between the bit sequence of data and a pseudorandom bit sequence.
+
+Pseudorandom bit sequence is generated using a Fibonacci-topology Linear-Feedback Shift Register (LFSR). Three different LFSR sizes are available: 8, 16 and 24-bit. Each shift register has an associated polynomial. The polynomials are listed in Table~\ref{tab:scrambling}. The LFSR is initialized with a seed value of the same length as the shift register. The seed value acts as an encryption key for the scrambler algorithm. See Figures~\ref{fig:lfsr8}, \ref{fig:lfsr16}, and \ref{fig:lfsr24} for block diagrams of the algorithm.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={llXX},
+		}
+		\hline
+		Encryption subtype & LFSR polynomial & Seed length & Sequence period \\
+		\hline
+		$00_2$ & $x^8 + x^6 + x^5 + x^4 + 1$ & 8 bits & 255 \\
+		$01_2$ & $x^{16} + x^{15} + x^{13} + x^4 + 1$ & 16 bits & 65,535 \\
+		$10_2$ & $x^{24} + x^{23} + x^{22} + x^{17} + 1$ & 24 bits &
+		16,777,215 \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Scrambling Subtypes}
+	\label{tab:scrambling}
+\end{table}
+
+\begin{figure}[H]
+	\centering
+	\scalebox{0.5}{\includegraphics{img/LFSR_8}}
+	\caption{8-bit LFSR Taps}
+	\label{fig:lfsr8}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics{img/LFSR_16}
+	\caption{16-bit LFSR Taps}
+	\label{fig:lfsr16}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics{img/LFSR_24}
+	\caption{24-bit LFSR Taps}
+	\label{fig:lfsr24}
+\end{figure}
+
+\section{Advanced Encryption Standard (AES)} \label{aes}
+
+This method uses AES block cipher in counter mode (AES-CTR), with a 112-bit nonce that should never be used for more than one stream (transmission) and a 16-bit counter.
+
+Three different AES Key lengths are avaialable and specified by the Encryption values \texttt{0x4..0x6}.
+
+The 112-bit nonce value is stored in the META field. The FN (Frame Number) value is then used to fill out the remaining 16 bits of the counter, totalling to 128 bits, and always starts from 0 (zero) in a new voice stream.
+
+\begin{quote}
+	\textbf{NOTE} The effective capacity of the frame counter is 15 bits, as its most significant bit is used for transmission end signalling. At 25 frames per second and $2^{15}$ frames, the transmission can last up to $2^{15}$ frames / 25 frames per second = 1310 seconds, or almost 22 minutes, without rolling over the counter.
+\end{quote}
+
+The random part of the nonce value should be generated with a hardware random number generator or any other cryptographically secure method of generating random values.
+To prevent replay attacks, a 32-bit timestamp is included in the cryptographic nonce field. The structure of the 128-bit counter is shown in Table~\ref{tab:aes_counter}. The timestamp represents the number of seconds since 2020-01-01T00:00:00Z (midnight UTC, January 1, 2020).
+
+\subsection{128 bit counter structure}
+
+FN field sets the most significant 16 bits of the counter, with the 32-bit least significant part holding the timestamp. The remaining 80-bit portion is filled with random data, re-generated per transmission.
+
+\begin{table}[h]
+	\centering
+	\begin{tblr}{
+		colspec={lcl},
+		}
+		\hline
+		Field & Length & Description \\
+		\hline
+		Timestamp & 32 bits & Seconds since 2020-01-01T00:00:00Z \\
+		Random Data & 80 bits & Random data \\
+		Frame Number & 16 bits & Incrementing Frame Number \\
+		\hline[2px]
+	\end{tblr}
+	\caption{AES Counter Contents}
+	\label{tab:aes_counter}
+\end{table}
+
+\begin{quote}
+	\textbf{WARNING} In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received messages are proven to be exactly as-sent by the sender should use an appropriate digital signature algorithm, as described below.
+\end{quote}
+
+\chapter{Digital Signature} \label{digital_signature}.
+
+M17 protocol provides a stream authentication method through Elliptic Curve Digital Signature Algorithm (ECDSA). The curve used is $secp256r1$. Signature availability is signalled with a specific bit in the TYPE field. Signature use reduces the maximum length of the stream by 4 frames.
+
+\section{Message Digest Algorithm for Voice Streams}
+At the beginning of the transmission, a $digest$ byte array of size 16 is initialized with zeros. After every stream frame (starting at frame 0) an exclusive or (XOR) operation is performed over the contents of the $digest$ array and the frame's payload. The $digest$ array is then rotated left by 1 byte. The result shall be retained in the array.
+
+\begin{align*}
+	digest :=& digest \oplus payload \\
+	digest :=& rol(digest, 8)
+\end{align*}
+
+This process is repeated until there is no more data to transmit. In case there is any encryption enabled,
+the $payload$ input shall be the encrypted stream. This ensures the possibility of verification, even if the
+encryption details are not known to the receiving parties. Frame Numbers of the frames carrying the
+signature should follow a succession of $\{7FFC_{16}$, $7FFD_{16}$, $7FFE_{16}$, $FFFF_{16}\}$.
+
+\begin{quote}
+	\textbf{NOTE} The Frame Number's most significant bit of the last speech payload stream shall not be set, since it is not the last frame to be transmitted.
+\end{quote}
+
+\section{Signature Generation and Transmission}
+At the transmitter-side, the stream digest is signed with a 256-bit private key. The resulting 512-bit signature is split into 4 chunks and sent as additional payload at the end of the transmission. To keep the reassembled LSF data consistent, the LICH counter shall advance normally. The most significant bit of the Frame Number (signalling end of transmission) shall be set only in the last frame carrying the signature.
+
+\section{Signature Verification}
+At the receiver-side, the 512-bit signature is retrieved from the last 4 frames' contents, if the appropriate TYPE bit is set. The signature is then checked using a 512-bit public key.
+\begin{quote}
+	\textbf{NOTE} The verification process will work if and only if all the data is received successfully (without transmission errors or dropped frames).
+\end{quote}
+
+\chapter{GNSS Data} \label{gnss_data}
+
+Unlike Text and Extended Callsign Data, GNSS data is expected to be dynamic during the course of a transmission and to be transmitted quickly after the GNSS data becomes available. To stop the LSF/LICH data stream from being overrun with GNSS data relative to other data types, a throttle on the amount of GNSS data transmitted is needed. It is recommended that GNSS data be sent at an update rate no faster than once every five seconds.
+
+The GNSS data fits within one 14-byte META field, which equates to six audio frames, and takes 240ms to transmit. This is a simple format of the GNSS data which does not require too much work to convert into, and provides enough flexibility for most cases. This has been tested on-air and successfully gated to APRS-IS, showing a location very close to the position reported by the GPS receiver.
+
+The GNSS data includes eight numeric values using from $3$ bits to $24$ bits. The two largest $24$ bit values are signed, two's complement values. The other six are unsigned values. All numeric fields are in order from most significant to least significant bit. There is also one $4$ bit validity field that used to indicate which numeric fields are valid.
+
+GNSS Position Data uses the 112 bit (14 byte) META field as follows:
+
+\begin{table}[H]
+	\centering
+	\small
+	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{5em}|}
+		\hline
+		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
+		\Hline[tikz=very thick]
+		0 &
+			\multicolumn{4}{c}{\parbox{12em}{\centering Data Source}} &
+			\multicolumn{4}{c}{\parbox{14em}{\centering Station Type}} \\
+		\hline
+		1 &
+			\multicolumn{4}{c}{\parbox{12em}{\centering Validity}} &
+			\multicolumn{3}{c}{\parbox{9em}{\centering Radius}} &
+			\parbox{5em}{\centering Bearing\ldots} \\
+		\hline
+		2 &
+			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
+		\Hline[tikz=very thick]
+		3 &
+			\multicolumn{8}{c}{\parbox{23em}{\centering Latitude\ldots}} \\
+		\hline
+		4 &
+			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
+		\hline
+		5 &
+			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
+		\Hline[tikz=very thick]
+		6 &
+			\multicolumn{8}{c}{\parbox{23em}{\centering Longitude\ldots}} \\
+		\hline
+		7 &
+			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
+		\hline
+		8 &
+			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
+		\Hline[tikz=very thick]
+		9 &
+			\multicolumn{8}{c}{\parbox{26em}{\centering Altitude\ldots}} \\
+		\hline
+		10 &
+			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
+		\Hline[tikz=very thick]
+		11 &
+			\multicolumn{8}{c}{\parbox{26em}{\centering Speed\ldots}} \\
+		\hline
+		12 &
+			\multicolumn{4}{c}{\parbox{12em}{\centering \ldots}} &
+			\multicolumn{4}{c}{\parbox{14em}{\centering \textit{Reserved}\ldots}} \\
+		\hline
+		13 &
+			\multicolumn{8}{c}{\parbox{26em}{\centering \ldots}} \\
+		\Hline[tikz=very thick]
+	\end{NiceTabular}
+	\normalsize
+	\caption{GNSS Data Layout}
+\end{table}
+
+The first byte contains two $4$ bit numeric fields. The first is the \textbf{Data Source} where: $0$ is an M17 client, $1$ is OpenRTX and $15$ is "other", while values $2..14$ are reserved. The second $4$ bit field is \textbf{Station Type}, where $0$ is a fixed station, $1$ is a mobile station, $2$ is a handheld and $15$ is "other", values $3..14$ are reserved.
+
+The second byte starts with a $4$ bit \textbf{Validity} field. Bit $1000_2$ is set if the latitude/longitude is valid. Bit $0100_2$ is set if the \textbf{Altitude} data is valid. Bit $0010_2$ is set if the velocity data is valid. Velocity data includes both \textbf{Bearing} and \textbf{Speed} data. Finally, bit $0001_2$ is set if the \textbf{Radius} data is valid. If any of these validity bits are set to zero, all the corresponding GNSS data fields should be zeroed-out by the transmitter and regarded as invalid and ignored by the receiver.
+
+The next three bits of the second byte is the numeric \textbf{Radius} field. This radius is an estimate of lateral position uncertainty and is based on the horizontal dilution of precision (HDOP) value provided by the GNSS module. HDOP measure is based on the number of received satellites and their geometric position relative to the receiver.
+\begin{quote}
+	\textbf{NOTE} The HDOP value (and therefore radius) is only a coarse estimate and in some cases might not reflect the actual uncertainty metric.
+\end{quote}
+
+The last bit of the second byte is the most significant bit of the $9$ bit \textbf{Bearing} numeric field. This bit is combined with the third byte and contains the bearing value. This is the heading direction for the velocity data in degrees and should never contain a value greater than 359. Zero is due north and 90 is due east, \textit{etc}.
+
+The $24$ bit, two's complement \textbf{Latitude} and \textbf{Longitude} are encoded into the next six bytes. The encoded values range from $+2^{23}-1$ to $-(2^{23}-1)$. Note that the largest negative two's complement value, $-2^{23}$ is never used.
+
+The \textbf{Latitude} is specified in the fourth through sixth bytes. The value is the binary fraction of $90$ degrees, where the value $0$ represents zero degrees latitude, \textit{i.e.}, the equator, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm90$ degrees, \textit{i.e.}, the poles. A positive value is north and negative is south. This results in a resolution of approximately 39 milliseconds of arc ($\sim$1.2m).
+
+The $24$ \textbf{Longitude} follows in the seventh through ninth bytes. The value is the binary fraction of $180$ degrees, where the value $0$ represents zero degrees longitude, \textit{i.e.}, the prime meridian, and $\pm8388607$ ($\pm2^{23}-1$) represents $\pm180$ degrees. A positive value is east and a negative value is west. This results in a resolution of approximately 77 milliseconds of arc ($\sim$2.4m at the equator).
+
+A $16$ bit numeric \textbf{Altitude} field is in the tenth and eleventh bytes and decodes in $0.5$ meter steps, offset by $500$ meters. A value of $0$ is an altitude of $-500.0$ meters, while the largest value of $65535$ is an altitude of $31767.5$ meters.
+
+A $12$ bit \textbf{Speed} numeric field is in the twelfth byte and the $4$ most significant bits of the thirteen byte. The decoded values range from 0.0 to 2047.5 km/h in 0.5 km/h steps.
+
+Finally, the remaining $4$ bits of the thirteenth byte and the fourteenth byte are reserved and should be set to zero.
+
+\chapter{Extended Callsign Data} \label{extended_callsign}
+
+This is only transmitted from repeaters/gateways and not from clients, who only receive and display this data.
+These fields should not appear over M17 Internet links as they should only be used over the air from a
+repeater/gateway.
+
+The META field is split into two callsign fields. The first is always present, and the second is optional. The callsign data is encoded using the standard M17 callsign Address Encoding which takes six bytes to encode a nine character callsign. Any unused space in the META field contains \texttt{0x00} bytes. The first callsign field starts at offset zero in the META field, and the second callsign if present starts immediately after the first. There are two unused bytes at the end of the META field.
+
+The use of these two callsign fields is as follows:
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lll},
+		}
+		\hline
+		Source & Callsign Field 1 & Callsign Field 2 \\
+		\hline
+		Locally Repeated RF & Originator & Unused \\
+		ECHO Reply & Originator & Unused \\
+		Reflector Traffic & Originator & Reflector Name \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Extended Callsign Data Encoding}
+\end{table}
+
+The extended callsign data is not used under any other circumstances than the above currently.
+
+It is not expected that the data in the extra callsign fields change during the course of a transmission.
+
+\chapter{Text Data} \label{text_data}
+
+The first byte of the Text Data is a Control Byte. To maintain backward compatibility, a Control Byte of \texttt{0x00} indicates that no Text Data is included.
+
+Up to four Text Data blocks compose a complete message with a maximum length of 52 bytes. Each block may contain up to 13 bytes of UTF-8 encoded text, and is padded with null characters to fill any unused space at the end of the last used Text Data block.
+
+The Control Byte is split into two 4-bit fields. The most significant four bits are a bit map of the message length indicating how many Text Data blocks are required for a complete message. There is one bit per used Text Data block, with $0001_2$ used for one block, $0011_2$ for the two, $0111_2$ for three, and $1111_2$ for four.
+
+The least significant four bits indicate which of the Text Data blocks this text corresponds to. It is $0001_2$ for the first, $0010_2$ for the second, $0100_2$ for the third, and $1000_2$ for the fourth. Any received Control Byte is OR-ed together by the receiving station, and once the most significant and least significant four bits are the same, a complete message has been received.
+
+It is up to the receiver to decide how to display this message. It may choose to wait for all of the Text Data to be received, or display the parts as they are received. It is not expected that the data in the text field changes during the course of a transmission.
+
+If there is no data to be transferred, the Control Byte should be set to zero.
 
 \chapter{GNU Free Documentation License}
 \phantomsection  % so hyperref creates bookmarks
