@@ -1152,15 +1152,28 @@ or signing, so those fields should be set to zero.
 	\caption{Stream LSF TYPE Layout}
 \end{table}
 
-Allowed values for the five fields are described below.
+Allowed values for the five fields are described in \autoref{sec:type_subfields}
+
+\section{META}
+
+META, a 14 byte array is the final part of the LSD. Table~\ref{tab:meta_type_subfield} lists the different contents META can have. While Packet Mode can accomodate a single META array, Stream Mode can additionally have new META contents every 240 milliseconds (every superframe).
+
+In the case of Stream Mode, it will be up to the sender to decide on priority if multiple META types are available to be sent. During an ongoing Stream META transmission, any TYPE of META may be retransmitted during a stream mode transmission. Retransmission of static META data is not strictly required, but one reason to retransmit data is for the benefit of late listeners. With static data like Text, repetition intervals could be on the order of 10 to 30 seconds.
+
+\section{TYPE Subfields} \label{sec:type_subfields}
+
+Listed from msb to lsb, there are five TYPE subfields:
+\begin{itemize}
+	\item A 4-bit \textbf{Payload} to indicate what type of M17 transmission mode is being used.
+	\item A 3-bit \textbf{Encryption} to indicate what, if any, payload encryption is applied.
+	\item A 1-bit \textbf{Signed} to indicated if the transmission is digitally signed by the SRC callsign.
+	\item A 4-bit \textbf{Meta} to indicate what kind of data is in the 15-byte META array.
+	\item A 4-bit \textbf{CAN} to indicate the Channel Access Number of the transmission.
+\end{itemize}
 
 \subsection{Payload}
 
-The first TYPE subfield is the 4 most significant bits of the first byte and specifies the contents of the 128-bit payload.
-Current implementations includes four payloads, two \href{http://rowetel.com/codec2.html}{Codec 2} codecs,
-a higher bit rate codec, 3200 bps, operating in a voice-only mode, and a lower bit rate codec, 1600 bps, that has a
-parallel data stream, also 1600 pbs, resulting in a voice+data mode. Stream Mode also supports a 3200 bps data-only mode.
-Packet Mode makes up the final payload.
+The first TYPE subfield is the 4 most significant bits of the first byte and specifies the contents of the 128-bit payload. Four payloads are currently defined: a 3200 bps data-only mode, a 3200 bps \href{http://rowetel.com/codec2.html}{Codec 2}-encoded voice-only mode, a 1600 bps Codec 2-encoded mode that has a parallel 1600 bps data stream, resulting in a voice+data mode and a Packet Mode. Only the voice-only and packet modes modes (0x2 and 0xF) are currently specified. There are applications that are currently using the voice+data mode and simply ignoring the data stream.
 
 \begin{table}[H]
 	\centering
@@ -1184,8 +1197,6 @@ Packet Mode makes up the final payload.
 Before version 3 of the specification, the 4 most significant bits of TYPE were always zero.
 Because the 0x0 value is reserved, clients may assume that a zero value in that field indicates
 a frame encoded according to the prior version.
-Also note that protocol(s) for the data portion of Stream modes \texttt{0x1} and
-\texttt{0x3} are yet to be developed.
 
 \subsection{Encryption}
 
@@ -1226,7 +1237,7 @@ Packet Mode does not support signing so the sign bit should be clear.
 
 \subsection{Meta}
 
-The most significant 4 bits of the second byte of TYPE specifies the contents of META. There are five possible contents in META.
+The most significant 4 bits of the second byte of TYPE specifies the contents of META. There are four possible contents in META.
 
 \begin{table}[H]
 	\centering
@@ -1234,11 +1245,10 @@ The most significant 4 bits of the second byte of TYPE specifies the contents of
 		\hline
 		Value & LSF META Contents & Count & Details \\
 		\hline
-		\texttt{0x0} & None & & The META is nulled. \\
+		\texttt{0x0} & None & \texttt{1} & META is empty. \\
 		\texttt{0x1} & GNSS Position Data & \texttt{1} & GNSS Data \autoref{gnss_data} \\
-		\texttt{0x2} & Extended Callsign Data & \texttt{} & Extended Callsign \autoref{extended_callsign} \\
-		\texttt{0x3} & Text Data & \texttt{1..15} & Text Data \autoref{text_data} \\
-		\texttt{0x4..0xE} & Reserved & \\
+		\texttt{0x2} & Text Data & \texttt{1..15} & Text Data \autoref{text_data} \\
+		\texttt{0x3..0xE} & Reserved & \\
 		\texttt{0xF} & AES Encryption IV & \texttt{1} & AES \autoref{aes} \\
 		\hline[2px]
 	\end{tblr}
@@ -1252,17 +1262,13 @@ All META values use a single META array to carry data, except for Text Data, whe
 
 The least significant 4 bits of the second byte of TYPE is the CAN (Channel Access Number) subfield, with possible values \texttt{0x0..0xF}, that may be used to filter received incoming Stream or Packet Mode data. A receiver may optionally allow reception from sources only if their its CAN value matches the receiver's own specified CAN value.
 
-\section{META}
-
-META, a 14 byte array is the final part of the LSD. Table~\ref{tab:meta_type_subfield} lists the different contents META can have. While Packet Mode can accomodate a single META array, Stream Mode can additionally have new META contents every 240 milliseconds (every superframe). It will be up to the sender to decide on priority if multiple META types are available to be sent. During an ongoing Stream META transmission, any TYPE of META may be retransmitted during a stream mode transmission. Retransmission of META data is not strictly required, but one reason to retransmit data is for the benefit of late listeners. With static data like Text or Extended Callsign data, repetition intervals could be on the order of 10 to 30 seconds. GNSS data might be done more often, especially if the GNSS station type is Mobile. In this case, GNSS data should be transmitted as soon as possible after the GNSS data is received from its source.
-
 \section{Stream Frames}
 
 Stream Frames will contain chunked LSF contents (in the LICH field). The Stream Contents will include the incrementing 16-bit Frame Number, and 128 bits of payload data (unencrypted or encrypted).
 
 \section{Packet Mode}
 
-Some countries require that the source of a transmisson be accountable to the amatuer licence that created the RF. Because Packet Mode can only carry a single META array, it's important to recognize that over-the-air relays, such as repeaters might have to overwrite that META array with Extented Callsign data so that the transmitting station callsign is attached to the transmission. As an example, a portable radio might transmit Packet Mode data to a local repeater, setting the META to GNSS data. Of course, this transmission would be identifiable by the SRC field in the LSF of the packet. If the repeater was linked to an internet server, it could just relay the Packet Mode data to the server. However a duplex repeater would have to modify the over-the-air packet by overwriting the META array with Extended Callsign data before repeating it. The GNSS data would be available to the local listeners, but only via a repeater dashboard.
+It is important to recognize that Packet Mode can only carry a single META array. As a result, it is important to recognize that the META data is consistent with the laws in effect at the user's location.
 
 A single packet of up to 823 bytes of data may be sent in one transmission.
 
@@ -1289,7 +1295,11 @@ The data type specifier can also be used as a protocol specifier. Table~\ref{tab
 	\label{tab:reserved_packet_protocols}
 \end{table}
 
-The data type specifier is used to compute the CRC, along with the payload.
+The data type specifier is used to compute the CRC, along with the payload. Only format for SMS, \texttt{0x05}, has been specified.
+
+\subsection{SMS}
+
+SMS is a way to send a null terminated UTF-8 text message quickly and efficiently. With a maximum of 33 data frames and 25 bytes per data frame, a 1-byte identifier, \texttt{0x05}, and a 2-byte CRC, the maximum number of characters in an SMS message sent via Packet Mode is $(33 \times 25) - 4$, or, $821$ bytes. The SMS message should not have any interspersed null bytes and should not contain any control characters expect for tab (\texttt{0x09}) and newline (\texttt{0x0A}). The CRC for the SMS type is inclusively calcuated from the identifier to the terminating null byte.
 
 \appendix
 
@@ -2083,7 +2093,7 @@ At the receiver-side, the 512-bit signature is retrieved from the last 4 frames'
 
 \chapter{GNSS Data} \label{gnss_data}
 
-Unlike Text and Extended Callsign Data, GNSS data is expected to be dynamic during the course of a transmission and to be transmitted quickly after the GNSS data becomes available. To stop the LSF/LICH data stream from being overrun with GNSS data relative to other data types, a throttle on the amount of GNSS data transmitted is needed. It is recommended that GNSS data be sent at an update rate no faster than once every five seconds.
+Unlike Text Data, GNSS data is expected to be dynamic during the course of a transmission and to be transmitted quickly after the GNSS data becomes available. To stop the LSF/LICH data stream from being overrun with GNSS data relative to other data types, a throttle on the amount of GNSS data transmitted is needed. It is recommended that GNSS data be sent at an update rate no faster than once every five seconds, and perhaps slower if the station type is not Mobile.
 
 The GNSS data fits within one 14-byte META field, which equates to six audio frames, and takes 240ms to transmit. This is a simple format of the GNSS data which does not require too much work to convert into, and provides enough flexibility for most cases. This has been tested on-air and successfully gated to APRS-IS, showing a location very close to the position reported by the GNSS receiver.
 
@@ -2172,53 +2182,21 @@ A $12$ bit \textbf{Speed} numeric field is in the twelfth byte and the $4$ most 
 
 Finally, the remaining $4$ bits of the thirteenth byte and the fourteenth byte are reserved and should be set to zero.
 
-\chapter{Extended Callsign Data} \label{extended_callsign}
-
-This is only transmitted from a duplex repeater and not from clients, who only receive and display this data.
-These fields should not appear over M17 Internet links as they should only be used over the air from a
-repeater.
-
-The META field is split into two callsign fields. The first is always present, and the second is optional. The callsign data is encoded using the standard M17 callsign Address Encoding which takes six bytes to encode a nine character callsign. Any unused space in the META field contains \texttt{0x00} bytes. The first callsign field starts at offset zero in the META field, and the second callsign if present starts immediately after the first. There are two unused bytes at the end of the META field.
-
-The use of these two callsign fields is as follows:
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={lll},
-		}
-		\hline
-		Source & Callsign Field 1 & Callsign Field 2 \\
-		\hline
-		Locally Repeated RF & Originator & Unused \\
-		ECHO Reply & Originator & Unused \\
-		Reflector Traffic & Originator & Reflector Name \\
-		\hline[2px]
-	\end{tblr}
-	\caption{Extended Callsign Data Encoding}
-\end{table}
-
-The extended callsign data is not used under any other circumstances than the above currently.
-
-It is not expected that the data in the extra callsign fields change during the course of a transmission.
-
 \chapter{Text Data} \label{text_data}
-
-The first byte of the Text Data is a Control Byte. To maintain backward compatibility, a Control Byte of \texttt{0x00} indicates that no Text Data is included.
 
 Up to fifteen Text Data blocks compose a complete message with a maximum length of 195 bytes. Each block may contain up to 13 bytes of UTF-8 encoded text, and is padded with null characters to fill any unused space at the end of the last used Text Data block.
 
-The Control Byte is split into two 4-bit fields. The most significant four bits is the number of block META blocks required for a complete message. Possible values are \texttt{1..15}.
+The Control Byte is split into two 4-bit fields. The most significant four bits is the number of META blocks required for a complete message. Possible values are \texttt{1..15}.
 
 The least significant four bits indicate which of the Text Data blocks this text corresponds to. Possible values are \texttt{0..15}. In a 15 block message, the first block would have a control byte of \texttt{0xF1}, and the last block would have \texttt{0xFF}.
 
-The last block may or may not have null characters at the end of the block, otherwise, there should be no null characters interspersed in the Text Data. The text data should not contain any control characters, except for perhaps tab and newline characters, however, text data senders should expect that receivers might display the message in a limited space by adding line breaks to limit the width of the display.
+The last block may or may not have null characters at the end of the block, otherwise, there should be no null characters interspersed in the Text Data, nor should there be any leading or trailing white space. The text data should not contain any control characters, except for perhaps tab and newline characters, however, text data senders should expect that receivers might display the message in a limited space by adding line breaks to limit the width of the display.
 
 It is up to the receiver to make sure all blocks in the message are received as well as to decide how to display this message. It may choose to wait for all of the Text Data to be received, or display the parts as they are received. It is not expected that the data in the text field changes during the course of a transmission.
 
-For Stream Mode, messages that are 13 bytes or less can be transmitted in one superframe, 240ms. A 15 block message will take 3.6 seconds. For Packet Mode, Text Data is limited to 13 bytes, and will have a control byte of \texttt{0xF1}.
+For Stream Mode, messages that are 13 bytes or less can be transmitted in one superframe, 240ms. A 15 block message will take 3.6 seconds. For Packet Mode, Text Data is limited to 13 bytes, and will have a control byte of \texttt{0x11}.
 
-If there is no data to be transferred, the Control Byte should be set to zero.
+If there is no data to be transferred, there should never be any Text Data META block.
 
 \chapter{GNU Free Documentation License}
 \phantomsection  % so hyperref creates bookmarks
