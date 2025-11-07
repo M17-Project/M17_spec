@@ -1156,7 +1156,7 @@ Allowed values for the five fields are described in \autoref{sec:type_subfields}
 
 \section{META}
 
-META, a 14 byte array is the final part of the LSD. Table~\ref{tab:meta_type_subfield} lists the different contents META can have. While Packet Mode can accomodate a single META array, Stream Mode can additionally have new META contents every 240 milliseconds (every superframe).
+META, a 14 byte block is the final part of the LSD. Table~\ref{tab:meta_type_subfield} lists the different contents META can have. While Packet Mode can accomodate a single META block, Stream Mode can additionally have new META contents every 240 milliseconds (every superframe).
 
 In the case of Stream Mode, it will be up to the sender to decide on priority if multiple META types are available to be sent. During an ongoing Stream META transmission, any TYPE of META may be retransmitted during a stream mode transmission. Retransmission of static META data is not strictly required, but one reason to retransmit data is for the benefit of late listeners. With static data like Text, repetition intervals could be on the order of 10 to 30 seconds.
 
@@ -1167,7 +1167,7 @@ Listed from msb to lsb, there are five TYPE subfields:
 	\item A 4-bit \textbf{Payload} to indicate what type of M17 transmission mode is being used.
 	\item A 3-bit \textbf{Encryption} to indicate what, if any, payload encryption is applied.
 	\item A 1-bit \textbf{Signed} to indicated if the transmission is digitally signed by the SRC callsign.
-	\item A 4-bit \textbf{Meta} to indicate what kind of data is in the 15-byte META array.
+	\item A 4-bit \textbf{Meta} to indicate what kind of data is in the 15-byte META block.
 	\item A 4-bit \textbf{CAN} to indicate the Channel Access Number of the transmission.
 \end{itemize}
 
@@ -1247,8 +1247,9 @@ The most significant 4 bits of the second byte of TYPE specifies the contents of
 		\hline
 		\texttt{0x0} & None & \texttt{1} & META is empty. \\
 		\texttt{0x1} & GNSS Position Data & \texttt{1} & GNSS Data \autoref{gnss_data} \\
-		\texttt{0x2} & Text Data & \texttt{1..15} & Text Data \autoref{text_data} \\
-		\texttt{0x3..0xE} & Reserved & \\
+		\texttt{0x2} & Extended Callsign Data & \texttt{1} & Additional addresses \autoref{extended_callsign} \\
+		\texttt{0x3} & Text Data & \texttt{1..15} & Text Data \autoref{text_data} \\
+		\texttt{0x4..0xE} & Reserved & \\
 		\texttt{0xF} & AES Encryption IV & \texttt{1} & AES \autoref{aes} \\
 		\hline[2px]
 	\end{tblr}
@@ -1256,7 +1257,7 @@ The most significant 4 bits of the second byte of TYPE specifies the contents of
 	\label{tab:meta_type_subfield}
 \end{table}
 
-All META values use a single META array to carry data, except for Text Data, where up to 15 consecutive META arrays can be used to carry up to 195 bytes of Text Data. Of course because Packet Mode does not support encryption, it's value should never be \texttt{0xF}. Also, the only text data than can be supported would be a single block text, with a control byte of \texttt{0x11}.
+All META values use a single META block to carry data, except for Text Data, where up to 15 consecutive META arrays can be used to carry up to 195 bytes of Text Data. Of course because Packet Mode does not support encryption, it's value should never be \texttt{0xF}. Also, the only text data than can be supported would be a single block text, with a control byte of \texttt{0x11}.
 
 \subsection{CAN}
 
@@ -1268,7 +1269,7 @@ Stream Frames will contain chunked LSF contents (in the LICH field). The Stream 
 
 \section{Packet Mode}
 
-It is important to recognize that Packet Mode can only carry a single META array. As a result, it is important to recognize that the META data is consistent with the laws in effect at the user's location.
+It is important to recognize that Packet Mode can only carry a single META block. As a result, it is important to recognize that the META data is consistent with the laws in effect at the user's location.
 
 A single packet of up to 823 bytes of data may be sent in one transmission.
 
@@ -2181,6 +2182,37 @@ A $16$ bit numeric \textbf{Altitude} field is in the tenth and eleventh bytes an
 A $12$ bit \textbf{Speed} numeric field is in the twelfth byte and the $4$ most significant bits of the thirteen byte. The decoded values range from 0.0 to 2047.5 km/h in 0.5 km/h steps.
 
 Finally, the remaining $4$ bits of the thirteenth byte and the fourteenth byte are reserved and should be set to zero.
+
+\chapter{Extended Callsign Data} \label{extended_callsign}
+
+The ECD is one or two 48 bits (6 bytes) encoded callsigns followed by enough null bytes to completely fill the 14 byte META data. The callsign data is encoded using the standard M17 callsign Address Encoding.
+
+The ECD is only used in RF transmissions from a repeater/hot-spot (\textbf{RF Node}) and not from a user's M17 radio, as they only receive and display this data. ECD should never be sent over the internet.
+
+For Stream Mode, the ECD will never be in the LICH channel. For both Packet and Stream Mode, the first LSF in the transmission will contain the ECD. The only case where the LSF is not ECD data is when AES encryption is being used.
+
+The first ECD callsign field is always present and is always the encoded callsign of the RF Node producing the transmission.
+
+Then, only if the data source is from a reflector module, or other kind of IP relay node, the second field is the encoded designation of the reflector/relay, including module, if appropriate.
+
+The use of these two callsign fields is as follows:
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lll},
+		}
+		\hline
+		M17 Data Source & Callsign Field 1 & Callsign Field 2 \\
+		\hline
+		RF & RF Node & Unused \\
+		Reflector & RF Node & Reflector \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Extended Callsign Data Encoding}
+\end{table}
+
+The extended callsign data is not used under any other circumstances.
 
 \chapter{Text Data} \label{text_data}
 
