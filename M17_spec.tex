@@ -1269,8 +1269,6 @@ Stream Frames will contain chunked LSF contents (in the LICH field). The Stream 
 
 \section{Packet Mode}
 
-It is important to recognize that Packet Mode can only carry a single META block. As a result, it is important to recognize that the META data is consistent with the laws in effect at the user's location.
-
 A single packet of up to 823 bytes of data may be sent in one transmission.
 
 Packets are composed of a 1..n byte data type specifier and up to $823-n$ bytes of payload data. The data type specifier is a variable-length encoding using the same format as UTF-8. The data type specifier must be between $0$ and $2^{21}-1$ which will occupy between 1 and 4 bytes when encoded. Values from 0 to 127 are identical to their encoded form.
