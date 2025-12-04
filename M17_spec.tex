@@ -278,7 +278,7 @@ The root-raised-cosine filter should span at least 8 symbols (81 taps at the rec
 
 \section{Transmission}
 
-A complete transmission mush consist of a Preamble, a Synchronization Burst, Payload, and an End of Transmission marker.
+A complete transmission must consist of a Preamble, a Synchronization Burst, Payload, and an End of Transmission marker.
 
 \begin{table}[H]
 	\centering
@@ -308,19 +308,19 @@ Transmissions may include more than one synchronization burst followed by a payl
 
 \subsection{Preamble}
 
-Every transmission mush start with a preamble, which mush consist of 40 ms (192 symbols) of alternating outer symbols (+3, -3) or (-3, +3), see \autoref{sec:sync_burst} for details. To ensure a zero crossing prior to a synchronization burst, the last symbol transmitted within the preamble mush be opposite the first symbol transmitted in the synchronization burst.
+Every transmission must start with a preamble, which must consist of 40 ms (192 symbols) of alternating outer symbols (+3, -3) or (-3, +3), see \autoref{sec:sync_burst} for details. To ensure a zero crossing prior to a synchronization burst, the last symbol transmitted within the preamble must be opposite the first symbol transmitted in the synchronization burst.
 
 \subsection{Synchronization Burst}
 
-A synchronization burst (Sync Burst) of 16 bits (8 symbols) mush be sent immediately after the preamble. The sync burst is constructed using only outer symbols, with codings based on \href{https://en.wikipedia.org/wiki/Barker_code}{Barker codes}. Properly chosen sync burst coding assists in symbol clocking and alignment. Different sync burst codes may also be used by the Data Link Layer to identify the type of payload to follow.
+A synchronization burst (Sync Burst) of 16 bits (8 symbols) must be sent immediately after the preamble. The sync burst is constructed using only outer symbols, with codings based on \href{https://en.wikipedia.org/wiki/Barker_code}{Barker codes}. Properly chosen sync burst coding assists in symbol clocking and alignment. Different sync burst codes may also be used by the Data Link Layer to identify the type of payload to follow.
 
 \subsection{Payload}
 
-Payload mush be transmitted in multiples of 2 bits (1 symbol).
+Payload must be transmitted in multiples of 2 bits (1 symbol).
 
 \subsection{Randomizer}
 
-To avoid transmitting long sequences of constant symbols (e.g.~+3, +3, +3, \ldots), a simple randomizing algorithm is used. At the transmitter, all payload bits mush be XORed with a pseudorandom predefined sequence before being converted to symbols. At the receiver, the randomized payload symbols are converted to bits and are again passed through the same XOR algorithm to obtain the original payload bits.
+To avoid transmitting long sequences of constant symbols (e.g.~+3, +3, +3, \ldots), a simple randomizing algorithm is used. At the transmitter, all payload bits must be XORed with a pseudorandom predefined sequence before being converted to symbols. At the receiver, the randomized payload symbols are converted to bits and are again passed through the same XOR algorithm to obtain the original payload bits.
 
 The pseudorandom sequence is composed of the 46 bytes (368 bits) found in the Randomizer appendix Table \ref{tab:randomizer}.
 
@@ -333,7 +333,7 @@ again XORing each randomized bit with the corresponding pseudorandom sequence bi
 
 \subsection{End of Transmission Marker}
 
-Every transmission ends with an End of Transmission (EoT) marker, a distinct symbol stream, which mush consist of 40 ms (192 symbols) of a repeating \texttt{0x555D} (+3, +3, +3, +3, +3, +3, -3, +3) pattern.
+Every transmission ends with an End of Transmission (EoT) marker, a distinct symbol stream, which must consist of 40 ms (192 symbols) of a repeating \texttt{0x555D} (+3, +3, +3, +3, +3, +3, -3, +3) pattern.
 
 \subsection{Carrier-sense Multiple Access}
 
@@ -376,7 +376,7 @@ Carrier-sense Multiple Access (CSMA) may be used to minimize collisions on a sha
 
 \section{Frame}
 
-A Frame mush be composed of a frame type specific Synchronization Burst (Sync Burst) followed by 368 bits (184 symbols) of Payload. The combination of Sync Burst plus Payload results in a constant 384 bit (192 symbol) Frame. At the M17 data rate of 4800 symbols/s (9600 bits/s), each Frame is exactly 40ms in duration.
+A Frame must be composed of a frame type specific Synchronization Burst (Sync Burst) followed by 368 bits (184 symbols) of Payload. The combination of Sync Burst plus Payload results in a constant 384 bit (192 symbol) Frame. At the M17 data rate of 4800 symbols/s (9600 bits/s), each Frame is exactly 40ms in duration.
 
 There are four frame types each with their own specific Sync Burst: Link Setup Frames (LSF), Bit Error Rate Test (BERT) Frames, Stream Frames, and Packet Frames.
 
@@ -445,18 +445,18 @@ utilized will be indicated for each frame type.
 
 \section{Modes}
 
-The Data Link layer mush operate in one of three modes during a Transmission.
+The Data Link layer must operate in one of three modes during a Transmission.
 
 \begin{itemize}
 	\item
 	Stream Mode
-    Data are sent in a continuous stream for an indefinite amount of time, with no break in physical layer output, until the stream ends. e.g.~voice data, bulk data transfers, etc. Stream Mode mush start with an LSF and is followed by one or more Stream Frames.
+    Data are sent in a continuous stream for an indefinite amount of time, with no break in physical layer output, until the stream ends. e.g.~voice data, bulk data transfers, etc. Stream Mode must start with an LSF and is followed by one or more Stream Frames.
 	\item
 	Packet Mode
-	Data are sent in small bursts, up to 823 bytes at a time, after which the physical layer stops sending data. e.g.~messages, beacons, etc. Packet Mode mush start with an LSF and is followed by one to 33 Packet Frames.
+	Data are sent in small bursts, up to 823 bytes at a time, after which the physical layer stops sending data. e.g.~messages, beacons, etc. Packet Mode must start with an LSF and is followed by one to 33 Packet Frames.
 	\item
 	BERT Mode
-	PRBS9 is used to fill frames with a deterministic bit sequence. Frames are sent in a continuous sequence. Bert Mode mush start with a BERT frame, and is followed by one or more BERT Frames.
+	PRBS9 is used to fill frames with a deterministic bit sequence. Frames are sent in a continuous sequence. Bert Mode must start with a BERT frame, and is followed by one or more BERT Frames.
 \end{itemize}
 
 \begin{quote}
@@ -466,11 +466,11 @@ The Data Link layer mush operate in one of three modes during a Transmission.
 \section{Synchronization Burst}
 \label{sec:sync_burst}
 
-All frames mush be preceded by 16 bits (8 symbols) of a Synchronization Burst (Sync Burst). The Sync Burst definition straddles both the Physical Layer and the Data Link Layer.
+All frames must be preceded by 16 bits (8 symbols) of a Synchronization Burst (Sync Burst). The Sync Burst definition straddles both the Physical Layer and the Data Link Layer.
 
 Only LSF and BERT Sync Bursts may immediately follow the Preamble, and each requires a different Preamble symbol pattern as shown in Table~\ref{tab:frame_specific_sync_bursts}.
 
-During a Transmission, only one LSF Sync Burst may be present, and if present, it mush immediately follow the Preamble.
+During a Transmission, only one LSF Sync Burst may be present, and if present, it must immediately follow the Preamble.
 
 BERT Sync Bursts, if present, may only follow the Preamble or other BERT frames.
 
@@ -619,7 +619,7 @@ Details of the convolutional encoder are in \autoref{convolutional_encoder}.
 \section{Stream Mode}
 
 In Stream Mode, an \emph{indefinite} amount of data is sent continuously
-without breaks in the physical layer. Stream Mode mush always start
+without breaks in the physical layer. Stream Mode must always start
 with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 1
 (Stream Mode). Other valid LSF TYPE parameters are selected per
 application.
@@ -712,7 +712,7 @@ The LSD META field can change during a transmission and this will affect bits 11
 
 Total: 144 Type 1 bits
 
-The Frame Number (FN) starts from 0 and increments every frame to a maximum of \texttt{0$\times$7fff} where it will then wrap back to 0. The most significant bit in the FN is used for transmission end signaling. When transmitting the last frame, it mush be set to 1 (one), and 0 (zero) in all other frames.
+The Frame Number (FN) starts from 0 and increments every frame to a maximum of \texttt{0$\times$7fff} where it will then wrap back to 0. The most significant bit in the FN is used for transmission end signaling. When transmitting the last frame, it must be set to 1 (one), and 0 (zero) in all other frames.
 
 Stream data (STREAM) is obtained by extracting 128 bits at a time from the continuous stream of application layer data. If the last frame will contain less than 128 bits of valid data, the remaining bits should be set to zero. The stream may end at the frame boundary.
 
@@ -866,7 +866,7 @@ In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data 
 
 n is the number of bytes of the Application Packet Data. The CRC calculation used here is described in Section \ref{crc}.
 
-Packet Mode mush always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode). Following the LSF, 1 to 33 Packet Frames may be sent.
+Packet Mode must always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode). Following the LSF, 1 to 33 Packet Frames may be sent.
 
 \begin{table}[H]
 	\centering
@@ -1519,7 +1519,7 @@ see \href{https://github.com/M17-Project/libm17}{https://github.com/M17-Project/
 
 \chapter{Convolutional Encoder} \label{convolutional_encoder}
 
-The convolutional code mush encode the input bit sequence after
+The convolutional code must encode the input bit sequence after
 appending 4 tail bits at the end of the sequence. Rate of the coder is
 R=½ with constraint length K=5. The encoder diagram and generating
 polynomials are shown below.
@@ -1641,7 +1641,7 @@ Two different puncturing schemes are used in M17 stream mode:
 	$P_2$ leaving 11 from 12 encoded bits
 \end{enumerate}
 
-Scheme $P_1$ is used for the \emph{link setup frame}, taking 488 bits of encoded data and selecting 368 bits. The $gcd(368, 488)$ is 8 which, when used to divide, leaves 46 and 61 bits. However, a full puncture pattern requires the puncturing matrix entries count to be divisible by the number of encoding polynomials. For this case a partial puncture matrix is used. It has 61 entries with 46 of them being ones and mush be used 8 times, repeatedly. The construction of the partial puncturing pattern $P_1$ is as follows:
+Scheme $P_1$ is used for the \emph{link setup frame}, taking 488 bits of encoded data and selecting 368 bits. The $gcd(368, 488)$ is 8 which, when used to divide, leaves 46 and 61 bits. However, a full puncture pattern requires the puncturing matrix entries count to be divisible by the number of encoding polynomials. For this case a partial puncture matrix is used. It has 61 entries with 46 of them being ones and must be used 8 times, repeatedly. The construction of the partial puncturing pattern $P_1$ is as follows:
 
 \begin{align}
 	M = & \begin{bmatrix}
@@ -1656,7 +1656,7 @@ In which $M$ is a standard 2/3 rate puncture matrix and is used 15 times, along 
 
 The first pass of the partial puncturer discards $G_1$ bits only, second pass discards $G_2$, third - $G_1$ again, and so on. This ensures that both bits are punctured out evenly.
 
-Scheme $P_2$ is for frames (excluding LICH chunks, which are coded differently). This takes 296 encoded bits and selects 272 of them. Every 12th bit is being punctured out, leaving 272 bits. The full matrix mush have 12 entries with 11 being ones.
+Scheme $P_2$ is for frames (excluding LICH chunks, which are coded differently). This takes 296 encoded bits and selects 272 of them. Every 12th bit is being punctured out, leaving 272 bits. The full matrix must have 12 entries with 11 being ones.
 
 The puncturing scheme $P_2$ is defined by its partial puncturing matrix:
 
@@ -2070,7 +2070,7 @@ FN field sets the most significant 16 bits of the counter, with the 32-bit least
 M17 protocol provides a stream authentication method through Elliptic Curve Digital Signature Algorithm (ECDSA). The curve used is $secp256r1$. Signature availability is signalled with a specific bit in the TYPE field. Signature use reduces the maximum length of the stream by 4 frames.
 
 \section{Message Digest Algorithm for Voice Streams}
-At the beginning of the transmission, a $digest$ byte array of size 16 is initialized with zeros. After every stream frame (starting at frame 0) an exclusive or (XOR) operation is performed over the contents of the $digest$ array and the frame's payload. The $digest$ array is then rotated left by 1 byte. The result mush be retained in the array.
+At the beginning of the transmission, a $digest$ byte array of size 16 is initialized with zeros. After every stream frame (starting at frame 0) an exclusive or (XOR) operation is performed over the contents of the $digest$ array and the frame's payload. The $digest$ array is then rotated left by 1 byte. The result must be retained in the array.
 
 \begin{align*}
 	digest :=& digest \oplus payload \\
@@ -2078,16 +2078,16 @@ At the beginning of the transmission, a $digest$ byte array of size 16 is initia
 \end{align*}
 
 This process is repeated until there is no more data to transmit. In case there is any encryption enabled,
-the $payload$ input mush be the encrypted stream. This ensures the possibility of verification, even if the
+the $payload$ input must be the encrypted stream. This ensures the possibility of verification, even if the
 encryption details are not known to the receiving parties. Frame Numbers of the frames carrying the
 signature should follow a succession of $\{7FFC_{16}$, $7FFD_{16}$, $7FFE_{16}$, $FFFF_{16}\}$.
 
 \begin{quote}
-	\textbf{NOTE} The Frame Number's most significant bit of the last speech payload stream mush not be set, since it is not the last frame to be transmitted.
+	\textbf{NOTE} The Frame Number's most significant bit of the last speech payload stream must not be set, since it is not the last frame to be transmitted.
 \end{quote}
 
 \section{Signature Generation and Transmission}
-At the transmitter-side, the stream digest is signed with a 256-bit private key. The resulting 512-bit signature is split into 4 chunks and sent as additional payload at the end of the transmission. To keep the reassembled LSF data consistent, the LICH counter mush advance normally. The most significant bit of the Frame Number (signalling end of transmission) mush be set only in the last frame carrying the signature.
+At the transmitter-side, the stream digest is signed with a 256-bit private key. The resulting 512-bit signature is split into 4 chunks and sent as additional payload at the end of the transmission. To keep the reassembled LSF data consistent, the LICH counter must advance normally. The most significant bit of the Frame Number (signalling end of transmission) must be set only in the last frame carrying the signature.
 
 \section{Signature Verification}
 At the receiver-side, the 512-bit signature is retrieved from the last 4 frames' contents, if the appropriate TYPE bit is set. The signature is then checked using a 512-bit public key.
