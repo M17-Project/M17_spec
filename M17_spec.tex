@@ -113,6 +113,7 @@ draw=black]
 	\vhEntry{2.0.1}{23 Sep 2025}{K6OF}{Implement CCSDS A20.0-Y-4 style guide and clarify use of UTC.}
 	\vhEntry{2.0.2}{28 Sep 2025}{K0RET}{Fixed misspellings.}
 	\vhEntry{2.0.3}{09 Oct 2025}{SP5WWP}{Fixed Golay matrices display.}
+	\vhEntry{2.0.4}{21 Jan 2026}{SP5WWP}{Changed descriptive words in the Address Encoding Appendix.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -1674,15 +1675,13 @@ Here are some facts and rules about the encoding an address from a callsign:
 	\item
 		A callsign is encoded backwards, from the last character to the first character. This means that the first character of the callsign is in the least significant bits of the address, while the last character is encode into the most significant bits of the address.
 	\item
-		Since the space character has a value of zero, trailing spaces will not affect the encoded value. For example the calculated address of \texttt{'ABC'} is the same as \texttt{'ABC~'}, or \texttt{'ABC~~~~~~'}.
+		Since the space character has a value of zero, trailing spaces will not affect the encoded value. For example the calculated address of \texttt{'ABC'} is the same as \texttt{'ABC~'}, or \texttt{'ABC~~~~~~'}. A callsign containing just one or more space characters encodes to an address of zero, and this address is reserved.
 	\item
 		If an uncoded address represents an amateur radio callsign it should be left-justified. That means that the first character will always be a digit or letter.
 	\item
 		Over 262 trillion address can be encoded from \texttt{0x1} (\texttt{A}) to \texttt{0xEE6B27FFFFFF} (\texttt{.........}) and only a fraction of these callsign actually look like an amateur radio callsign. Those encodable base-40 text strings that don't look like an amateur radio callsign can be used by applications for triggering events and features that their programs offer.
 	\item
-		A callsign consisting of only spaces is invalid, because it would have a corresponding address of zero. That address is defined to be invalid.
-	\item
-		Using this scheme, there are over 19 trillion 48-bit addresses that can't be encoded by nine characters. Only one of these non-encodable addresses ($2^{48}-1$) has a specified use.
+		Using this scheme, there are over 19 trillion 48-bit addresses that can't be encoded by nine characters from the above table. Only one of these non-encodable addresses ($2^{48}-1$) has a specified use.
 	\item
 		After the base-40 value is calculated, the final 6-byte address is the big endian encoded representation of the base-40 value. This is also called network byte order.
 \end{itemize}
@@ -1709,11 +1708,11 @@ Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can
 		\hline
 		Address Range & Category & Number of Addresses & Remarks \\
 		\hline
-		\texttt{0x000000000000} & INVALID & \texttt{1} & Forbidden \\
+		\texttt{0x000000000000} & Reserved & \texttt{1} & For future use \\
 		\hline
-		{\texttt{0x000000000001} \\ \texttt{0xEE6B27FFFFFF}} & Codable & \textasciitilde{}262 trillion & "\texttt{A}" to "\texttt{.........}" \\
+		{\texttt{0x000000000001} \\ \texttt{0xEE6B27FFFFFF}} & Standard & \textasciitilde{}262 trillion & "\texttt{A}" to "\texttt{.........}" \\
 		\hline
-		{\texttt{0xEE6B28000000} \\ \texttt{0xFFFFFFFFFFFE}} & Uncodable & \textasciitilde{}19 trillion & for application use \\
+		{\texttt{0xEE6B28000000} \\ \texttt{0xFFFFFFFFFFFE}} & Extended & \textasciitilde{}19 trillion & for application use \\
 		\hline
 		\texttt{0xFFFFFFFFFFFF} & BROADCAST & \texttt{1} & valid only for a destination \\
 		\hline[2pt]
@@ -1723,9 +1722,9 @@ Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can
 
 The BROADCAST address should only be used as a destination address. It means that the M17 stream or packet is intended for any capable M17 receivers.
 
-The Uncodable addresses can be used by applications for their own purposes and encoding/decoding algorithms for these addresses are left to the developer.
+The Reserved addresses can be used by applications for their own purposes and encoding/decoding algorithms for these addresses are left to the developer.
 
-For Codable addresses, the following encoding and decoding examples written in C will not treat the BROADCAST address. This is an implementation detail left to the developers.
+For Standard addresses, the following encoding and decoding examples written in C will not treat the BROADCAST address. This is an implementation detail left to the developers.
 
 \pagebreak
 
@@ -1803,7 +1802,7 @@ char *Decode(const uint8_t* pUChar)
 }
 \end{lstlisting}
 
-For an example of how to encode and decode BROADCAST, or how to use part of the Uncodable address space,
+For an example of how to encode and decode BROADCAST, or how to use part of the Extended address space,
 see \href{https://github.com/M17-Project/libm17}{https://github.com/M17-Project/libm17}.
 
 \chapter{Randomizer Sequence}
