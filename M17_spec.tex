@@ -121,7 +121,7 @@ draw=black]
 
 \paragraph{M17 Protocol Specification}
 
-Copyright \copyright{}  2023-2025  M17 Project.
+Copyright \copyright{}  2023-2026  M17 Project.
 
 Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License'' or at the following web page: \href{https://www.gnu.org/licenses/fdl-1.3.en.html}{https://www.gnu.org/licenses/fdl-1.3.en.html}
 
@@ -621,8 +621,8 @@ Details of the convolutional encoder are in \autoref{convolutional_encoder}.
 
 In Stream Mode, an \emph{indefinite} amount of data is sent continuously
 without breaks in the physical layer. Stream Mode must always start
-with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 1
-(Stream Mode). Other valid LSF TYPE parameters are selected per
+with an LSF that has the LSF TYPE value that specifies a Stream Mode,
+Voice mode or Data mode. Other valid LSF TYPE parameters are selected per
 application.
 
 Following the LSF, one or more Stream Frames may be sent.
@@ -715,22 +715,7 @@ Total: 144 Type 1 bits
 
 The Frame Number (FN) starts from 0 and increments every frame to a maximum of \texttt{0$\times$7fff} where it will then wrap back to 0. The most significant bit in the FN is used for transmission end signaling. When transmitting the last frame, it must be set to 1 (one), and 0 (zero) in all other frames.
 
-Stream data (STREAM) is obtained by extracting 128 bits at a time from the continuous stream of application layer data. If the last frame will contain less than 128 bits of valid data, the remaining bits should be set to zero. The stream may end at the frame boundary.
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={llXX},
-		}
-		\hline
-		Mode & Codec 2 rate & Frame t + 0 & Frame t + 1... \\
-		\hline
-		Voice & 3200 & 128 bits encoded speech & 128 bits encoded speech \\
-		Voice + Data & 1600 & 64 bits encoded speech + 64 bits arbitrary data & 64 bits encoded speech + 64 bits arbitrary data \\
-		\hline[2px]
-	\end{tblr}
-	\caption{STREAM Payload Examples}
-\end{table}
+Stream data (STREAM) is obtained by extracting 128 bits at a time from the continuous stream of application layer data. Stream data will be either 128 bits encoded audio, or 128 bits of arbitrary data. These two modes are not mixed in a stream. In data mode, if the last frame will contain less than 128 bits of valid data, the remaining bits should be set to zero. The stream may end at the frame boundary.
 
 \paragraph{Stream Contents ECC/FEC}
 
@@ -867,7 +852,7 @@ In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data 
 
 n is the number of bytes of the Application Packet Data. The CRC calculation used here is described in Section \ref{crc}.
 
-Packet Mode must always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode). Following the LSF, 1 to 33 Packet Frames may be sent.
+Packet Mode must always start with an LSF that has the LSF TYPE specifying Packet Mode. Following the LSF, 1 to 33 Packet Frames may be sent.
 
 \begin{table}[H]
 	\centering
@@ -1029,7 +1014,7 @@ The primary purpose of defining a bit error rate testing standard for M17 is to 
 		}
 		PREAMBLE & BERT Sync Burst & BERT Frame  & ••• & BERT Sync Burst & BERT Frame & EoT \\
 	\end{tblr}
-	\caption{Packet Mode}
+	\caption{BERT Mode}
 \end{table}
 
 \subsection{BERT Frames}
@@ -1174,7 +1159,7 @@ Listed from msb to lsb, there are five TYPE subfields:
 
 \subsection{Payload}
 
-The first TYPE subfield is the 4 most significant bits of the first byte and specifies the contents of the 128-bit payload. Three payloads are currently defined: a data mode, a \href{http://rowetel.com/codec2.html}{Codec 2}-encoded voice mode, and a Packet Mode.
+The first TYPE subfield is the 4 most significant bits of the first byte and specifies the contents of the 128-bit payload. Three payloads are currently defined: a data mode, a 3200 bps \href{http://rowetel.com/codec2.html}{Codec 2}-encoded voice mode, and a Packet Mode.
 
 \begin{table}[H]
 	\centering
@@ -1186,7 +1171,7 @@ The first TYPE subfield is the 4 most significant bits of the first byte and spe
 		\hline
 		\texttt{0x0} & Reserved for Version detection \\
 		\texttt{0x1} & Data \\
-		\texttt{0x2} & Codec2 Voice \\
+		\texttt{0x2} & 3200 bps Codec2 Voice \\
 		\texttt{0x3..0xE} & Reserved for future expansion \\
 		\texttt{0xF} & Packet data \\
 		\hline[2px]
@@ -1237,7 +1222,7 @@ Packet Mode does not support signing so the sign bit should be clear.
 
 \subsection{Meta}
 
-The most significant 4 bits of the second byte of TYPE specifies the contents of META. There are four possible contents in META.
+The most significant 4 bits of the second byte of TYPE specifies the contents of META. There are five possible values for this field indicating the contents in META.
 
 \begin{table}[H]
 	\centering
@@ -1393,7 +1378,7 @@ Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can
 
 The BROADCAST address should only be used as a destination address. It means that the M17 stream or packet is intended for any capable M17 receivers.
 
-The Reserved addresses can be used by applications for their own purposes and encoding/decoding algorithms for these addresses are left to the developer.
+The Extended addresses can be used by applications for their own purposes and encoding/decoding algorithms for these addresses are left to the developer.
 
 For Standard addresses, the following encoding and decoding examples written in C will not treat the BROADCAST address. This is an implementation detail left to the developers.
 
