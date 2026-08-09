@@ -1,5 +1,5 @@
-% if you need a document suitable for printing/binding, remove the ",oneside" from the following line.
 \documentclass[a4paper,11pt,oneside]{book}
+% if you need a document suitable for printing/binding, remove the ",oneside" in the line above.
 \usepackage[centering,margin=2.5cm]{geometry}
 \usepackage[export]{adjustbox}
 \usepackage[utf8]{inputenc}
@@ -113,6 +113,7 @@ draw=black]
 	\vhEntry{2.0.1}{23 Sep 2025}{K6OF}{Implement CCSDS A20.0-Y-4 style guide and clarify use of UTC.}
 	\vhEntry{2.0.2}{28 Sep 2025}{K0RET}{Fixed misspellings.}
 	\vhEntry{2.0.3}{09 Oct 2025}{SP5WWP}{Fixed Golay matrices display.}
+	\vhEntry{2.0.4}{21 Jan 2026}{SP5WWP}{Changed descriptive words in the Address Encoding Appendix.}
 	\vhEntry{3.0.0-draft}{16 Nov 2025}{SP5WWP|IU2KWO|N1ADJ|N7TAE|LWVMOBILE}{Redefined the TYPE field contents.{\newline}Changed META text message padding.{\newline}Changed how text data is sent using the META field.{\newline}Added TLE data packet type.{\newline}Dropped voice+data mode.}
 \end{versionhistory}
 
@@ -120,13 +121,13 @@ draw=black]
 
 \paragraph{M17 Protocol Specification}
 
-Copyright \copyright{}  2023-2025  M17 Project. \\
+Copyright \copyright{}  2023-2025  M17 Project.
 
 Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License'' or at the following web page: \href{https://www.gnu.org/licenses/fdl-1.3.en.html}{https://www.gnu.org/licenses/fdl-1.3.en.html}
 
 \paragraph{M17 Project Software}
 
-Copyright (C) 2024  M17 Project \\
+Copyright \copyright{} 2024  M17 Project
 
 Software included in the M17 Protocol Specification is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
@@ -1345,15 +1346,13 @@ Here are some facts and rules about the encoding an address from a callsign:
 	\item
 		A callsign is encoded backwards, from the last character to the first character. This means that the first character of the callsign is in the least significant bits of the address, while the last character is encode into the most significant bits of the address.
 	\item
-		Since the space character has a value of zero, trailing spaces will not affect the encoded value. For example the calculated address of \texttt{'ABC'} is the same as \texttt{'ABC~'}, or \texttt{'ABC~~~~~~'}.
+		Since the space character has a value of zero, trailing spaces will not affect the encoded value. For example the calculated address of \texttt{'ABC'} is the same as \texttt{'ABC~'}, or \texttt{'ABC~~~~~~'}. A callsign containing just one or more space characters encodes to an address of zero, and this address is reserved.
 	\item
 		If an uncoded address represents an amateur radio callsign it should be left-justified. That means that the first character will always be a digit or letter.
 	\item
 		Over 262 trillion address can be encoded from \texttt{0x1} (\texttt{A}) to \texttt{0xEE6B27FFFFFF} (\texttt{.........}) and only a fraction of these callsign actually look like an amateur radio callsign. Those encodable base-40 text strings that don't look like an amateur radio callsign can be used by applications for triggering events and features that their programs offer.
 	\item
-		A callsign consisting of only spaces is invalid, because it would have a corresponding address of zero. That address is defined to be invalid.
-	\item
-		Using this scheme, there are over 19 trillion 48-bit addresses that can't be encoded by nine characters. Only one of these non-encodable addresses ($2^{48}-1$) has a specified use.
+		Using this scheme, there are over 19 trillion 48-bit addresses that can't be encoded by nine characters from the above table. Only one of these non-encodable addresses ($2^{48}-1$) has a specified use.
 	\item
 		After the base-40 value is calculated, the final 6-byte address is the big endian encoded representation of the base-40 value. This is also called network byte order.
 \end{itemize}
@@ -1380,11 +1379,11 @@ Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can
 		\hline
 		Address Range & Category & Number of Addresses & Remarks \\
 		\hline
-		\texttt{0x000000000000} & INVALID & \texttt{1} & Forbidden \\
+		\texttt{0x000000000000} & Reserved & \texttt{1} & For future use \\
 		\hline
-		{\texttt{0x000000000001} \\ \texttt{0xEE6B27FFFFFF}} & Codable & \textasciitilde{}262 trillion & "\texttt{A}" to "\texttt{.........}" \\
+		{\texttt{0x000000000001} \\ \texttt{0xEE6B27FFFFFF}} & Standard & \textasciitilde{}262 trillion & "\texttt{A}" to "\texttt{.........}" \\
 		\hline
-		{\texttt{0xEE6B28000000} \\ \texttt{0xFFFFFFFFFFFE}} & Uncodable & \textasciitilde{}19 trillion & for application use \\
+		{\texttt{0xEE6B28000000} \\ \texttt{0xFFFFFFFFFFFE}} & Extended & \textasciitilde{}19 trillion & for application use \\
 		\hline
 		\texttt{0xFFFFFFFFFFFF} & BROADCAST & \texttt{1} & valid only for a destination \\
 		\hline[2pt]
@@ -1394,9 +1393,9 @@ Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can
 
 The BROADCAST address should only be used as a destination address. It means that the M17 stream or packet is intended for any capable M17 receivers.
 
-The Uncodable addresses can be used by applications for their own purposes and encoding/decoding algorithms for these addresses are left to the developer.
+The Reserved addresses can be used by applications for their own purposes and encoding/decoding algorithms for these addresses are left to the developer.
 
-For Codable addresses, the following encoding and decoding examples written in C will not treat the BROADCAST address. This is an implementation detail left to the developers.
+For Standard addresses, the following encoding and decoding examples written in C will not treat the BROADCAST address. This is an implementation detail left to the developers.
 
 \pagebreak
 
@@ -1474,7 +1473,7 @@ char *Decode(const uint8_t* pUChar)
 }
 \end{lstlisting}
 
-For an example of how to encode and decode BROADCAST, or how to use part of the Uncodable address space,
+For an example of how to encode and decode BROADCAST, or how to use part of the Extended address space,
 see \href{https://github.com/M17-Project/libm17}{https://github.com/M17-Project/libm17}.
 
 \chapter{Randomizer Sequence}
