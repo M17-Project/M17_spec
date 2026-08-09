@@ -1173,7 +1173,7 @@ Listed from msb to lsb, there are five TYPE subfields:
 
 \subsection{Payload}
 
-The first TYPE subfield is the 4 most significant bits of the first byte and specifies the contents of the 128-bit payload. Four payloads are currently defined: a 3200 bps data-only mode, a 3200 bps \href{http://rowetel.com/codec2.html}{Codec 2}-encoded voice-only mode, a 1600 bps Codec 2-encoded mode that has a parallel 1600 bps data stream, resulting in a voice+data mode and a Packet Mode. Only the voice-only and packet modes modes (0x2 and 0xF) are currently specified. There are applications that are currently using the voice+data mode and simply ignoring the data stream.
+The first TYPE subfield is the 4 most significant bits of the first byte and specifies the contents of the 128-bit payload. Three payloads are currently defined: a data mode, a \href{http://rowetel.com/codec2.html}{Codec 2}-encoded voice mode, and a Packet Mode.
 
 \begin{table}[H]
 	\centering
@@ -1184,10 +1184,9 @@ The first TYPE subfield is the 4 most significant bits of the first byte and spe
 		Value & Content \\
 		\hline
 		\texttt{0x0} & Reserved for Version detection \\
-		\texttt{0x1} & Data Only \\
-		\texttt{0x2} & 3200 bps Codec2 Voice Only \\
-		\texttt{0x3} & 1600 bps Codec2 Voice \textit{and} Data \\
-		\texttt{0x4..0xE} & Reserved for future expansion \\
+		\texttt{0x1} & Data \\
+		\texttt{0x2} & Codec2 Voice \\
+		\texttt{0x3..0xE} & Reserved for future expansion \\
 		\texttt{0xF} & Packet data \\
 		\hline[2px]
 	\end{tblr}
