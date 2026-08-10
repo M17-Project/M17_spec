@@ -1,5 +1,5 @@
-% if you need a document suitable for printing/binding, remove the ",oneside" from the following line.
 \documentclass[a4paper,11pt,oneside]{book}
+% if you need a document suitable for printing/binding, remove the ",oneside" in the line above.
 \usepackage[centering,margin=2.5cm]{geometry}
 \usepackage[export]{adjustbox}
 \usepackage[utf8]{inputenc}
@@ -113,20 +113,21 @@ draw=black]
 	\vhEntry{2.0.1}{23 Sep 2025}{K6OF}{Implement CCSDS A20.0-Y-4 style guide and clarify use of UTC.}
 	\vhEntry{2.0.2}{28 Sep 2025}{K0RET}{Fixed misspellings.}
 	\vhEntry{2.0.3}{09 Oct 2025}{SP5WWP}{Fixed Golay matrices display.}
-	\vhEntry{3.0.0-draft}{16 Nov 2025}{SP5WWP|IU2KWO|N1ADJ|N7TAE|LWVMOBILE}{Redefined the TYPE field contents.{\newline}Changed META text message padding.{\newline}Changed how text data is sent using the META field.{\newline}Added TLE data packet type.}
+	\vhEntry{2.0.4}{21 Jan 2026}{SP5WWP}{Changed descriptive words in the Address Encoding Appendix.}
+	\vhEntry{3.0.0-draft}{16 Nov 2025}{SP5WWP|IU2KWO|N1ADJ|N7TAE|LWVMOBILE}{Redefined the TYPE field contents.{\newline}Changed META text message padding.{\newline}Changed how text data is sent using the META field.{\newline}Added TLE data packet type.{\newline}Dropped voice+data mode.}
 \end{versionhistory}
 
 \chapter{Licenses}
 
 \paragraph{M17 Protocol Specification}
 
-Copyright \copyright{}  2023-2025  M17 Project. \\
+Copyright \copyright{}  2023-2026  M17 Project.
 
 Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License'' or at the following web page: \href{https://www.gnu.org/licenses/fdl-1.3.en.html}{https://www.gnu.org/licenses/fdl-1.3.en.html}
 
 \paragraph{M17 Project Software}
 
-Copyright (C) 2024  M17 Project \\
+Copyright \copyright{} 2024  M17 Project
 
 Software included in the M17 Protocol Specification is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
@@ -620,8 +621,8 @@ Details of the convolutional encoder are in \autoref{convolutional_encoder}.
 
 In Stream Mode, an \emph{indefinite} amount of data is sent continuously
 without breaks in the physical layer. Stream Mode must always start
-with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 1
-(Stream Mode). Other valid LSF TYPE parameters are selected per
+with an LSF that has the LSF TYPE value that specifies a Stream Mode,
+Voice mode or Data mode. Other valid LSF TYPE parameters are selected per
 application.
 
 Following the LSF, one or more Stream Frames may be sent.
@@ -714,22 +715,7 @@ Total: 144 Type 1 bits
 
 The Frame Number (FN) starts from 0 and increments every frame to a maximum of \texttt{0$\times$7fff} where it will then wrap back to 0. The most significant bit in the FN is used for transmission end signaling. When transmitting the last frame, it must be set to 1 (one), and 0 (zero) in all other frames.
 
-Stream data (STREAM) is obtained by extracting 128 bits at a time from the continuous stream of application layer data. If the last frame will contain less than 128 bits of valid data, the remaining bits should be set to zero. The stream may end at the frame boundary.
-
-\begin{table}[H]
-	\centering
-	\begin{tblr}{
-		colspec={llXX},
-		}
-		\hline
-		Mode & Codec 2 rate & Frame t + 0 & Frame t + 1... \\
-		\hline
-		Voice & 3200 & 128 bits encoded speech & 128 bits encoded speech \\
-		Voice + Data & 1600 & 64 bits encoded speech + 64 bits arbitrary data & 64 bits encoded speech + 64 bits arbitrary data \\
-		\hline[2px]
-	\end{tblr}
-	\caption{STREAM Payload Examples}
-\end{table}
+Stream data (STREAM) is obtained by extracting 128 bits at a time from the continuous stream of application layer data. Stream data will be either 128 bits encoded audio, or 128 bits of arbitrary data. These two modes are not mixed in a stream. In data mode, if the last frame will contain less than 128 bits of valid data, the remaining bits should be set to zero. The stream may end at the frame boundary.
 
 \paragraph{Stream Contents ECC/FEC}
 
@@ -866,7 +852,7 @@ In Packet Mode, a Single Packet with up to 823 bytes of Application Packet Data 
 
 n is the number of bytes of the Application Packet Data. The CRC calculation used here is described in Section \ref{crc}.
 
-Packet Mode must always start with an LSF that has the LSF TYPE Packet/Stream indicator bit set to 0 (Packet Mode). Following the LSF, 1 to 33 Packet Frames may be sent.
+Packet Mode must always start with an LSF that has the LSF TYPE specifying Packet Mode. Following the LSF, 1 to 33 Packet Frames may be sent.
 
 \begin{table}[H]
 	\centering
@@ -1028,7 +1014,7 @@ The primary purpose of defining a bit error rate testing standard for M17 is to 
 		}
 		PREAMBLE & BERT Sync Burst & BERT Frame  & ••• & BERT Sync Burst & BERT Frame & EoT \\
 	\end{tblr}
-	\caption{Packet Mode}
+	\caption{BERT Mode}
 \end{table}
 
 \subsection{BERT Frames}
@@ -1173,7 +1159,7 @@ Listed from msb to lsb, there are five TYPE subfields:
 
 \subsection{Payload}
 
-The first TYPE subfield is the 4 most significant bits of the first byte and specifies the contents of the 128-bit payload. Four payloads are currently defined: a 3200 bps data-only mode, a 3200 bps \href{http://rowetel.com/codec2.html}{Codec 2}-encoded voice-only mode, a 1600 bps Codec 2-encoded mode that has a parallel 1600 bps data stream, resulting in a voice+data mode and a Packet Mode. Only the voice-only and packet modes modes (0x2 and 0xF) are currently specified. There are applications that are currently using the voice+data mode and simply ignoring the data stream.
+The first TYPE subfield is the 4 most significant bits of the first byte and specifies the contents of the 128-bit payload. Three payloads are currently defined: a data mode, a 3200 bps \href{http://rowetel.com/codec2.html}{Codec 2}-encoded voice mode, and a Packet Mode.
 
 \begin{table}[H]
 	\centering
@@ -1184,10 +1170,9 @@ The first TYPE subfield is the 4 most significant bits of the first byte and spe
 		Value & Content \\
 		\hline
 		\texttt{0x0} & Reserved for Version detection \\
-		\texttt{0x1} & Data Only \\
-		\texttt{0x2} & 3200 bps Codec2 Voice Only \\
-		\texttt{0x3} & 1600 bps Codec2 Voice \textit{and} Data \\
-		\texttt{0x4..0xE} & Reserved for future expansion \\
+		\texttt{0x1} & Data \\
+		\texttt{0x2} & 3200 bps Codec2 Voice \\
+		\texttt{0x3..0xE} & Reserved for future expansion \\
 		\texttt{0xF} & Packet data \\
 		\hline[2px]
 	\end{tblr}
@@ -1237,7 +1222,7 @@ Packet Mode does not support signing so the sign bit should be clear.
 
 \subsection{Meta}
 
-The most significant 4 bits of the second byte of TYPE specifies the contents of META. There are four possible contents in META.
+The most significant 4 bits of the second byte of TYPE specifies the contents of META. There are five possible values for this field indicating the contents in META.
 
 \begin{table}[H]
 	\centering
@@ -1346,15 +1331,13 @@ Here are some facts and rules about the encoding an address from a callsign:
 	\item
 		A callsign is encoded backwards, from the last character to the first character. This means that the first character of the callsign is in the least significant bits of the address, while the last character is encode into the most significant bits of the address.
 	\item
-		Since the space character has a value of zero, trailing spaces will not affect the encoded value. For example the calculated address of \texttt{'ABC'} is the same as \texttt{'ABC~'}, or \texttt{'ABC~~~~~~'}.
+		Since the space character has a value of zero, trailing spaces will not affect the encoded value. For example the calculated address of \texttt{'ABC'} is the same as \texttt{'ABC~'}, or \texttt{'ABC~~~~~~'}. A callsign containing just one or more space characters encodes to an address of zero, and this address is reserved.
 	\item
 		If an uncoded address represents an amateur radio callsign it should be left-justified. That means that the first character will always be a digit or letter.
 	\item
 		Over 262 trillion address can be encoded from \texttt{0x1} (\texttt{A}) to \texttt{0xEE6B27FFFFFF} (\texttt{.........}) and only a fraction of these callsign actually look like an amateur radio callsign. Those encodable base-40 text strings that don't look like an amateur radio callsign can be used by applications for triggering events and features that their programs offer.
 	\item
-		A callsign consisting of only spaces is invalid, because it would have a corresponding address of zero. That address is defined to be invalid.
-	\item
-		Using this scheme, there are over 19 trillion 48-bit addresses that can't be encoded by nine characters. Only one of these non-encodable addresses ($2^{48}-1$) has a specified use.
+		Using this scheme, there are over 19 trillion 48-bit addresses that can't be encoded by nine characters from the above table. Only one of these non-encodable addresses ($2^{48}-1$) has a specified use.
 	\item
 		After the base-40 value is calculated, the final 6-byte address is the big endian encoded representation of the base-40 value. This is also called network byte order.
 \end{itemize}
@@ -1381,11 +1364,11 @@ Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can
 		\hline
 		Address Range & Category & Number of Addresses & Remarks \\
 		\hline
-		\texttt{0x000000000000} & INVALID & \texttt{1} & Forbidden \\
+		\texttt{0x000000000000} & Reserved & \texttt{1} & For future use \\
 		\hline
-		{\texttt{0x000000000001} \\ \texttt{0xEE6B27FFFFFF}} & Codable & \textasciitilde{}262 trillion & "\texttt{A}" to "\texttt{.........}" \\
+		{\texttt{0x000000000001} \\ \texttt{0xEE6B27FFFFFF}} & Standard & \textasciitilde{}262 trillion & "\texttt{A}" to "\texttt{.........}" \\
 		\hline
-		{\texttt{0xEE6B28000000} \\ \texttt{0xFFFFFFFFFFFE}} & Uncodable & \textasciitilde{}19 trillion & for application use \\
+		{\texttt{0xEE6B28000000} \\ \texttt{0xFFFFFFFFFFFE}} & Extended & \textasciitilde{}19 trillion & for application use \\
 		\hline
 		\texttt{0xFFFFFFFFFFFF} & BROADCAST & \texttt{1} & valid only for a destination \\
 		\hline[2pt]
@@ -1395,9 +1378,9 @@ Because $40^{9}$ is less than $2^{48}$, there are some 48-bit addresses that can
 
 The BROADCAST address should only be used as a destination address. It means that the M17 stream or packet is intended for any capable M17 receivers.
 
-The Uncodable addresses can be used by applications for their own purposes and encoding/decoding algorithms for these addresses are left to the developer.
+The Extended addresses can be used by applications for their own purposes and encoding/decoding algorithms for these addresses are left to the developer.
 
-For Codable addresses, the following encoding and decoding examples written in C will not treat the BROADCAST address. This is an implementation detail left to the developers.
+For Standard addresses, the following encoding and decoding examples written in C will not treat the BROADCAST address. This is an implementation detail left to the developers.
 
 \pagebreak
 
@@ -1475,7 +1458,7 @@ char *Decode(const uint8_t* pUChar)
 }
 \end{lstlisting}
 
-For an example of how to encode and decode BROADCAST, or how to use part of the Uncodable address space,
+For an example of how to encode and decode BROADCAST, or how to use part of the Extended address space,
 see \href{https://github.com/M17-Project/libm17}{https://github.com/M17-Project/libm17}.
 
 \chapter{Randomizer Sequence}
