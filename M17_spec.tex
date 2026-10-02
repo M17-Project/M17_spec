@@ -114,6 +114,7 @@ draw=black]
 	\vhEntry{2.0.2}{28 Sep 2025}{K0RET}{Fixed misspellings.}
 	\vhEntry{2.0.3}{09 Oct 2025}{SP5WWP}{Fixed Golay matrices display.}
 	\vhEntry{2.0.4}{21 Jan 2026}{SP5WWP}{Changed descriptive words in the Address Encoding Appendix.}
+	\vhEntry{2.0.5}{02 Oct 2026}{SP5WWP}{Fixed BERT mode puncturing details.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -1057,7 +1058,7 @@ Total: 197 Type 1 bits
 
 The 197 Type 1 bits of the Packet Contents along with 4 flush bits are convolutionally coded using a rate 1/2 coder with constraint K=5. 201 bits total are encoded resulting in 402 Type 2 bits.
 
-These bits are $P_2$ punctured to generate 368 Type 3 bits.
+These bits are $P_2$ punctured to generate 369 bits, the last of which is discarded, resulting in 368 Type 3 bits.
 
 Interleaving the Type 3 bits produces 368 Type 4 bits that are ready to be passed to the Physical Layer.
 
