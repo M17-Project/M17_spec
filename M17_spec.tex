@@ -116,6 +116,7 @@ draw=black]
 	\vhEntry{2.0.4}{21 Jan 2026}{SP5WWP}{Changed descriptive words in the Address Encoding Appendix.}
 	\vhEntry{2.0.5}{02 Oct 2026}{SP5WWP}{Fixed BERT mode puncturing details.}
 	\vhEntry{2.0.6}{02 Oct 2026}{SP5WWP}{META position data maximum altitude correction.}
+	\vhEntry{2.0.7}{03 Oct 2026}{SP5WWP}{Clarified scrambling details.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -1444,7 +1445,13 @@ Encryption type = $01_2$
 
 Scrambling is an encryption by bit inversion using a bitwise exclusive-or (XOR) operation between the bit sequence of data and a pseudorandom bit sequence.
 
-Pseudorandom bit sequence is generated using a Fibonacci-topology Linear-Feedback Shift Register (LFSR). Three different LFSR sizes are available: 8, 16 and 24-bit. Each shift register has an associated polynomial. The polynomials are listed in Table~\ref{tab:scrambling}. The LFSR is initialized with a seed value of the same length as the shift register. The seed value acts as an encryption key for the scrambler algorithm. See Figures~\ref{fig:lfsr8}, \ref{fig:lfsr16}, and \ref{fig:lfsr24} for block diagrams of the algorithm.
+The pseudorandom bit sequence is generated using a Fibonacci-topology Linear-Feedback Shift Register (LFSR). Three different LFSR sizes are available: 8, 16 and 24-bit. Each shift register has an associated polynomial. The polynomials are listed in Table~\ref{tab:scrambling}. On every step, the feedback bit is shifted into $D_0$ and is also the output bit of the pseudorandom sequence.
+
+The LFSR is initialized with a seed value of the same length as the shift register. The seed value acts as an encryption key for the scrambler algorithm. The register length, and therefore the encryption subtype in the TYPE field, is determined by the seed's length (1, 2 or 3 bytes), including leading zero bytes. The seed is loaded with its most significant bit in $D_{n-1}$ and its least significant bit in $D_0$. An all-zero seed shall not be used.
+
+The LFSR is initialized with the seed at the start of every transmission and runs continuously, generating 128 bits per Stream Frame. A receiver that joins mid-stream advances the LFSR by $128 \times FN$ bits from the seed.
+
+See Figures~\ref{fig:lfsr8}, \ref{fig:lfsr16}, and \ref{fig:lfsr24} for block diagrams of the algorithm.
 
 \begin{table}[H]
 	\centering
