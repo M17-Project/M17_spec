@@ -117,6 +117,7 @@ draw=black]
 	\vhEntry{2.0.5}{02 Oct 2026}{SP5WWP}{Fixed BERT mode puncturing details.}
 	\vhEntry{2.0.6}{02 Oct 2026}{SP5WWP}{META position data maximum altitude correction.}
 	\vhEntry{2.0.7}{03 Oct 2026}{SP5WWP}{Clarified scrambling details.}
+	\vhEntry{2.0.8}{03 Oct 2026}{SP5WWP}{Fixed contradiction in the AES CTR description.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -1528,19 +1529,18 @@ To prevent replay attacks, a 32-bit timestamp is included in the cryptographic n
 
 \paragraph{128 bit counter structure}
 
-FN field sets the most significant 16 bits of the counter, with the 32-bit least significant part holding the timestamp. The remaining 80-bit portion is filled with random data, re-generated per transmission.
-
+The timestamp occupies the most significant 32 bits of the counter, followed by 80 bits of random data, re-generated per transmission. Together they form the 112-bit nonce stored in the META field. The FN field occupies the least significant 16 bits of the counter.
 \begin{table}[h]
 	\centering
 	\begin{tblr}{
-		colspec={lcl},
+		colspec={lccl},
 		}
 		\hline
-		Field & Length & Description \\
+		Field & Bits & Length & Description \\
 		\hline
-		Timestamp & 32 bits & Seconds since 2020-01-01T00:00:00Z \\
-		Random Data & 80 bits & Random data \\
-		Frame Number & 16 bits & Incrementing Frame Number \\
+		Timestamp & 127--96 & 32 bits & Seconds since 2020-01-01T00:00:00Z \\
+		Random Data & 95--16 & 80 bits & Random data \\
+		Frame Number & 15--0 & 16 bits & Incrementing Frame Number \\
 		\hline[2px]
 	\end{tblr}
 	\caption{AES Counter Contents}
