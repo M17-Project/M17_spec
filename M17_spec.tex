@@ -118,6 +118,7 @@ draw=black]
 	\vhEntry{2.0.6}{02 Oct 2026}{SP5WWP}{META position data maximum altitude correction.}
 	\vhEntry{2.0.7}{03 Oct 2026}{SP5WWP}{Clarified scrambling details.}
 	\vhEntry{2.0.8}{03 Oct 2026}{SP5WWP}{Fixed contradiction in the AES CTR description.}
+	\vhEntry{2.0.9}{04 Oct 2026}{SP5WWP}{Clarified what can change in the LSD during a stream.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -696,7 +697,7 @@ The 48-bit LICH Contents is partitioned into 4 12-bit parts and encoded using Go
 
 \paragraph{Stream Contents}
 
-The LSD META field can change during a transmission and this will affect bits 112:239 of the LSF, resulting in changes in the LICH channel with LICH\_CNT 2 through 5. In addition, the stream frames also contain the stream contents that has two fields that will change with every frame.
+The LSD META field can change during a transmission and this will affect bits 112:239 of the LSD, resulting in changes in the LICH channel with LICH\_CNT 2 through 5. Only the META field may change during a transmission, and only at superframe boundaries, all other LSD fields shall remain constant. In addition, the stream frames also contain the stream contents that has two fields that will change with every frame.
 
 \begin{table}[H]
 	\centering
