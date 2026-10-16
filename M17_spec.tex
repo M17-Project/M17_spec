@@ -119,6 +119,7 @@ draw=black]
 	\vhEntry{2.0.7}{03 Oct 2026}{SP5WWP}{Clarified scrambling details.}
 	\vhEntry{2.0.8}{03 Oct 2026}{SP5WWP}{Fixed contradiction in the AES CTR description.}
 	\vhEntry{2.0.9}{04 Oct 2026}{SP5WWP}{Clarified what can change in the LSD during a stream.}
+	\vhEntry{2.0.10}{16 Oct 2026}{SP5WWP}{Restore GNSS Radius encoding rule}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -1393,6 +1394,7 @@ The first byte contains two $4$ bit numeric fields. The first is the \textbf{Dat
 The second byte starts with a $4$ bit \textbf{Validity} field. Bit $1000_2$ is set if the latitude/longitude is valid. Bit $0100_2$ is set if the \textbf{Altitude} data is valid. Bit $0010_2$ is set if the velocity data is valid. Velocity data includes both \textbf{Bearing} and \textbf{Speed} data. Finally, bit $0001_2$ is set if the \textbf{Radius} data is valid. If any of these validity bits are set to zero, all the corresponding GNSS data fields should be zeroed-out by the transmitter and regarded as invalid and ignored by the receiver.
 
 The next three bits of the second byte is the numeric \textbf{Radius} field. This radius is an estimate of lateral position uncertainty and is based on the horizontal dilution of precision (HDOP) value provided by the GNSS module. HDOP measure is based on the number of received satellites and their geometric position relative to the receiver.
+The encoded $3$ bit value $n$ is the base $2$ logarithm of the radius, rounded up, \textit{i.e.} the smallest $n$ for which the radius does not exceed $2^n$ meters. The decoded values span from $1$ ($2^0$) to $128$ ($2^7$) meters, with radii above $128$ meters encoded as $7$.
 \begin{quote}
 	\textbf{NOTE} The HDOP value (and therefore radius) is only a coarse estimate and in some cases might not reflect the actual uncertainty metric.
 \end{quote}
