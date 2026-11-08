@@ -25,7 +25,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build PDF
         uses: xu-cheng/latex-action@v4
@@ -44,15 +44,15 @@ jobs:
           mv M17_spec.pdf public/
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v6
 
       - name: Upload PDF
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: public
 
       - name: Deploy to Pages
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
       - name: Post URL to Summary
         run: echo "🚀 [View the latest PDF](https://m17-project.github.io/M17_spec/M17_spec.pdf)" >> $GITHUB_STEP_SUMMARY
@@ -65,7 +65,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build PDF
         uses: xu-cheng/latex-action@v4
@@ -80,7 +80,7 @@ jobs:
           fi
 
       - name: Upload PDF artifact for branch/PR
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: M17_spec
           path: M17_spec.pdf
