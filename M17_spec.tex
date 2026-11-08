@@ -1140,23 +1140,9 @@ The source address is always the callsign of the station transmitting, be it a c
 
 The destination address used by a client may simply be a callsign or reflector designation for a point to point contact, or may be a special identifier. Special identifiers are 6-byte addresses than can't be encoded in the standard way. For an explanation, see the Address Encoding \autoref{address_encoding}.
 
-\subsection{TYPE}
+\subsection{TYPE} \label{lsf_type}
 
-The 2-byte TYPE field contains information about the frames to follow LSF. The Packet/Stream indicator bit determines which mode (Packet or Stream) will be used during the transmission. The remaining field meanings are defined by the specific mode and application.
-
-\subsection{META}
-
-The 14-byte META field can and will contain a variety of data. In Stream mode, the META data will change as the stream evolves. The first meta field is available in the LSF frame but subsequent data/voice frames will potentially carry different META data in each superframe that follows. In Packet mode, one META field is available in the LSF frame. Different META data is described later in this chapter.
-
-\subsection{CRC}
-
-The last 2 bytes of the 30-byte LSF is a 16-bit CRC as described in Section \ref{crc}.
-
-\section{Stream Mode}
-
-\subsection{TYPE Field}
-
-The TYPE field contains all information need to properly interpret the stream frames.
+The 2-byte TYPE field contains information about the frames that follow the LSF. The layout of the TYPE field is the same in both modes. The Packet/Stream indicator bit determines which mode (Packet or Stream) will be used during the transmission, and therefore which of the remaining fields are used, as summarized in Table~\ref{tab:lsf_type_usage}.
 
 \begin{table}[H]
 	\centering
@@ -1179,7 +1165,8 @@ The TYPE field contains all information need to properly interpret the stream fr
 		\hline
 	\end{NiceTabular}
 	\normalsize
-	\caption{Stream LSF TYPE Layout}
+	\caption{LSF TYPE Layout}
+	\label{tab:lsf_type}
 \end{table}
 
 \begin{table}[H]
@@ -1211,7 +1198,7 @@ The TYPE field contains all information need to properly interpret the stream fr
 		$11_2$ & Voice+Data \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Data Type}
+	\caption{Data Type (Stream Mode only)}
 \end{table}
 
 \begin{table}[H]
@@ -1228,10 +1215,10 @@ The TYPE field contains all information need to properly interpret the stream fr
 		$11_2$ & Other/reserved \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Encryption Type}
+	\caption{Encryption Type (Stream Mode only)}
 \end{table}
 
-For the encryption subtype, meaning of values depends on encryption type.
+The meaning of the Encryption Subtype depends on the Encryption Type. When the Encryption Type is $00_2$ (None), in either mode, the Encryption Subtype is the META type and specifies the contents of the META field, as given in Table~\ref{tab:meta_types}. When the Encryption Type is Scrambler or AES (Stream Mode only), the Encryption Subtype specifies the key length.
 
 \begin{table}[H]
 	\centering
@@ -1252,47 +1239,39 @@ For the encryption subtype, meaning of values depends on encryption type.
 
 \begin{table}[H]
 	\centering
-	\begin{tblr}{ll}
+	\begin{tblr}{lll}
 		\hline
-		Packet/Stream & 1 = Stream Mode \\
+		Field & Stream Mode & Packet Mode \\
 		\hline
-		Data Type & $10_2$ = Voice only (3200 bps) \\
-		\hline
-		Encryption Type & $00_2$ = None \\
-		& $01_2$ = Scrambling \\
-		& $10_2$ = AES \\
-		\hline
-		Encryption Subtype & Depends on Encryption Type \\
-		\hline
-		Channel Access Number (CAN) & 0..15 \\
+		Packet/Stream & 1 & 0 \\
+		Data Type & See Data Type table & \textit{Reserved} \\
+		Encryption Type & Any & $00_2$ (None) \\
+		Encryption Subtype & Key length or META type & META type \\
+		Signed Stream & 0 or 1 & \textit{Reserved} \\
+		Channel Access Number (CAN) & 0..15 & 0..15 \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Voice LSF TYPE Definition}
+	\caption{TYPE Field Usage by Mode}
+	\label{tab:lsf_type_usage}
 \end{table}
 
-This application requires Stream Mode.
+Reserved bits shall be set to zero by the transmitter and ignored by the receiver.
 
-The Voice only Data type indicator specifies voice data encoded at 3200 bps using Codec 2.
+\subsubsection{Channel Access Number}
 
-\subsection{Encryption Types}
+The Channel Access Number (CAN) is a four bit code that may be used to filter received audio, text, and GNSS data. A receiver may optionally allow reception from sources only if their transmitted CAN value matches the receiver's own specified CAN value.
 
-Encryption is \textbf{optional}. The use of it may be restricted within
-some radio services and countries, and should only be used if legally
-permissible.
+\subsection{META} \label{lsf_meta}
 
-\paragraph{Null Encryption}
+The 14-byte META field can and will contain a variety of data. When encryption is used (Stream Mode only), the META field carries cryptographic data such as the AES nonce. Otherwise, the META field can be used for transmitting relatively small amounts of extended data, and the Encryption Subtype bits of the TYPE field (the META type) indicate what is stored in the META field.
 
-Encryption type = $00_2$
-
-When no encryption is used, the 14-byte (112-bit) META field of the LSF and corresponding LICH of the stream can be used for transmitting relatively small amounts of extended data without affecting the bandwidth available for the audio. The full 14 bytes of META extended data is potentially decodable every six stream frames, at a 240 ms update rate. The extended data is transmitted in a simple round robin manner, with the only exception being GPS data which should be transmitted as soon as possible after the GPS data is received from its source.
-
-The "Encryption subtype" bits in the Stream Type field indicate what extended data is stored in the META field.
+In Stream Mode, the first META field is available in the LSF, and the META field may change at superframe boundaries as the stream evolves, as described under Null Encryption in \autoref{stream_encryption}. In Packet Mode, a single META field is available in the LSF.
 
 \begin{table}[H]
 	\centering
 	\begin{tblr}{ll}
 		\hline
-		Encryption subtype bits & LSF META data contents \\
+		META type (Encryption Subtype) & META field contents \\
 		\hline
 		$00_2$ & Text Data \\
 		$01_2$ & GNSS Position Data \\
@@ -1300,12 +1279,13 @@ The "Encryption subtype" bits in the Stream Type field indicate what extended da
 		$11_2$ & Reserved \\
 		\hline[2px]
 	\end{tblr}
-	\caption{Null Encryption Subtype Bits}
+	\caption{META Types (Encryption Type = None)}
+	\label{tab:meta_types}
 \end{table}
 
-\subparagraph{Text Data}
+\subsubsection{Text Data}
 
-Encryption subtype = $00_2$
+META type = $00_2$
 
 The first byte of the Text Data is a Control Byte. To maintain backward compatibility, a Control Byte of \texttt{0x00} indicates that no Text Data is included.
 
@@ -1319,13 +1299,15 @@ It is up to the receiver to decide how to display this message. It may choose to
 
 If there is no data to be transferred, the Control Byte should be set to zero.
 
-\subparagraph{GNSS Data}
+In Packet Mode only one META field is sent, so a Text Data message is limited to a single 13-byte block and the Control Byte is \texttt{0x11}.
 
-Encryption subtype = $01_2$
+\subsubsection{GNSS Data}
+
+META type = $01_2$
 
 Unlike Text and Extended Callsign Data, GNSS data is expected to be dynamic during the course of a transmission and to be transmitted quickly after the GNSS data becomes available. To stop the LSF/LICH data stream from being overrun with GNSS data relative to other data types, a throttle on the amount of GNSS data transmitted is needed. It is recommended that GNSS data be sent at an update rate no faster than once every five seconds.
 
-The GNSS data fits within one 14-byte META field, which equates to six audio frames, and takes 240ms to transmit. This is a simple format of the GNSS data which does not require too much work to convert into, and provides enough flexibility for most cases. This has been tested on-air and successfully gated to APRS-IS, showing a location very close to the position reported by the GPS receiver.
+The GNSS data fits within one 14-byte META field (in Stream Mode, six stream frames, taking 240 ms to transmit). This is a simple format of the GNSS data which does not require too much work to convert into, and provides enough flexibility for most cases. This has been tested on-air and successfully gated to APRS-IS, showing a location very close to the position reported by the GPS receiver.
 
 The GNSS data includes eight numeric values using from $3$ bits to $24$ bits. The two largest $24$ bit values are signed, two's complement values. The other six are unsigned values. All numeric fields are in order from most significant to least significant bit. There is also one $4$ bit validity field that used to indicate which numeric fields are valid.
 
@@ -1413,9 +1395,9 @@ A $12$ bit \textbf{Speed} numeric field is in the twelfth byte and the $4$ most 
 
 Finally, the remaining $4$ bits of the thirteenth byte and the fourteenth byte are reserved and should be set to zero.
 
-\subparagraph{Extended Callsign Data}
+\subsubsection{Extended Callsign Data}
 
-Encryption subtype = $10_2$
+META type = $10_2$
 
 This is only transmitted from repeaters/gateways and not from clients, who only receive and display this data. These fields should not appear over M17 Internet links as they should only be used over the air from a repeater/gateway.
 
@@ -1442,6 +1424,55 @@ The use of these two callsign fields is as follows:
 The extended callsign data is not used under any other circumstances than the above currently.
 
 It is not expected that the data in the extra callsign fields change during the course of a transmission.
+
+\begin{quote}
+	\textbf{NOTE} In Packet Mode the LSF carries the only META field, so a repeater or gateway that inserts Extended Callsign Data replaces any META data supplied by the originating station.
+\end{quote}
+
+\subsection{CRC}
+
+The last 2 bytes of the 30-byte LSF is a 16-bit CRC as described in Section \ref{crc}.
+
+\section{Stream Mode}
+
+\subsection{Stream Mode LSF TYPE}
+
+In Stream Mode, the TYPE field (\autoref{lsf_type}) contains all information needed to properly interpret the stream frames. The voice application uses the following values:
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{ll}
+		\hline
+		Packet/Stream & 1 = Stream Mode \\
+		\hline
+		Data Type & $10_2$ = Voice only (3200 bps) \\
+		\hline
+		Encryption Type & $00_2$ = None \\
+		& $01_2$ = Scrambling \\
+		& $10_2$ = AES \\
+		\hline
+		Encryption Subtype & Depends on Encryption Type \\
+		\hline
+		Channel Access Number (CAN) & 0..15 \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Voice LSF TYPE Definition}
+\end{table}
+The Voice only Data type indicator specifies voice data encoded at 3200 bps using Codec 2.
+
+\subsection{Encryption Types} \label{stream_encryption}
+
+Encryption is \textbf{optional}. The use of it may be restricted within
+some radio services and countries, and should only be used if legally
+permissible.
+
+\paragraph{Null Encryption}
+
+Encryption type = $00_2$
+
+When no encryption is used, the 14-byte (112-bit) META field of the LSF and corresponding LICH of the stream can be used for transmitting relatively small amounts of extended data without affecting the bandwidth available for the audio. The full 14 bytes of META extended data is potentially decodable every six stream frames, at a 240 ms update rate. The extended data is transmitted in a simple round robin manner, with the only exception being GNSS data which should be transmitted as soon as possible after the GNSS data is received from its source.
+
+The Encryption Subtype bits indicate what extended data is stored in the META field. The META types and their formats are defined in \autoref{lsf_meta}.
 
 \paragraph{Scrambling}
 
@@ -1554,10 +1585,6 @@ The timestamp occupies the most significant 32 bits of the counter, followed by 
 	\textbf{WARNING} In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received messages are proven to be exactly as-sent by the sender should use an appropriate digital signature algorithm, as described below.
 \end{quote}
 
-\subsection{Channel Access Number}
-
-The Channel Access Number (CAN) is a four bit code that may be used to filter received audio, text, and GNSS data. A receiver may optionally allow reception from sources only if their transmitted CAN value matches the receiver's own specified CAN value.
-
 \subsection{Stream Frames}
 
 Stream Frames will contain chunked LSF contents (in the LICH field). The Stream Contents will include the incrementing 16-bit Frame Number, and 128 bits of data (unencrypted or encrypted).
@@ -1591,29 +1618,30 @@ At the receiver-side, the 512-bit signature is retrieved from the last 4 frames'
 
 \subsection{Packet Mode LSF TYPE}
 
-The TYPE field only defines the stream/packet bit, called ``P/S'' in Table~\ref{tab:packet_lsf_type} and the Channel Access Number (CAN) bits. All other bits are reserved.
+Packet Mode does not support encryption or signatures. The TYPE field (\autoref{lsf_type}) is used as follows:
 
 \begin{table}[H]
 	\centering
-	\small
-	\begin{NiceTabular}{|W{c}{4em}|[tikz=very thick]W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|W{c}{3em}|}
+	\begin{tblr}{ll}
 		\hline
-		\diagbox{Byte}{Bit} & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 \\
-		\Hline[tikz=very thick]
-		0 &
-			\multicolumn{5}{c}{\textit{Reserved}} &
-			\multicolumn{3}{c}{Channel Access Number\ldots} \\
+		Packet/Stream & 0 = Packet Mode \\
 		\hline
-		1 &
-			\ldots &
-			\multicolumn{6}{c}{\textit{Reserved}} &
-			\parbox{3em}{\centering P/S} \\
+		Data Type & \textit{Reserved} \\
 		\hline
-	\end{NiceTabular}
-	\normalsize
-	\caption{Packet LSF TYPE Layout}
+		Encryption Type & $00_2$ = None \\
+		\hline
+		Encryption Subtype & META type, see Table~\ref{tab:meta_types} \\
+		\hline
+		Signed Stream & \textit{Reserved} \\
+		\hline
+		Channel Access Number (CAN) & 0..15 \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Packet LSF TYPE Definition}
 	\label{tab:packet_lsf_type}
 \end{table}
+
+The single META field in the LSF may carry any of the META types defined in \autoref{lsf_meta}.
 
 \subsection{Packet Data}
 
