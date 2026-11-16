@@ -120,6 +120,7 @@ draw=black]
 	\vhEntry{2.0.8}{03 Oct 2026}{SP5WWP}{Fixed contradiction in the AES CTR description.}
 	\vhEntry{2.0.9}{04 Oct 2026}{SP5WWP}{Clarified what can change in the LSD during a stream.}
 	\vhEntry{2.0.10}{16 Oct 2026}{SP5WWP}{Restore GNSS Radius encoding rule.}
+	\vhEntry{2.0.11}{16 Nov 2026}{SP5WWP}{Fixed a typo in the BERT PRBS.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -2197,7 +2198,7 @@ However, the M17 LFSR is a slightly different. The M17 PRBS9 uses the generated 
 
 This will result in the same sequence, just shifted by nine bits.
 
-${M17\_PRBS}_{n} = {PRBS9}_{n + 8}$
+${M17\_PRBS}_{n} = {PRBS9}_{n + 9}$
 
 The reason for this is that it allows for easier synchronization. This is equivalent to a multiplicative scrambler (a self-synchronizing scrambler) fed with a stream of 0s.
 
