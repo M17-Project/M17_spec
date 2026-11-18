@@ -122,13 +122,14 @@ draw=black]
 	\vhEntry{2.0.10}{16 Oct 2026}{SP5WWP}{Restore GNSS Radius encoding rule.}
 	\vhEntry{2.0.11}{16 Nov 2026}{SP5WWP}{Fixed a typo in the BERT PRBS.}
 	\vhEntry{2.0.12}{18 Nov 2026}{N1ADJ}{Fixed ASCII values for slash and dot in the Callsign Alphabet table.{\newline}Corrected N1ADJ callsign in the 2.0.0 entry.}
+	\vhEntry{2.1.0}{18 Nov 2026}{SP5WWP}{New stream hash (SHA-256 hash) and Authentication Frame.}
 \end{versionhistory}
 
 \chapter{Licenses}
 
 \paragraph{M17 Protocol Specification}
 
-Copyright \copyright{}  2023-2025  M17 Project. \\
+Copyright \copyright{}  2023-2026  M17 Project. \\
 
 Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.3 or any later version published by the Free Software Foundation; with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included in the section entitled ``GNU Free Documentation License'' or at the following web page: \href{https://www.gnu.org/licenses/fdl-1.3.en.html}{https://www.gnu.org/licenses/fdl-1.3.en.html}
 
@@ -1553,7 +1554,7 @@ The timestamp occupies the most significant 32 bits of the counter, followed by 
 \end{table}
 
 \begin{quote}
-	\textbf{WARNING} In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received messages are proven to be exactly as-sent by the sender should use an appropriate digital signature algorithm, as described below.
+	\textbf{WARNING} In CTR mode, AES encryption is malleable. That is, an attacker can change the contents of the encrypted message without decrypting it. This means that recipients of AES-encrypted data must not trust that the data is authentic. Users who require that received payloads are proven to be exactly as-sent by the holder of a signing key should use a digital signature, as described in Section~\ref{sec:digital_signatures}. Note that the signature does not cover the LSD.
 \end{quote}
 
 \subsection{Channel Access Number}
@@ -1565,29 +1566,130 @@ The Channel Access Number (CAN) is a four bit code that may be used to filter re
 Stream Frames will contain chunked LSF contents (in the LICH field). The Stream Contents will include the incrementing 16-bit Frame Number, and 128 bits of data (unencrypted or encrypted).
 
 \subsection{Digital Signatures}
-M17 protocol provides a stream authentication method through Elliptic Curve Digital Signature Algorithm (ECDSA). The curve used is $secp256r1$. Signature availability is signalled with a specific bit in the TYPE field. Signature use reduces the maximum length of the stream by 4 frames.
+\label{sec:digital_signatures}
+M17 protocol provides a stream authentication method through the Elliptic Curve Digital Signature Algorithm (ECDSA, FIPS 186-5) with SHA-256 (FIPS 180-4) as the hash function. The curve used is $secp256r1$ (NIST P-256). Signature availability is signalled with the Signed Stream bit in the TYPE field. A signed stream ends with one Authentication Frame and 4 frames carrying the signature, so signature use reduces the maximum length of the stream by 5 frames.
 
-\subsubsection{Message Digest Algorithm for Voice Streams}
-At the beginning of the transmission, a $digest$ byte array of size 16 is initialized with zeros. After every stream frame (starting at frame 0) an exclusive or (XOR) operation is performed over the contents of the $digest$ array and the frame's payload. The $digest$ array is then rotated left by 1 byte. The result shall be retained in the array.
+\subsubsection{Authentication Frame}
+After the last stream frame carrying data or voice, the transmitter sends one Authentication Frame with $FN = 7FFB_{16}$. Its 16-byte payload identifies the signer, the intended destination, and the time of signing:
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{
+		colspec={lll},
+		}
+		\hline
+		Bytes & Field & Description \\
+		\hline
+		0--5 & Signer Callsign & Callsign of the signing station, Address Encoding (Appendix~\ref{address_encoding}) \\
+		6--11 & Destination & DST field as sent by the signing station, Address Encoding \\
+		12--15 & Timestamp & Seconds since 2020-01-01T00:00:00Z, most significant byte first \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Authentication Frame Payload}
+	\label{tab:auth_frame}
+\end{table}
+
+The Signer Callsign is the callsign of the station owning the private key. The Destination is the DST field of the LSD sent by the signing station. Repeaters, gateways, and reflectors do not change these two fields, even when they change the SRC or DST fields of the LSD. The Timestamp is the time at which the frame is generated, in the same format as the timestamp of the AES nonce (Table~\ref{tab:aes_counter}).
+
+The Authentication Frame is not encrypted, so that the signature can be verified without the encryption key. The LICH counter advances normally.
+
+\subsubsection{Stream Hash}
+At the beginning of the transmission, a SHA-256 computation is started. Its input is a fixed 10-byte tag $T$, followed by the Frame Number and the payload of every stream frame, in the order of transmission, up to and including the Authentication Frame:
 
 \begin{align*}
-	digest :=& digest \oplus payload \\
-	digest :=& rol(digest, 8)
+	H := \mathrm{SHA256}(T \,\|\, FN_0 \,\|\, P_0 \,\|\, FN_1 \,\|\, P_1 \,\|\, \ldots \,\|\, FN_{N-1} \,\|\, P_{N-1} \,\|\, FN_A \,\|\, P_A)
 \end{align*}
 
-This process is repeated until there is no more data to transmit. In case there is any encryption enabled, the $payload$ input shall be the encrypted stream. This ensures the possibility of verification, even if the encryption details are not known to the receiving parties. Frame Numbers of the frames carrying the signature should follow a succession of $\{7FFC_{16}, 7FFD_{16}, 7FFE_{16}, FFFF_{16}\}$.
+where:
+\begin{itemize}
+	\item $T$ is the ASCII string ``M17-SIG-v2'' without a terminator (bytes \texttt{4D 31 37 2D 53 49 47 2D 76 32} in hexadecimal),
+	\item $FN_i$ is the 16-bit Frame Number of the $i$-th stream frame, as transmitted, most significant byte first,
+	\item $P_i$ is the 16-byte payload of the $i$-th stream frame, as transmitted,
+	\item $N$ is the number of stream frames carrying data or voice. The first one is the frame with $FN = 0000_{16}$,
+	\item $FN_A = 7FFB_{16}$ and $P_A$ are the Frame Number and the payload of the Authentication Frame.
+\end{itemize}
+
+The 4 frames carrying the signature are not part of the hash input. The hash is updated after every stream frame with the 18 bytes $FN_i \,\|\, P_i$, so the whole stream never has to be stored. In case there is any encryption enabled, the payload input shall be the encrypted stream. This ensures the possibility of verification, even if the encryption details are not known to the receiving parties.
+
+Including the Frame Number in the hash prevents payloads from being reordered, moved to a different position, inserted or removed without changing $H$. SHA-256 ensures that no other stream with the same $H$ can be computed. The tag $T$ separates M17 stream signatures from any other use of the same key.
+
 \begin{quote}
 	\textbf{NOTE} The Frame Number's most significant bit of the last speech payload stream shall not be set, since it is not the last frame to be transmitted.
 \end{quote}
 
 \subsubsection{Signature Generation and Transmission}
-At the transmitter-side, the stream digest is signed with a 256-bit private key. The resulting 512-bit signature is split into 4 chunks and sent as additional payload at the end of the transmission. To keep the reassembled LSF data consistent, the LICH counter shall advance normally. The most significant bit of the Frame Number (signalling end of transmission) shall be set only in the last frame carrying the signature.
+At the transmitter-side, $H$ is signed with ECDSA over $secp256r1$ using a 256-bit private key $d$. $H$ shall be used directly as the hash value of the message in the ECDSA signature generation (it is not hashed again). The result is a pair of integers $(r, s)$.
+
+The per-signature value $k$ (nonce) shall be secret and shall never be used for more than one signature. It shall be either uniformly random in $[1, n-1]$ (where $n$ is the order of the curve), generated with a cryptographically secure random number generator, or derived deterministically from $d$ and $H$, as in RFC 6979. Reusing $k$, or a predictable or biased $k$, reveals the private key. Since the costly part of the signature, $R = k \cdot G$, does not depend on $H$, a transmitter using a random $k$ may compute $k$, $k^{-1}$ and $r$ in advance (e.g. when the transmission starts) and only compute $s$ after the Authentication Frame.
+
+The 512-bit signature is formed as $r \,\|\, s$, with $r$ and $s$ each encoded as 32-byte unsigned integers, most significant byte first. The signature is split into 4 chunks of 16 bytes and sent as additional payload after the Authentication Frame. Frame Numbers of the frames carrying the signature should follow a succession of $\{7FFC_{16}, 7FFD_{16}, 7FFE_{16}, FFFF_{16}\}$: the frame with $FN = 7FFC_{16}$ carries bytes 0--15, $7FFD_{16}$ bytes 16--31, $7FFE_{16}$ bytes 32--47 and $FFFF_{16}$ bytes 48--63. The signature frames are not encrypted. To keep the reassembled LSD consistent, the LICH counter shall advance normally. The most significant bit of the Frame Number (signalling end of transmission) shall be set only in the last frame carrying the signature.
 
 \subsubsection{Signature Verification}
-At the receiver-side, the 512-bit signature is retrieved from the last 4 frames' contents, if the appropriate TYPE bit is set. The signature is then checked using a 512-bit public key.
+At the receiver-side, $H$ is computed from the received stream frames and the Authentication Frame as described above. The 512-bit signature is retrieved from the last 4 frames' contents, if the Signed Stream bit is set in the TYPE field. The signature is then checked with ECDSA signature verification, using $H$ as the hash value and the public key of the station named in the Signer Callsign field. The public key is the point $Q = d \cdot G$, encoded as $X \,\|\, Y$: the 32-byte $x$ and $y$ coordinates, most significant byte first (an uncompressed point without the $04_{16}$ prefix used by SEC 1).
 \begin{quote}
 	\textbf{NOTE} The verification process will work if and only if all the data is received successfully (without transmission errors or dropped frames).
 \end{quote}
+
+A receiver with a trusted time source (e.g. GNSS or network time) should reject a stream whose Timestamp differs from its own time by more than a configurable window. A default window of 300 seconds is recommended. Such a receiver may also remember the hash $H$ of the streams accepted within the window, and reject a stream whose $H$ has already been seen: it is a replay. A receiver without a trusted time source cannot detect a replay and shall not report the stream as fresh.
+
+\subsubsection{Receiver Display}
+A receiver verifying signatures should display:
+\begin{itemize}
+	\item the result of the verification (valid, invalid, or not verified, e.g. because no public key is known for the Signer Callsign),
+	\item the Signer Callsign,
+	\item the Destination,
+	\item the Timestamp, as a UTC date and time,
+	\item the result of the Timestamp check, if the receiver has a trusted time source.
+\end{itemize}
+
+The receiver should display a warning when the Signer Callsign differs from the originator of the stream: Callsign Field 1 of the Extended Callsign Data, if present in the META field, or the SRC field otherwise. A valid signature with a different Signer Callsign proves that the stream was signed by the Signer, not by the station the LSD names. A Destination different from the DST field of the LSD is not a reason for a warning, since gateways and reflectors may change the DST field.
+
+\begin{quote}
+	\textbf{NOTE} The signature does not cover the LSD (DST, SRC, TYPE, META). The signing station and the destination are covered through the Authentication Frame. The distribution of public keys is out of the scope of this document.
+\end{quote}
+
+\subsubsection{Test Vector}
+The following values can be used to test an implementation. The stream has 3 frames with $FN_i = i$ and $P_i[j] = 16i + j$ (i.e. the payload bytes are $00_{16}$ to $2F_{16}$). The Authentication Frame carries the Signer Callsign ``N0CALL'', the Destination ``W1AW'' and the Timestamp 2026-11-18T00:00:00Z ($217123200$ seconds). All table values are hexadecimal.
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{colspec={lll}}
+		\hline
+		Input & FN & Payload \\
+		\hline
+		Tag $T$ & -- & \texttt{4D31372D5349472D7632} \\
+		Stream frame 0 & \texttt{0000} & \texttt{000102030405060708090A0B0C0D0E0F} \\
+		Stream frame 1 & \texttt{0001} & \texttt{101112131415161718191A1B1C1D1E1F} \\
+		Stream frame 2 & \texttt{0002} & \texttt{202122232425262728292A2B2C2D2E2F} \\
+		Authentication Frame & \texttt{7FFB} & \texttt{00004B13D106 0000001680B7 0CF10980} \\
+		& & \footnotesize Signer (N0CALL), Destination (W1AW), Timestamp \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Stream Signature Test Vector -- Hash Input (82 Bytes)}
+	\label{tab:sig_test_input}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\begin{tblr}{colspec={ll}}
+		\hline
+		Value & Hexadecimal \\
+		\hline
+		Stream hash $H$ & \texttt{2DD1BC7B5C017F100F9379F42EAA205CE90B8C7EA263F2F80E37BA6E6D6B588D} \\
+		Private key $d$ & \texttt{3F9BC000FAB83AED4551EC40A5F6A7C178B255BA654C0684D242BC8F59F8DA18} \\
+		Public key $X$ & \texttt{B91931F4DC5EFC54C23C0B8C87704C45585BD791046FEF05BFBFD5A0CE9B53B3} \\
+		Public key $Y$ & \texttt{C55637387871BB5491A814C2344EC6F0696BF3E16FE8017FC08E3A6320EEA070} \\
+		Signature $r$ & \texttt{E689788A5C2FBDD0FA2137429517B7C9DD5E3C2BFFB9667D4EDB9A8472F3CF31} \\
+		Signature $s$ & \texttt{C45421DED7F7025608BFD928B06BEFD4A44526609B3DC54FC2B36944F6121D54} \\
+		\hline[2px]
+	\end{tblr}
+	\caption{Stream Signature Test Vector -- Keys and Signature}
+	\label{tab:sig_test_values}
+\end{table}
+
+The private key $d$ is the SHA-256 hash of the ASCII string ``M17 test key''. The signature uses $k$ as in RFC 6979.
+
+A transmitter using a random $k$ produces a different signature for the same $H$. Every valid signature verifies with the public key above.
 
 \section{Packet Mode}
 
