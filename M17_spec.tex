@@ -109,7 +109,7 @@ draw=black]
 	\vhEntry{1.4.0}{01 Jan 2025}{SP5WWP}{Removed the KISS appendix and created a separate KISS specification document.}
 	\vhEntry{1.5.0}{11 Feb 2025}{N7TAE|VK7XT}{Rearranged the Data Link and Application Layer chapters for better flow, removed IP Network chapter and File Type appendix, added more details to Packet Mode, 3 new IP packets defined, and added new clarifying bit tables.}
 	\vhEntry{1.6.0}{08 Aug 2025}{SP5WWP}{Section 3.4 was moved to Part II.}
-	\vhEntry{2.0.0}{12 Aug 2025}{N7TAE|N7ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
+	\vhEntry{2.0.0}{12 Aug 2025}{N7TAE|N1ADJ|SP5WWP}{GNSS Meta data changed extensively. Values are now metric, and a new param related to HDOP was added.}
 	\vhEntry{2.0.1}{23 Sep 2025}{K6OF}{Implement CCSDS A20.0-Y-4 style guide and clarify use of UTC.}
 	\vhEntry{2.0.2}{28 Sep 2025}{K0RET}{Fixed misspellings.}
 	\vhEntry{2.0.3}{09 Oct 2025}{SP5WWP}{Fixed Golay matrices display.}
@@ -121,6 +121,7 @@ draw=black]
 	\vhEntry{2.0.9}{04 Oct 2026}{SP5WWP}{Clarified what can change in the LSD during a stream.}
 	\vhEntry{2.0.10}{16 Oct 2026}{SP5WWP}{Restore GNSS Radius encoding rule.}
 	\vhEntry{2.0.11}{16 Nov 2026}{SP5WWP}{Fixed a typo in the BERT PRBS.}
+	\vhEntry{2.0.12}{18 Nov 2026}{N1ADJ}{Fixed ASCII values for slash and dot in the Callsign Alphabet table.{\newline}Corrected N1ADJ callsign in the 2.0.0 entry.}
 \end{versionhistory}
 
 \chapter{Licenses}
@@ -1673,8 +1674,8 @@ In order to define how encoding and decoding are done, here are 40 characters us
 		1 - 26 & '\texttt{A}' - '\texttt{Z}' & Letter & \texttt{0x41} - \texttt{0x5A} & Uppercase \\
 		27 - 36 & '\texttt{0}' - '\texttt{9}' & Digit & \texttt{0x30} - \texttt{0x39} & Decimal \\
 		37 & '\texttt{-}' & Hyphen & \texttt{0x2D} & Dash \\
-		38 & '\texttt{/}' & Slash & \texttt{0x3F} & Forward slash & \\
-		39 & '\texttt{.}' & Dot & \texttt{0x3E} & Period \\
+		38 & '\texttt{/}' & Slash & \texttt{0x2F} & Forward slash & \\
+		39 & '\texttt{.}' & Dot & \texttt{0x2E} & Period \\
 		\hline[2px]
 	\end{tblr}
 	\caption{Callsign Alphabet}
